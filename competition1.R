@@ -93,9 +93,17 @@ theme_minimal()
 dev.off()
 
 
+### SIGNIFICANCE TESTS
+# test relationship between flowering date (days between planting and spike emergence) and...
+
+# replicate
 x <-aov(Flowering_Date ~ replicate, df3)
 summary(x)
 
- df3 %>% group_by(replicate) %>% summarise(mean(Flowering_Date, na.rm=T))
+# are replicates strongly correlated?
+#rep1 <- df3 %>% select(Genotypes, replicate, Flowering_Date) %>% filter(replicate=="rep 1") #%>% filter(!is.na(Flowering_Date))
+#rep2 <- df3 %>% select(Genotypes, replicate, Flowering_Date) %>% filter(replicate=="rep 2") #%>% filter(!is.na(Flowering_Date))
+
+#cor(rep1$Flowering_Date, rep2$Flowering_Date)
 
 summarise(iris, sd(Sepal.Length, na.rm = T), groups=Species)
