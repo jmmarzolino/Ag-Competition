@@ -1,24 +1,28 @@
-setwd("/rhome/jmarz001/bigdata/Competition")
+setwd("/rhome/jmarz001/bigdata/Ag-Competition")
+library(tidyverse)
 
+# load phenotyping data
 df <- read_delim("Phenotyping Sheets - germination, survival, flowering time, height - CC II Competition Phenotyping - Formatted.csv", ",")
-
+# remove comments and count columns
 df <- df[, -(17:19)]
 
+# separate duplicate cols into 2 data frames
 df1 <- df[, 1:8]
 df2 <- df[, 9:16]
 
-
+# copy correct col names onto second data frame
 colnames(df2) <- colnames(df1)
 df3 <- bind_rows(df1, df2)
 
-
+# remove non-numeric date entries
 #df3 <- df3[-which(df3$`Flowering Date` == "x"),]
 #df3 <- df3[-which(df3$`Flowering Date` == "X"),]
 df3$`Flowering Date` <- as.numeric(df3$`Flowering Date`)
+
+# replace colnames with code-friendly versions
 colnames(df3) <- c("Genotypes", "number_of_plants", "Condition", "replicate", "2021BED", "2021ROW", "Flowering_Date", "Notes")
 
 
-t.test(extra ~ group, data = sleep)
 ## Remove rows without genotype
 df3 <- df3 %>% filter(!is.na(Genotypes))
 
