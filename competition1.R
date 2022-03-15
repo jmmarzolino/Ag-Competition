@@ -33,6 +33,15 @@ df3$Generation <- str_replace(df3$Generation, "(\\d)_\\d+", "\\1")
 df3$Generation <- as.numeric(df3$Generation)
 df3[which(df3$Generation > 8), which(colnames(df3) == "Generation")] <- 0
 
+
+
+#### generation means and vars
+df3 %>% group_by(Generation) %>% summarise(mean = mean(Flowering_Date, na.rm=T), variance = var(Flowering_Date, na.rm=T), n=n())
+### conditions means and vars
+df3 %>% group_by(Condition) %>% summarise(mean = mean(Flowering_Date, na.rm=T), variance = var(Flowering_Date, na.rm=T), n=n())
+### replicates means and vars
+df3 %>% group_by(replicate) %>% summarise(mean = mean(Flowering_Date, na.rm=T), variance = var(Flowering_Date, na.rm=T), n=n())
+
 ## boxplot of experimental conditions
 png("boxplot.png")
 ggplot(df3, aes(y=Flowering_Date, x=Condition, fill=Condition)) +
