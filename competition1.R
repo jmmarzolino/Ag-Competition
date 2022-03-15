@@ -46,16 +46,48 @@ df3 %>% group_by(Condition) %>% summarise(mean = mean(Flowering_Date, na.rm=T), 
 ### replicates means and vars
 df3 %>% group_by(replicate) %>% summarise(mean = mean(Flowering_Date, na.rm=T), variance = var(Flowering_Date, na.rm=T), n=n())
 
+
+
+### Plotting
 ## boxplot of experimental conditions
-png("boxplot.png")
+png("boxplot_condition.png")
 ggplot(df3, aes(y=Flowering_Date, x=Condition, fill=Condition)) +
 geom_boxplot() +
 theme_minimal()
 dev.off()
 
-## distribution
-png("distribution.png")
+## distribution of experimental conditions
+png("distribution_condition.png")
 ggplot(df3, aes(x=Flowering_Date, group=Condition, color=Condition, fill=Condition)) +
+geom_density(alpha=0.5) +
+theme_minimal()
+dev.off()
+
+## boxplot of Generations
+png("boxplot_generation.png")
+ggplot(df3, aes(y=Flowering_Date, x=Generation, group=Generation, fill=Generation)) +
+geom_boxplot() +
+theme_minimal()
+dev.off()
+
+## distribution of Generations
+png("distribution_generation.png")
+ggplot(df3, aes(x=Flowering_Date, group=Generation, color=Generation, fill=Condition)) +
+geom_density(alpha=0.5) +
+theme_minimal()
+dev.off()
+
+
+## boxplot of replicates
+png("boxplot_replicates.png")
+ggplot(df3, aes(y=Flowering_Date, x=replicate, group=replicate, fill=replicate)) +
+geom_boxplot() +
+theme_minimal()
+dev.off()
+
+## distribution of replicates
+png("distribution_replicates.png")
+ggplot(df3, aes(x=Flowering_Date, group=replicate, color=replicate, fill=replicate)) +
 geom_density(alpha=0.5) +
 theme_minimal()
 dev.off()
