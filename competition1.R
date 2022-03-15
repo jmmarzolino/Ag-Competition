@@ -19,6 +19,19 @@ colnames(df3) <- c("Genotypes", "number_of_plants", "Condition", "replicate", "2
 
 
 t.test(extra ~ group, data = sleep)
+## Remove rows without genotype
+df3 <- df3 %>% filter(!is.na(Genotypes))
+
+#### Add Generation
+df3$Genotypes <- str_replace(df3$Genotypes, "-", "_")
+df3$Genotypes <- str_replace(df3$Genotypes, "-", "_")
+
+df3$Generation <- str_replace(df3$Genotypes, "(\\d)_\\d+", "\\1")
+df3$Generation <- str_replace(df3$Generation, "(\\d)_\\d+", "\\1")
+#str_split_fixed(df3$Genotypes, "_", 3)
+
+df3$Generation <- as.numeric(df3$Generation)
+df3[which(df3$Generation > 8), which(colnames(df3) == "Generation")] <- 0
 
 ## boxplot of experimental conditions
 png("boxplot.png")
