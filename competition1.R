@@ -106,4 +106,34 @@ summary(x)
 
 #cor(rep1$Flowering_Date, rep2$Flowering_Date)
 
-summarise(iris, sd(Sepal.Length, na.rm = T), groups=Species)
+
+
+# experimental group
+x <-aov(Flowering_Date ~ Condition, df3)
+summary(x)
+
+# replicate and experimental group
+x <-aov(Flowering_Date ~ replicate + Condition, df3)
+summary(x)
+
+# generation - parents vs progeny
+#df3 %>% mutate(ParentOrProgeny = )
+
+# generation - F0, 18, 28, 58...
+x <-aov(Flowering_Date ~ Generation, df3)
+summary(x)
+
+# combinations of above?
+x <-aov(Flowering_Date ~ Condition + replicate + Generation + number_of_plants, df3)
+summary(x)
+
+x <-aov(Flowering_Date ~ Condition*Generation, df3)
+summary(x)
+
+
+#t.test(extra ~ group, data = sleep)
+
+
+
+ df3 %>% group_by(replicate) %>% summarise(mean(Flowering_Date, na.rm=T))
+ df3 %>% group_by(replicate) %>% summarise(var(Flowering_Date, na.rm=T))
