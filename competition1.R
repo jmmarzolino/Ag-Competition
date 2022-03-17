@@ -146,8 +146,3 @@ summary(x)
 #summary(aov())
 #ranova(lmer()) # for random effects
 #t.test(extra ~ group, data = sleep)
-
-
-
- df3 %>% group_by(replicate) %>% summarise(mean(Flowering_Date, na.rm=T))
- df3 %>% group_by(replicate) %>% summarise(var(Flowering_Date, na.rm=T))
