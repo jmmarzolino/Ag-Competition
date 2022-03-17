@@ -65,14 +65,14 @@ dev.off()
 
 ## boxplot of Generations
 png("boxplot_generation.png")
-ggplot(df3, aes(y=Flowering_Date, x=Generation, group=Generation, fill=Generation)) +
+ggplot(df3, aes(y=Flowering_Date, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
 geom_boxplot() +
 theme_minimal()
 dev.off()
 
 ## distribution of Generations
 png("distribution_generation.png")
-ggplot(df3, aes(x=Flowering_Date, group=Generation, color=Generation, fill=Condition)) +
+ggplot(df3, aes(x=Flowering_Date, group=as.factor(Generation), color=as.factor(Generation), fill=as.factor(Generation))) +
 geom_density(alpha=0.5) +
 theme_minimal()
 dev.off()
