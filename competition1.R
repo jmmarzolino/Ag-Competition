@@ -130,7 +130,21 @@ summary(x)
 x <-aov(Flowering_Date ~ Condition*Generation, df3)
 summary(x)
 
+#library(lme4)
+#install_packages("lmeTest")
+#library(lmeTest)
+#x <-aov(lmer(Flowering_Date ~ Condition + (1|Generation:Genotypes) + (1|replicate), df3))
+#x <-aov(lmer(Flowering_Date ~ Condition + Generation + (1 + Generation|Genotypes) + (1|replicate)), df3) # try to plot this line!
+# Fixed: Condition, Generation
+# Random: Genotype, replicate
+# relationship between Generation and genotype?
+# relationship between Generation and Condition...
 
+
+#summary(x)
+#anova(lmer()) # anova for fixed effects
+#summary(aov())
+#ranova(lmer()) # for random effects
 #t.test(extra ~ group, data = sleep)
 
 
