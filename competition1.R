@@ -1,3 +1,13 @@
+#!/usr/bin/env Rscript
+
+#SBATCH --ntasks=1
+#SBATCH --mem=50G
+#SBATCH --time=02:00:00
+#SBATCH --job-name="Ag-Competition 1"
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/competition1.stdout
+#SBATCH -p short
+
+
 setwd("/rhome/jmarz001/bigdata/Ag-Competition")
 library(tidyverse)
 
