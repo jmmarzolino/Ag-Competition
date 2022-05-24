@@ -63,9 +63,11 @@ geom_density(alpha=0.5) +
 theme_minimal()
 dev.off()
 
+
+
 ## boxplot of Generations
 png("boxplot_generation.png")
-df3 %>% filter(Condition == "single") %>% ggplot( aes(y=Flowering_Date, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
+df3 %>% ggplot( aes(y=Flowering_Date, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
 geom_boxplot() +
 theme_minimal()
 dev.off()
@@ -81,6 +83,13 @@ dev.off()
 png("distribution_generation_single_condition.png")
 df3 %>% filter(Condition == "single") %>% ggplot(aes(x=Flowering_Date, group=as.factor(Generation), color=as.factor(Generation), fill=as.factor(Generation))) +
 geom_density(alpha=0.5) +
+theme_minimal()
+dev.off()
+
+## boxplot of Generations - single plots only
+png("boxplot_generation_single_condition.png")
+df3 %>% filter(Condition == "single") %>% ggplot( aes(y=Flowering_Date, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
+geom_boxplot() +
 theme_minimal()
 dev.off()
 
