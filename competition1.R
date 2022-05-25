@@ -60,9 +60,8 @@ df3 %>% group_by(replicate) %>% summarise(mean = mean(Flowering_Date, na.rm=T), 
 
 
 #### generation means and vars
-df3 %>% filter(Generation == 0) %>% group_by(Genotypes) %>% summarise(mean = mean(Flowering_Date, na.rm=T), variance = var(Flowering_Date, na.rm=T), n=n())
-
-
+report <- df3 %>% filter(Generation == 0) %>% group_by(Genotypes) %>% summarise(mean = mean(Flowering_Date, na.rm=T), variance = var(Flowering_Date, na.rm=T), n=n())
+print(report)
 
 
 ### Plotting
