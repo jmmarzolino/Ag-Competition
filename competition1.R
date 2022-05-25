@@ -65,7 +65,6 @@ write_delim(report, "avg_flowering_date_parents.tsv", "\t")
 
 
 
-
 ### Plotting
 ## boxplot of experimental conditions
 png("boxplot_condition.png")
