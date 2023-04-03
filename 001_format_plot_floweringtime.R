@@ -3,8 +3,8 @@
 #SBATCH --ntasks=1
 #SBATCH --mem=50G
 #SBATCH --time=02:00:00
-#SBATCH --job-name="Ag-Competition 1"
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/competition1.stdout
+#SBATCH --job-name="Plot FT"
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/001_format_plot_floweringtime.stdout
 #SBATCH -p short
 
 
@@ -13,6 +13,9 @@ library(tidyverse)
 
 # load phenotyping data
 df <- read_delim("Phenotyping Sheets - germination, survival, flowering time, height - CC II Competition Phenotyping - Formatted.csv", ",")
+ft <- read_delim("FT_DAYS_2022-2023.xlsx - FT_DAYS.csv", ",")
+layout <- read_delim("FT_DAYS_2022-2023.xlsx - FIELD_LAYOUT.csv", ",")
+
 # remove comments and count columns
 df <- df[, -(17:19)]
 
