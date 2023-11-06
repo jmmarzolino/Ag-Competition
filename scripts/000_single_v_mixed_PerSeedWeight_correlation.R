@@ -14,17 +14,21 @@ library(tidyverse)
 # load phenotyping data
 df <- read_delim("Ag-Comp Seed Weights - Sheet3.csv")
 
+# find average seed weight and flowering time per genotype-condition-replicate ## wait that shouldn't average anything then, get rid of replicate grouping?
 df_mean <- df %>% group_by(Genotypes, Condition, replicate) %>% summarise(a100seed = mean(a100_seed_weight, na.rm=T), ft= mean(as.numeric(Flowering_Date), na.rm=T))
 
+# filter data to only single-genotype plots (control condition)
 df_single <- df_mean %>% filter(Condition=="single") %>% pivot_wider(names_from=replicate, values_from=c(a100seed, ft)) %>% filter(!is.na(`a100seed_rep 1`)) %>% filter(!is.na(`a100seed_rep 2`))
 
+# calculate correlation across single-genotype plots replicates
 cor(df_single$`a100seed_rep 1`, df_single$`a100seed_rep 2`)
 cor(df_single$`ft_rep 1`, df_single$`ft_rep 2`)
 
 
-
+# filter data to mixed-genotype plots (test condition)
 df_mixed <- df_mean %>% filter(Condition=="mixed") %>% pivot_wider(names_from=replicate, values_from=c(a100seed, ft)) %>% filter(!is.na(`a100seed_rep 1`)) %>% filter(!is.na(`a100seed_rep 2`))
 
+# calculate correlation across mixed-genotype plot replicates
 cor(df_mixed$`a100seed_rep 1`, df_mixed$`a100seed_rep 2`)
 
 df_mixed <- df_mixed %>% filter(!is.na(`ft_rep 1`)) %>% filter(!is.na(`ft_rep 2`))
