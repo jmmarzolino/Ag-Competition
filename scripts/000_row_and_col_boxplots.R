@@ -21,9 +21,6 @@ ft_23 <- read_delim("FT_2023.tsv")
 ft <- full_join(ft22, ft23) %>% filter(!is.na(FT))
 
 
-### PLOTTING FT
-
-
 
 ## Flowering Time Traits First
 trait = c("Flowering Time", "100 Seed Weight")
