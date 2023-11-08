@@ -30,4 +30,4 @@ Is this script redundant with others?
 Probably redundant with other scripts.
 
 #Field 2023.R
-???
+Script acts as a quality control for the data used in the Ag_Comp Project. Contains correlation graphs for replicates in relation to Total seed weight, Fecundity, 100 seed weight single, and 100 seed weight mixed. Also shows histograms to compare the shift in averages over generations for Total seed weight and 100 seed weight.
