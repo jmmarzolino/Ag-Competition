@@ -18,7 +18,12 @@ Seed_weights_2022_2023 <- subset(Seed_weights_2022_2023, select = -Notes)
 FT_2022_2023 <- subset(FT_2022_2023, select = -Notes)
 Conjoined_Data <- full_join(Seed_weights_2022_2023, FT_2022_2023, by = ("PLOT_ID"))
 Conjoined_Data$PLOT_ID <- as.numeric(Conjoined_Data$PLOT_ID)
-Conjoined_Data <- subset(Conjoined_Data, Conjoined_Data$PLOT_ID <= 1036, )
+Conjoined_Data <- subset(Conjoined_Data, Conjoined_Data$PLOT_ID <= 1036)
+
+### Subtract the Average weight of a brown bag and the average weight of an envelope to get the true weights
+
+Conjoined_Data$`Brown Bag Weight` <- Conjoined_Data$`Brown Bag Weight` - 11.24
+Conjoined_Data$`100 seed weight` <- Conjoined_Data$`100 seed weight` - 1.61
 
 ### Join Conjoined_Data with Genotype_List_2022_2023, rename the Generation column to make it easier to work with, add Fecundity and Fitness columns
 
