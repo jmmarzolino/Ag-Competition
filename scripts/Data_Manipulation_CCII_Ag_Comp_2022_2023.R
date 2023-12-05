@@ -57,7 +57,8 @@ Rep_Single <- mutate(Rep_Single, Avg_Fecundity = (Rep_Single$Fecundity + Rep_Sin
 Atlas_tbl <- filter(Full_Data, Full_Data$Genotypes == "48_5")
 Atlas_tbl <- na.omit(Atlas_tbl)
 Atlas_tbl <- Atlas_tbl %>% mutate(Atlas_Avg_Fecundity = (sum(Atlas_tbl$Fecundity)/3),
-                                  Atlas_Avg_Fitness = (sum(Atlas_tbl$Fitness)/3))
+                                  Atlas_Avg_Fitness = (sum(Atlas_tbl$Fitness)/3),
+                                  Atlas_Avg_Total_Weight = (sum(Atlas_tbl$`Brown Bag Weight`)/3))
 
 ### Average the mixed replicate data and add average total weight, fecundity, fitness, and expected fecundity
 
@@ -68,9 +69,9 @@ colnames(Mixed_rep_2)[1:14] <- paste(colnames(Mixed_rep_2)[c(1:14)], '_2', sep =
 Rep_Mixed <- inner_join(Mixed_rep_1, Mixed_rep_2, by = c("Genotypes" = "Genotypes__2","Condition" = "Condition__2"))
 Rep_Mixed <- Rep_Mixed %>% mutate(Avg_Total_weight = (Rep_Mixed$`Brown Bag Weight` + Rep_Mixed$`Brown Bag Weight__2`)/2,
                                   Avg_Fecundity = Rep_Mixed$Fecundity + Rep_Mixed$Fecundity__2,
-                                  Atlas_Avg_Fec = 1977.169,
-                                  Atlas_Avg_Fitness = 17834.67)
-Rep_Mixed <- Rep_Mixed %>% mutate(Expected_Fecundity = (Avg_Fecundity)/2 + (Atlas_Avg_Fec)/2)
+                                  Atlas_Avg_Fec = 2363.51,
+                                  Atlas_Avg_Fitness = 21347.22)
+Rep_Mixed <- Rep_Mixed %>% mutate(Expected_Fecundity = (Avg_Fecundity - Atlas_Avg_Fec)/2 + (Atlas_Avg_Fec)/2)
 
 ### Averaging replicates to correlate the replicate data, adding average fitness, fecundity, 100 seed weight, flowering time
 
@@ -82,9 +83,59 @@ Side_By_Side_Replicates <- Side_By_Side_Replicates %>% mutate(Avg_Fec = (Side_By
                                                               Avg_Total_Weight = (Side_By_Side_Replicates$`Brown Bag Weight`+Side_By_Side_Replicates$`Brown Bag Weight__2`)/2,
                                                               Avg_Fit = (Side_By_Side_Replicates$Fitness + Side_By_Side_Replicates$Fitness__2)/2,
                                                               Avg_100_SW = (Side_By_Side_Replicates$`100 seed weight` + Side_By_Side_Replicates$`100 seed weight__2`)/2,
-                                                              Avg_FT = (Side_By_Side_Replicates$FT_DAYS + Side_By_Side_Replicates$FT_DAYS__2)/2)
+                                                              Avg_FT = (Side_By_Side_Replicates$FT_DAYS + Side_By_Side_Replicates$FT_DAYS__2)/2,
+                                                              Atlas_Avg_Fec = 2363.51,
+                                                              Atlas_Avg_Fitness = 21347.22,
+                                                              Atlas_Avg_Total_Weight = 126.8267)
+Side_By_Side_Replicates$Numbers <- ifelse(Side_By_Side_Replicates$Condition == "mixed", 1, 0)
+
+### Functions to get expected per plant fecundity for both conditions
+### Numbers col: 1 = mixed, 0 = single
+
+Exp_Single <- function(x){
+  result_single <- x/10
+  return(result_single) 
+} 
+
+Exp_Fec_Mixed <- function(x){
+  TW_mix <- (x/2) + (Side_By_Side_Replicates$Atlas_Avg_Fec/2) 
+  Exp_Fec_mix <- TW_mix/10
+  return(Exp_Fec_mix)
+}
 
 
+Side_By_Side_Replicates$Exp_Fec_Per_Plant <- ifelse(Side_By_Side_Replicates$Numbers == 1,
+       NA,
+       Exp_Single(Side_By_Side_Replicates$Avg_Fec))
+
+
+
+
+
+
+### Functions to get expected per plant fitness for both conditions
+
+Exp_Fit_Mixed <- function(x){
+  fit_mix <- x + (Side_By_Side_Replicates$Atlas_Avg_Fitness/2)
+  Exp_Fit_mix <- fit_mix/10
+  return(Exp_Fit_mix)
+}
+
+Side_By_Side_Replicates$Exp_Fit_Per_Plant <- ifelse(Side_By_Side_Replicates$Numbers == 1,
+                                                    Exp_Fit_Mixed(Side_By_Side_Replicates$Avg_Fit),
+                                                    Exp_Single(Side_By_Side_Replicates$Avg_Fit))
+
+### Functions to get expected total weight per plant for both conditions
+
+Exp_TW_mix <- function(x){
+  TW_mix <- x + (Side_By_Side_Replicates$Atlas_Avg_Total_Weight/2)
+  Exp_TW <- TW_mix/10
+  return(Exp_TW)
+}
+
+Side_By_Side_Replicates$Exp_TW_Per_Plant <- ifelse(Side_By_Side_Replicates$Numbers == 1,
+                                                   Exp_TW_mix(Side_By_Side_Replicates$Avg_Total_Weight),
+                                                   Exp_Single(Side_By_Side_Replicates$Avg_Total_Weight))
 
 ### Write Delims
 write_delim(Full_Data, "Full_Data")
