@@ -11,6 +11,7 @@ library(tidyr)
 Seed_weights_2022_2023 <- read_sheet('https://docs.google.com/spreadsheets/d/1mxSidDcodD7-Iju9JJZ_YoejhjEqt6JDad3LMGOh61s/edit#gid=1749035245')
 FT_2022_2023 <- read_sheet('https://docs.google.com/spreadsheets/d/1Rb1oN4yeqcQDFKfezf3uGLEOlp-s8x1iAIpAO6cqT4E/edit#gid=682364943')
 Genotype_List_2022_2023 <- read_sheet('https://docs.google.com/spreadsheets/d/1pKOlthCtyF-T8bbU_96xfoUDcQbbVSnP3jAk6iP3egc/edit#gid=326137907')
+Haplo_raw <- read_sheet("https://docs.google.com/spreadsheets/d/13CHW_ZFK7BDMoJ2vgQkm1QhlCm068_m7s1lOCF-lVSc/edit#gid=1521625104")
 
 ### Filtering out the Notes column then joining Seed_weights_2022_2023 and FT_2022_2023 to make Conjoined_Data
 
@@ -37,20 +38,11 @@ Full_Data$Generation <- gsub("^*.*_.*", 0, Full_Data$Generation)
 Full_Data$Fecundity <- Full_Data$`Brown Bag Weight`/(Full_Data$`100 seed weight`/100)
 Full_Data$Fitness <- Full_Data$Fecundity * Full_Data$Plot_Germination
 Full_Data <- na.omit(Full_Data)
+Full_Data <- Full_Data %>% filter(Genotypes != "7_5")
 
-### Split Single_Condition into two data frames in order to average the replicates of the single Condition
-
-Single_Condition <- subset(Full_Data, Full_Data$Condition == "single")
-Single_rep_1 <- subset(Single_Condition, replicate == "rep 1")
-Single_rep_2 <- subset(Single_Condition, replicate == "rep 2")
-colnames(Single_rep_2)[1:14] <- paste(colnames(Single_rep_2)[c(1:14)], '_2', sep = '_')
-Rep_Single <- inner_join(Single_rep_1, Single_rep_2, by = c("Genotypes" = "Genotypes__2","Condition" = "Condition__2"))
-Rep_Single <- mutate(Rep_Single, Avg_Fecundity = (Rep_Single$Fecundity + Rep_Single$Fecundity__2)/2,
-                     Avg_Fit = (Rep_Single$Fitness + Rep_Single$Fitness__2)/2,
-                     Avg_FT = (Rep_Single$FT_DAYS + Rep_Single$FT_DAYS__2)/2,
-                     Avg_Total_Weight = (Rep_Single$`Brown Bag Weight` + Rep_Single$`Brown Bag Weight__2`)/2,
-                     Expect_Seed_Mass_per_Plant = (Rep_Single$`Brown Bag Weight` + Rep_Single$`Brown Bag Weight__2`)/10)
-
+`%!in%` = Negate(`%in%`)
+delete_geno <- c("396", "516", "910", "1030", "442", "444", "956", "958")
+Full_Data <- Full_Data %>% filter(PLOT_ID %!in% delete_geno)
 
 #### Creates a data frame that isolates Atlas Genotypes, then averages the replicates
 
@@ -60,37 +52,45 @@ Atlas_tbl <- Atlas_tbl %>% mutate(Atlas_Avg_Fecundity = (sum(Atlas_tbl$Fecundity
                                   Atlas_Avg_Fitness = (sum(Atlas_tbl$Fitness)/3),
                                   Atlas_Avg_Total_Weight = (sum(Atlas_tbl$`Brown Bag Weight`)/3))
 
-### Average the mixed replicate data and add average total weight, fecundity, fitness, and expected fecundity
+### Importing Haplotype Data and cleaning the dataframe
 
-Mixed_Condition <- subset(Full_Data, Full_Data$Condition == "mixed")
-Mixed_rep_1 <- subset(Mixed_Condition, replicate == "rep 1")
-Mixed_rep_2 <- subset(Mixed_Condition, replicate == "rep 2")
-colnames(Mixed_rep_2)[1:14] <- paste(colnames(Mixed_rep_2)[c(1:14)], '_2', sep = '_')
-Rep_Mixed <- inner_join(Mixed_rep_1, Mixed_rep_2, by = c("Genotypes" = "Genotypes__2","Condition" = "Condition__2"))
-Rep_Mixed <- Rep_Mixed %>% mutate(Avg_Total_weight = (Rep_Mixed$`Brown Bag Weight` + Rep_Mixed$`Brown Bag Weight__2`)/2,
-                                  Avg_Fecundity = Rep_Mixed$Fecundity + Rep_Mixed$Fecundity__2,
-                                  Atlas_Avg_Fec = 2363.51,
-                                  Atlas_Avg_Fitness = 21347.22)
-Rep_Mixed <- Rep_Mixed %>% mutate(Expected_Fecundity = (Avg_Fecundity - Atlas_Avg_Fec)/2 + (Atlas_Avg_Fec)/2)
+Haplo_raw <- Haplo_raw %>% select(c("Pedigree", "Haplotype", "Generation", "Family"))
+Haplo_raw$Family <- unlist(Haplo_raw$Family)
+Haplo_raw$Haplotype <- unlist(Haplo_raw$Haplotype)
+Haplo_raw <- Haplo_raw %>% mutate(Pedigree = paste0("UCRKL00000", Haplo_raw$Family))
+colnames(Haplo_raw)[which(names(Haplo_raw) == "Family")] <- "Genotypes"
 
-### Averaging replicates to correlate the replicate data, adding average fitness, fecundity, 100 seed weight, flowering time
+### Averaging Replicates
 
-rep1 <- subset(Full_Data, replicate == "rep 1")
-rep2 <- subset(Full_Data, replicate == "rep 2")
-colnames(rep2)[1:13] <- paste(colnames(rep2)[c(1:13)], '_2', sep = '_')
-Side_By_Side_Replicates <- inner_join(rep1, rep2, by = c("Genotypes" = "Genotypes__2","Condition" = "Condition__2"))
-Side_By_Side_Replicates <- Side_By_Side_Replicates %>% mutate(Avg_Fec = (Side_By_Side_Replicates$Fecundity + Side_By_Side_Replicates$Fecundity__2)/2,
-                                                              Avg_Total_Weight = (Side_By_Side_Replicates$`Brown Bag Weight`+Side_By_Side_Replicates$`Brown Bag Weight__2`)/2,
-                                                              Avg_Fit = (Side_By_Side_Replicates$Fitness + Side_By_Side_Replicates$Fitness__2)/2,
-                                                              Avg_100_SW = (Side_By_Side_Replicates$`100 seed weight` + Side_By_Side_Replicates$`100 seed weight__2`)/2,
-                                                              Avg_FT = (Side_By_Side_Replicates$FT_DAYS + Side_By_Side_Replicates$FT_DAYS__2)/2,
-                                                              Atlas_Avg_Fec = 2363.51,
-                                                              Atlas_Avg_Fitness = 21347.22,
-                                                              Atlas_Avg_Total_Weight = 126.8267)
-Side_By_Side_Replicates$Numbers <- ifelse(Side_By_Side_Replicates$Condition == "mixed", 1, 0)
+Average_Haplo_rep <- Full_Data %>% group_by(Genotypes, Condition, Generation) %>% summarise(across(.cols = c(`Brown Bag Weight`, `100 seed weight`, Fecundity, Fitness, FT_DAYS), function(x) mean(x))) %>% ungroup()
+Average_Haplo_rep$Generation <- as.numeric(Average_Haplo_rep$Generation)
+Average_Haplo_rep <- full_join(Haplo_raw, Average_Haplo_rep, by = c("Genotypes", "Generation"))
+Average_Haplo_rep <- Average_Haplo_rep %>% filter(`Brown Bag Weight` != "NA")
+Average_Haplo_rep <- Average_Haplo_rep %>%  mutate(Atlas_Avg_Fec = 2363.51,
+                                                   Atlas_Avg_Fitness = 21347.22,
+                                                   Atlas_Avg_Total_Weight = 126.8267)
+Average_Haplo_rep$Numbers <- ifelse(Average_Haplo_rep$Condition == "mixed", 1, 0)
+  
+### Creating Single Condition Dataframe
 
-### Functions to get expected per plant fecundity for both conditions
-### Numbers col: 1 = mixed, 0 = single
+Rep_Single <- Average_Haplo_rep %>% filter(Condition == "single")
+
+### Creating Mixed Condition Dataframe
+
+Rep_Mixed <- Average_Haplo_rep %>% filter(Condition == 'mixed')
+
+### Creating replicate dataframe for correlation graphs
+
+rep1 <- Full_Data %>% filter(replicate == "rep 1")
+rep2 <- Full_Data %>% filter(replicate == 'rep 2')
+colnames(rep2) <- paste(colnames(rep2), 2, sep = "_")
+Replicate_corr_tbl <- full_join(rep1, rep2, by = c("Condition" = "Condition_2", "Generation" = "Generation_2", "Genotypes" = "Genotypes_2"))
+Replicate_corr_tbl <- na.omit(Replicate_corr_tbl)
+
+###### Functions to get expected fitness, fecundity, and yield per plant for both conditions
+## Numbers col: 1 = mixed, 0 = single
+
+### Fecundity
 
 Exp_Single <- function(x){
   result_single <- x/10
@@ -98,48 +98,42 @@ Exp_Single <- function(x){
 } 
 
 Exp_Fec_Mixed <- function(x){
-  TW_mix <- (x/2) + (Side_By_Side_Replicates$Atlas_Avg_Fec/2) 
+  TW_mix <- (x/2) + (Average_Haplo_rep$Atlas_Avg_Fec/2) 
   Exp_Fec_mix <- TW_mix/10
   return(Exp_Fec_mix)
 }
 
+Average_Haplo_rep$Exp_Fec_Per_Plant <- ifelse(Average_Haplo_rep$Numbers == 1,
+       Exp_Fec_Mixed(Average_Haplo_rep$Fecundity),
+       Exp_Single(Average_Haplo_rep$Fecundity))
 
-Side_By_Side_Replicates$Exp_Fec_Per_Plant <- ifelse(Side_By_Side_Replicates$Numbers == 1,
-       NA,
-       Exp_Single(Side_By_Side_Replicates$Avg_Fec))
-
-
-
-
-
-
-### Functions to get expected per plant fitness for both conditions
+### Fitness
 
 Exp_Fit_Mixed <- function(x){
-  fit_mix <- x + (Side_By_Side_Replicates$Atlas_Avg_Fitness/2)
+  fit_mix <- (x/2) + (Average_Haplo_rep$Atlas_Avg_Fitness/2)
   Exp_Fit_mix <- fit_mix/10
   return(Exp_Fit_mix)
 }
 
-Side_By_Side_Replicates$Exp_Fit_Per_Plant <- ifelse(Side_By_Side_Replicates$Numbers == 1,
-                                                    Exp_Fit_Mixed(Side_By_Side_Replicates$Avg_Fit),
-                                                    Exp_Single(Side_By_Side_Replicates$Avg_Fit))
+Average_Haplo_rep$Exp_Fit_Per_Plant <- ifelse(Average_Haplo_rep$Numbers == 1,
+                                                    Exp_Fit_Mixed(Average_Haplo_rep$Fitness),
+                                                    Exp_Single(Average_Haplo_rep$Fitness))
 
-### Functions to get expected total weight per plant for both conditions
+### Yield
 
 Exp_TW_mix <- function(x){
-  TW_mix <- x + (Side_By_Side_Replicates$Atlas_Avg_Total_Weight/2)
+  TW_mix <- (x/2) + (Average_Haplo_rep$Atlas_Avg_Total_Weight/2)
   Exp_TW <- TW_mix/10
   return(Exp_TW)
 }
 
-Side_By_Side_Replicates$Exp_TW_Per_Plant <- ifelse(Side_By_Side_Replicates$Numbers == 1,
-                                                   Exp_TW_mix(Side_By_Side_Replicates$Avg_Total_Weight),
-                                                   Exp_Single(Side_By_Side_Replicates$Avg_Total_Weight))
+Average_Haplo_rep$Exp_TW_Per_Plant <- ifelse(Average_Haplo_rep$Numbers == 1,
+                                                   Exp_TW_mix(Average_Haplo_rep$`Brown Bag Weight`),
+                                                   Exp_Single(Average_Haplo_rep$`Brown Bag Weight`))
 
 ### Write Delims
 write_delim(Full_Data, "Full_Data")
-write_delim(Side_By_Side_Replicates, "Side_By_Side_Replicates")
+write_delim(Average_Haplo_rep, "Average_Haplo_rep")
 write_delim(Rep_Mixed, "Rep_Mixed")
 write_delim(Rep_Single, "Rep_Single")
-
+write_delim(Replicate_corr_tbl, "Replicate_corr_tbl")
