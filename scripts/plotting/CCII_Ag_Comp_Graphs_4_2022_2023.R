@@ -28,7 +28,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_TW)) +
        title = "Average Yield between Haplotypes") +
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) 
-ggsave("Average_Yield_Haplotypes.png")
+ggsave("scripts/plotting/Average_Yield_Haplotypes.png")
 
 ### 4a_Comparing_FT_Between_Haplotypes.R
 
@@ -43,7 +43,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_FT)) +
        title = "Average Flowering Time between Haplotypes") +
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) 
-ggsave("Average_FT_Haplotypes.png")
+ggsave("scripts/plotting/Average_FT_Haplotypes.png")
 
 ### 4b_Comparing_Fecundity_Between_Haplotypes.R
 
@@ -58,7 +58,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fec)) +
        title = "Average Fecundity between Haplotypes") +
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) 
-ggsave("Average_Fec_Haplotypes.png")
+ggsave("scripts/plotting/Average_Fec_Haplotypes.png")
 
 ### 4c_Comparing_Fitness_Between_Haplotypes.R
 
@@ -73,7 +73,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fit)) +
        title = "Average Fitness between Haplotypes") +
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) 
-ggsave("Average_Fit_Haplotypes.png")
+ggsave("scripts/plotting/Average_Fit_Haplotypes.png")
 
 
   
