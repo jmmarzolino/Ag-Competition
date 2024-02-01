@@ -61,7 +61,7 @@ for (i in unique(T$Generation)){
     labs(y = "Flowering Time (Days After Sowing)") +
     coord_flip() +
     ggtitle(paste0("Generation ", i)) 
-  ggsave(tmp, file = paste0("Bar_Plot_FT_Generation_", i, ".png"))
+  ggsave(tmp, file = paste0("scripts/plotting/Bar_Plot_FT_Generation_", i, ".png"))
 }
 
 ### Kruskal-Wallis Test
@@ -124,7 +124,7 @@ for (i in unique(T$Generation)){
     labs(y = "Total Weight (g)") +
     coord_flip() +
     ggtitle(paste0("Generation ", i)) 
-  ggsave(tmp, file = paste0("Bar_Plot_Total_Weight_Generation_", i, ".png"))
+  ggsave(tmp, file = paste0("scripts/plotting/Bar_Plot_Total_Weight_Generation_", i, ".png"))
 }
 
 
@@ -174,7 +174,7 @@ for (i in unique(T$Generation)){
     labs(y = "Fecundity") +
     coord_flip() +
     ggtitle(paste0("Generation ", i)) 
-  ggsave(tmp, file = paste0("Bar_Plot_Fecundity_Generation_", i, ".png"))
+  ggsave(tmp, file = paste0("scripts/plotting/Bar_Plot_Fecundity_Generation_", i, ".png"))
 }
 
 ##### Fitness Distributions & Statistical Analysis
@@ -223,5 +223,5 @@ for (i in unique(T$Generation)){
     labs(y = "Fitness") +
     coord_flip() +
     ggtitle(paste0("Generation ", i)) 
-  ggsave(tmp, file = paste0("Bar_Plot_Fitness_Generation_", i, ".png"))
+  ggsave(tmp, file = paste0("scripts/plotting/Bar_Plot_Fitness_Generation_", i, ".png"))
 }

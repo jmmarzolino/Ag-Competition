@@ -29,7 +29,7 @@ ggplot(Replicate_corr_tbl, aes(x=`Brown Bag Weight`, y=`Brown Bag Weight_2`, add
        title = "Correlation of Replicates for Total Seed Weight") +
   facet_wrap(~Condition)
 
-ggsave("Correlation_of_Rep1_and_Rep2_Total_SW.png")
+ggsave("scripts/plotting/Correlation_of_Rep1_and_Rep2_Total_SW.png")
 
 res <- Replicate_corr_tbl %>% summarise(residuals = resid(lm(`Brown Bag Weight_2` ~ `Brown Bag Weight`)))
 Replicate_corr_tbl$Residuals <- res$residuals
@@ -46,7 +46,7 @@ ggplot(Replicate_corr_tbl, aes(x=Fecundity, y= Fecundity_2)) +
        title = "Correlation of Replicates for Fecundity") +
   facet_wrap(~Condition)
 
-ggsave("Correlation_of_Rep1_and_Rep2_Fecundity.png")
+ggsave("scripts/plotting/Correlation_of_Rep1_and_Rep2_Fecundity.png")
 
 res <- Replicate_corr_tbl %>% summarise(residuals = resid(lm(Fecundity_2 ~ Fecundity)))
 Replicate_corr_tbl$Residuals <- res$residuals
@@ -94,7 +94,7 @@ ggplot(SW100, aes(x=`Brown Bag Weight`, y=`Brown Bag Weight__2`)) +
        y= "100 Seed Weight (rep 2)",
        title = "Correlation of Single Replicate for 100 Seed Weight")
 
-ggsave("Correlation_100_SW_Single.png")
+ggsave("scripts/plotting/Correlation_100_SW_Single.png")
 
 res <- SW100 %>% summarise(residuals = resid(lm(`Brown Bag Weight__2` ~ `Brown Bag Weight`)))
 SW100$Residuals <- res$residuals
@@ -115,7 +115,7 @@ y <- ggplot(SW100, aes(x=`Brown Bag Weight`, y=`Brown Bag Weight__2`)) +
        y= "100 Seed Weight (rep 2)",
        title = "Mixed 100 Seed Weight Correlation by Replicate")
 
-ggsave("Correlation_100_SW_Mixed.png")
+ggsave("scripts/plotting/Correlation_100_SW_Mixed.png")
 
 res <- SW100 %>% summarise(residuals = resid(lm(`Brown Bag Weight__2` ~ `Brown Bag Weight`)))
 SW100$Residuals <- res$residuals
@@ -126,7 +126,7 @@ l <- ggplot(SW100, aes(`100 seed weight`, Residuals)) +
   labs(title = "Residuals for 100 Seed Weight (Mixed)")
 
 grid.arrange(y, l, ncol = 2, nrow = 1) +
-ggsave("Correlation_100_SW_By_Replicates_Mixed.png")
+ggsave("scripts/plotting/Correlation_100_SW_By_Replicates_Mixed.png")
 
 
 ### Histograms For Total Weight by Generation
@@ -173,7 +173,7 @@ ggplot(Average_Haplo_rep, aes(x = `Brown Bag Weight`, group = Generation, fill =
   stat_bin(bins = 50) +
   scale_fill_brewer(palette = "Blues")
 
-ggsave("Overlapping_Histograms_Total_Weight_Over_Generations.png")
+ggsave("scripts/plotting/Overlapping_Histograms_Total_Weight_Over_Generations.png")
 
 ### Histograms For 100 Seed Weight by Generation
 
@@ -192,7 +192,7 @@ summary(ANOVA_100_SW)
 TukeyHSD(ANOVA_100_SW)
 leveneTest(`100 seed weight` ~ as.factor(Generation), Full_Data)
 
-ggsave("Histograms_Average_SW_100_Over_Generations.png")
+ggsave("scripts/plotting/Histograms_Average_SW_100_Over_Generations.png")
 
 ### Overlapping Histogram for 100 Seed Weight by Generation
 
@@ -204,4 +204,4 @@ ggplot(Full_Data, aes(x = `100 seed weight`, group = Generation, fill = Generati
        y = "frequency",
        title = "100 Seed Weight by Generations")
 
-ggsave("Overplapping_Histograms_SW_100_Over_Generations.png")
+ggsave("scripts/plotting/Overplapping_Histograms_SW_100_Over_Generations.png")

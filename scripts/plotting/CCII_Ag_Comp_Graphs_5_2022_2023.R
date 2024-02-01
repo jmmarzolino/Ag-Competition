@@ -13,7 +13,7 @@ Average_Haplo_rep <- read_delim("~/Documents/GitHub/Ag-Competition/Average_Haplo
 Rep_Mixed <- read_delim("~/Documents/GitHub/Ag-Competition/Rep_Mixed")
 Rep_Single <- read_delim("~/Documents/GitHub/Ag-Competition/Rep_Single")
 
-### 4_Comparing_Yield_Between_Haplotypes.R
+### 5a_Comparing_Yield_Between_Haplotypes.R
 
 Rep_Single <- Rep_Single %>% filter(Haplotype != "NA")
 Rep_Single$Haplotype <- as.factor(Rep_Single$Haplotype)
@@ -28,9 +28,9 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_TW)) +
        title = "Average Yield between Haplotypes") +
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) 
-ggsave("scripts/plotting/Average_Yield_Haplotypes.png")
+ggsave("scripts/plotting/05a_Average_Yield_Haplotypes.png")
 
-### 4a_Comparing_FT_Between_Haplotypes.R
+### 5ai_Comparing_FT_Between_Haplotypes.R
 
 Haplo_graph <- Rep_Single %>% group_by(Generation, Haplotype) %>% summarise(Avg_FT = mean(FT_DAYS)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_FT)) 
@@ -43,9 +43,9 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_FT)) +
        title = "Average Flowering Time between Haplotypes") +
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) 
-ggsave("scripts/plotting/Average_FT_Haplotypes.png")
+ggsave("scripts/plotting/05ai_Average_FT_Haplotypes.png")
 
-### 4b_Comparing_Fecundity_Between_Haplotypes.R
+### 5aii_Comparing_Fecundity_Between_Haplotypes.R
 
 Haplo_graph <- Rep_Single %>% group_by(Generation, Haplotype) %>% summarise(Avg_Fec = mean(Fecundity)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_Fec)) 
@@ -58,9 +58,9 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fec)) +
        title = "Average Fecundity between Haplotypes") +
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) 
-ggsave("scripts/plotting/Average_Fec_Haplotypes.png")
+ggsave("scripts/plotting/05aii_Average_Fec_Haplotypes.png")
 
-### 4c_Comparing_Fitness_Between_Haplotypes.R
+### 5aiii_Comparing_Fitness_Between_Haplotypes.R
 
 Haplo_graph <- Rep_Single %>% group_by(Generation, Haplotype) %>% summarise(Avg_Fit = mean(Fitness)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_Fit)) 
@@ -73,7 +73,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fit)) +
        title = "Average Fitness between Haplotypes") +
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) 
-ggsave("scripts/plotting/Average_Fit_Haplotypes.png")
+ggsave("scripts/plotting/05aiii_Average_Fit_Haplotypes.png")
 
 
   
@@ -83,11 +83,3 @@ for (i in unique(T$Generation)){
     ggtitle(paste0("Generation ", i))
   ggsave(tmp, file = paste0("Bar_Plot_Total_Weight_Generation_", i, ".png"))
 }
-
-
-ggplot(Average_Haplo_rep, aes(x = Haplotype, y = `Brown Bag Weight`)) +
-  geom_bar(stat = 'identity') +
-  facet_wrap(~Generation) +
-  labs(y = "Average Yield",
-       title = "Average Yield between Haplotypes")
-
