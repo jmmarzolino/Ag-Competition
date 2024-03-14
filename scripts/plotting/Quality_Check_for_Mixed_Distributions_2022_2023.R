@@ -73,7 +73,7 @@ ggplot(Rep_Mixed, aes(x = FT_DAYS, fill = Generation, group = Generation)) +
 
 ggplot(Rep_Mixed, aes(x = `Brown Bag Weight`)) +
   geom_histogram(binwidth = 2) +
-  facet_wrap(~Generation) +
+  facet_wrap(~Generation, scales = "free_x") +
   labs(x = "Total Seed Weight (g)",
        y = "Frequency",
        title = "Generational Change in Total Seed Weight (g)") +
@@ -104,7 +104,6 @@ for(i in unique(T$Generation)){
   s <- shapiro.test(p$TW)
   print(s)
 }
-
 
 
 ##### Fecundity Distributions and Statistical Analysis
@@ -144,7 +143,6 @@ for(i in unique(T$Generation)){
   s <- shapiro.test(p$fec)
   print(s)
 }
-
 
 
 

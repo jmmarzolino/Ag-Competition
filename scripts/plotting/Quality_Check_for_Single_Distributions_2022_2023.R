@@ -23,7 +23,8 @@ ggplot(Rep_Single, aes(x = FT_DAYS)) +
   stat_bin(bins = 50) +
   labs(x = "Average Flowering Time (Days)",
        y = "Frequency",
-       title = "Generational Change in Average Flowering Time (Single)")
+       title = "Evolution of Flowering Time Over Generations")
+
 
 ### Testing for Homogeneity of Variance and ANOVA for FT
 
@@ -80,15 +81,17 @@ ggplot(Rep_Single, aes(x = FT_DAYS, fill = Generation, group = Generation)) +
 
 ##### Total Seed Weight Distributions and Statistical Analysis
 
-### Histograms for Average Total Weight Over Generations (Single)
+### Histograms for Average Total Weight Over Generations (Single) - Normal
 
+Rep_Single <- Rep_Single %>% group_by(Generation) %>% mutate(GenAvg = mean(`Brown Bag Weight`)) %>% ungroup()
 ggplot(Rep_Single, aes(x = `Brown Bag Weight`)) +
   geom_histogram(binwidth = .9) +
   facet_grid(~Generation) +
   stat_bin(bins = 60) +
   labs(x = "Average Total Weight (g)",
        y = "Frequency",
-       title = "Average Total Weight Over Generations")
+       title = "Average Total Weight Over Generations")+
+  geom_vline(aes(xintercept = GenAvg), color = 'red') 
 
 ### Testing for Homogenity of Variance and ANOVA for Average Total Weight
 
@@ -130,15 +133,17 @@ for (i in unique(T$Generation)){
 
 ##### Fecundity Distributions and Statistical Analysis
 
-### Histograms for Average Fecundity Over Generations (Single)
+### Histograms for Average Fecundity Over Generations (Single) - Normal
 
+Rep_Single <- Rep_Single %>% group_by(Generation) %>% mutate(GenAvg = mean(Fecundity)) %>% ungroup()
 ggplot(Rep_Single, aes(x = Fecundity)) +
   geom_histogram(binwidth = .9) +
   facet_grid(~Generation) +
   stat_bin(bins = 70) +
   labs(x = "Average Fecundity",
        y = "Frequency",
-       title = "Average Fecundity Over Generations")
+       title = "Average Fecundity Over Generations") +
+  geom_vline(aes(xintercept = GenAvg), color = 'red') 
 
 ### Testing for Homogenity of Variance and ANOVA for Average Fecundity
 
@@ -179,15 +184,17 @@ for (i in unique(T$Generation)){
 
 ##### Fitness Distributions & Statistical Analysis
 
-### Histograms for Average Fit Over Generations (Single)
+### Histograms for Average Fit Over Generations (Single) - Normal
 
+Rep_Single <- Rep_Single %>% group_by(Generation) %>% mutate(GenAvg = mean(Fitness)) %>% ungroup()
 ggplot(Rep_Single, aes(x = Fitness)) +
   geom_histogram(binwidth = .9) +
   facet_grid(~Generation) +
   stat_bin(bins = 70) +
   labs(x = "Average Fitness",
        y = "Frequency",
-       title = "Average Fitness Over Generations")
+       title = "Average Fitness Over Generations") +
+  geom_vline(aes(xintercept = GenAvg), color = 'red')
 
 ### Testing for Homogenity of Variance and ANOVA for Average Fitness
 
