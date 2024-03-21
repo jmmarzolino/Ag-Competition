@@ -22,6 +22,8 @@ merge <- full_join(ft, layout)
 merge <- merge[order(merge$PLOT_ID),]
 # subset merged data to only include CC II Competition part of experiment
 df <- merge[grep("CC II", merge$PLANT_ID),]
+# remove notes col
+df <- df %>% select(-Notes)
 # rows 19 and 30 are short, so that's where the replicates split
 # separate duplicate cols into 2 data frames
 rep1 <- df %>% filter(ROW <= 19)
@@ -38,9 +40,10 @@ df3$ROW <- df3$ROW - 8
 
 
 
-df4 <- full_join(competition, df3, by=c('Genotypes'='PLANT_ID', 'replicate'='REP', 'Bed_2022'='ROW'))
+df4 <- full_join(competition, df3, by=c('Genotypes'='PLANT_ID', 'replicate'='REP', 'Bed_2022'='ROW', 'PLOT_ID'))
 ## Remove rows without genotype
 df4 <- df4 %>% filter(!is.na(Genotypes))
+df4 <- df4 %>% select(-PLANT_ID)
 
 # add generation column
 df4$Generation <- 0
