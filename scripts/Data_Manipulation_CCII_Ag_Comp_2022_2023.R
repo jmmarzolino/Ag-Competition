@@ -70,7 +70,7 @@ Average_Haplo_rep <- Average_Haplo_rep %>%  mutate(Atlas_Avg_Fec = 2363.51,
                                                    Atlas_Avg_Fitness = 21347.22,
                                                    Atlas_Avg_Total_Weight = 126.8267)
 Average_Haplo_rep$Numbers <- ifelse(Average_Haplo_rep$Condition == "mixed", 1, 0)
-  
+
 ### Creating Single Condition Dataframe
 
 Rep_Single <- Average_Haplo_rep %>% filter(Condition == "single")
@@ -94,11 +94,11 @@ Replicate_corr_tbl <- na.omit(Replicate_corr_tbl)
 
 Exp_Single <- function(x){
   result_single <- x/10
-  return(result_single) 
-} 
+  return(result_single)
+}
 
 Exp_Fec_Mixed <- function(x){
-  TW_mix <- (x/2) + (Average_Haplo_rep$Atlas_Avg_Fec/2) 
+  TW_mix <- (x/2) + (Average_Haplo_rep$Atlas_Avg_Fec/2)
   Exp_Fec_mix <- TW_mix/10
   return(Exp_Fec_mix)
 }
