@@ -13,6 +13,15 @@ Average_Haplo_rep <- read_delim("~/Documents/GitHub/Ag-Competition/Average_Haplo
 Rep_Mixed <- read_delim("~/Documents/GitHub/Ag-Competition/Rep_Mixed")
 Rep_Single <- read_delim("~/Documents/GitHub/Ag-Competition/Rep_Single")
 
+
+test <- Average_Haplo_rep %>% select(c("Genotypes", "Generation", "Condition", "Brown Bag Weight", "Fitness", "Fecundity", "FT_DAYS")) %>% group_by(Genotypes) %>% 
+  pivot_wider(names_from = "Condition", values_from = c("Brown Bag Weight", "Fecundity", "Fitness"))
+test <- ifelse(test$)
+
+
+test$new <- ifelse(test$`Brown Bag Weight_single` > test$`Brown Bag Weight_single`, 1,0)
+
+
 ### 3a_Bar_Graph_Avg_Yield_Between_Genotypes.R
 
 ggplot(Average_Haplo_rep, aes(Genotypes, `Brown Bag Weight`, color = Condition, fill = Condition)) +
