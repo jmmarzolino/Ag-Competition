@@ -21,40 +21,40 @@ df <- df[, -(17:19)]
 df1 <- df[, 1:8]
 df2 <- df[, 9:16]
 
-# copy correct col names onto second data frame
-colnames(df2) <- colnames(df1)
+# replace colnames with code-friendly versions
+colnames(df2) <- c("Genotypes", "number_of_plants", "Condition", "replicate", "2021BED", "2021ROW", "Flowering_Date", "Notes")
+colnames(df1) <- c("Genotypes", "number_of_plants", "Condition", "replicate", "2021BED", "2021ROW", "Flowering_Date", "Notes")
 df3 <- bind_rows(df1, df2)
 
 # remove non-numeric date entries
 #df3 <- df3[-which(df3$`Flowering Date` == "x"),]
 #df3 <- df3[-which(df3$`Flowering Date` == "X"),]
-df3$`Flowering Date` <- as.numeric(df3$`Flowering Date`)
-
-# replace colnames with code-friendly versions
-colnames(df3) <- c("Genotypes", "number_of_plants", "Condition", "replicate", "2021BED", "2021ROW", "Flowering_Date", "Notes")
+df3$Flowering_Date <- as.numeric(df3$Flowering_Date)
+#colnames(df3) <- c("Genotypes", "number_of_plants", "Condition", "replicate", "2021BED", "2021ROW", "Flowering_Date", "Notes")
 df3 <- df3 %>% select(-Notes)
 
 ## Remove rows without genotype
 df3 <- df3 %>% filter(!is.na(Genotypes))
 
-#### Add Generation
+# add generation column
 df3$Genotypes <- str_replace(df3$Genotypes, "-", "_")
-df3$Genotypes <- str_replace(df3$Genotypes, "-", "_")
-
 #df3$Generation <- str_replace(df3$Genotypes, "(\\d)_\\d+", "\\1")
 #df3$Generation <- str_replace(df3$Generation, "(\\d)_\\d+", "\\1")
 #str_split_fixed(df3$Genotypes, "_", 3)
 #df3[which(df3$Generation > 8), which(colnames(df3) == "Generation")] <- 0
-
-
-# add generation column
 df3$Generation <- 0
 df3[grep("^1_", df3$Genotypes), which(colnames(df3)=="Generation")] <- 18
 df3[grep("^2_", df3$Genotypes), which(colnames(df3)=="Generation")] <- 28
 df3[grep("^3_", df3$Genotypes), which(colnames(df3)=="Generation")] <- 50
 df3[grep("^7_", df3$Genotypes), which(colnames(df3)=="Generation")] <- 58
 
+# simplify replicate col to a number
+df3$replicate <- gsub("rep (\\d)", "\\1", df3$replicate)
 
+# remove extra numbers and characters from germination/survival count
+df3$number_of_plants <- gsub("(\\d+)-\\d+", "\\1", df3$number_of_plants)
+df3$number_of_plants <- gsub(".* (\\d+)", "\\1", df3$number_of_plants)
+df3$number_of_plants <- as.numeric(df3$number_of_plants)
 
 write_delim(df3, "FT_2022.tsv", "\t")
 
