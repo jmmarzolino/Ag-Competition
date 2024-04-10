@@ -6,18 +6,13 @@ library(ggplot2)
 library(googlesheets4)
 library(tidyr)
 
-### Load Data
-
-Full_Data <- read_delim("~/Documents/GitHub/Ag-Competition/Full_Data")
-Average_Haplo_rep <- read_delim("~/Documents/GitHub/Ag-Competition/Average_Haplo_rep")
-Rep_Mixed <- read_delim("~/Documents/GitHub/Ag-Competition/Rep_Mixed")
-Rep_Single <- read_delim("~/Documents/GitHub/Ag-Competition/Rep_Single")
+setwd("/Users/mattkahler/Documents/GitHub/Ag-Competition/scripts/plotting")
 
 ### 5a_Comparing_Yield_Between_Haplotypes.R
 
-Rep_Single <- Rep_Single %>% filter(Haplotype != "NA")
-Rep_Single$Haplotype <- as.factor(Rep_Single$Haplotype)
-Haplo_graph <- Rep_Single %>% group_by(Generation, Haplotype) %>% summarise(Avg_TW = mean(`Brown Bag Weight`)) %>% ungroup()
+Single_2021_2022 <- Single_2021_2022 %>% filter(Haplotype != "NA")
+Single_2021_2022$Haplotype <- as.factor(Single_2021_2022$Haplotype)
+Haplo_graph <- Single_2021_2022 %>% group_by(Generation, Haplotype) %>% summarise(Avg_TW = mean(total_seed_mass_g)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_TW)) %>% ungroup()
 Haplo_graph$`Avg Yield > Pop & Gen Avg Yield` <- ifelse(Haplo_graph$Avg_TW > Haplo_graph$GenAvg & Haplo_graph$Avg_TW > mean(Haplo_graph$Avg_TW), TRUE, FALSE)
 f_AY <- Haplo_graph %>% filter(`Avg Yield > Pop & Gen Avg Yield` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
@@ -32,12 +27,12 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_TW, fill = `Avg Yield > Pop & Gen A
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red")) 
-ggsave("scripts/plotting/05a_Average_Yield_Haplotypes.png", width = 16, height = 12)
+ggsave("scripts/plotting/05a_Average_Yield_Haplotypes_2021_2022.png", width = 16, height = 12)
 
 
 ### 5ai_Comparing_FT_Between_Haplotypes.R
 
-Haplo_graph <- Rep_Single %>% group_by(Generation, Haplotype) %>% summarise(Avg_FT = mean(FT_DAYS)) %>% ungroup()
+Haplo_graph <- Single_2021_2022 %>% group_by(Generation, Haplotype) %>% summarise(Avg_FT = mean(Flowering_Date)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_FT)) %>% ungroup()
 Haplo_graph$`Avg FT > Pop & Gen Avg FT` <- ifelse(Haplo_graph$Avg_FT > Haplo_graph$GenAvg & Haplo_graph$Avg_FT > mean(Haplo_graph$Avg_FT), TRUE, FALSE)
 f_FT <- Haplo_graph %>% filter(`Avg FT > Pop & Gen Avg FT` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
@@ -51,11 +46,11 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_FT, fill = `Avg FT > Pop & Gen Avg 
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red"))
-ggsave("scripts/plotting/05ai_Average_FT_Haplotypes.png", width = 16, height = 12)
+ggsave("scripts/plotting/05ai_Average_FT_Haplotypes_2021_2022.png", width = 16, height = 12)
 
 ### 5aii_Comparing_Fecundity_Between_Haplotypes.R
 
-Haplo_graph <- Rep_Single %>% group_by(Generation, Haplotype) %>% summarise(Avg_Fec = mean(Fecundity)) %>% ungroup()
+Haplo_graph <- Single_2021_2022 %>% group_by(Generation, Haplotype) %>% summarise(Avg_Fec = mean(Fecundity)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_Fec)) %>% ungroup()
 Haplo_graph$`Avg Fec > Pop & Gen Avg Fec` <- ifelse(Haplo_graph$Avg_Fec > Haplo_graph$GenAvg & Haplo_graph$Avg_Fec > mean(Haplo_graph$Avg_Fec), TRUE, FALSE)
 f_Fe <- Haplo_graph %>% filter(`Avg Fec > Pop & Gen Avg Fec` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
@@ -69,16 +64,16 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fec, fill = `Avg Fec > Pop & Gen Av
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red"))
-ggsave("scripts/plotting/05aii_Average_Fec_Haplotypes.png", width = 16, height = 12)
+ggsave("scripts/plotting/05aii_Average_Fec_Haplotypes_2021_2022.png", width = 16, height = 12)
 
 ### 5aiii_Comparing_Fitness_Between_Haplotypes.R
 
-Haplo_graph <- Rep_Single %>% group_by(Generation, Haplotype) %>% summarise(Avg_Fit = mean(Fitness)) %>% ungroup()
+Haplo_graph <- Single_2021_2022 %>% group_by(Generation, Haplotype) %>% summarise(Avg_Fit = mean(Fitness)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_Fit)) %>% ungroup()
 Haplo_graph$`Avg Fit > Pop & Gen Avg Fit` <- ifelse(Haplo_graph$Avg_Fit > Haplo_graph$GenAvg & Haplo_graph$Avg_Fit > mean(Haplo_graph$Avg_Fit), TRUE, FALSE)
 f_Fi <- Haplo_graph %>% filter(`Avg Fit > Pop & Gen Avg Fit` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
 ui <- Reduce(intersect, list(f_AY, f_Fe, f_Fi))
-  
+
 ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fit, fill = `Avg Fit > Pop & Gen Avg Fit`)) +
   geom_bar(stat = 'identity') +
   geom_hline(yintercept = mean(Haplo_graph$Avg_Fit), color = "green") +
@@ -88,10 +83,10 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fit, fill = `Avg Fit > Pop & Gen Av
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red"))
-ggsave("scripts/plotting/05aiii_Average_Fit_Haplotypes.png", width = 16, height = 12)
+ggsave("scripts/plotting/05aiii_Average_Fit_Haplotypes_2021_2022.png", width = 16, height = 12)
 
 
-  
+
 for (i in unique(T$Generation)){
   tmp <-  ggplot(subset(T, Generation == i), aes(Genotypes, TW)) + geom_bar(stat = 'identity') + 
     theme(axis.text.x = element_text(angle = 60)) + labs(y = "Total Weight (g)") +

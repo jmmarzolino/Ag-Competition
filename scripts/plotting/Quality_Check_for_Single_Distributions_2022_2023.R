@@ -85,7 +85,7 @@ ggplot(Rep_Single, aes(x = FT_DAYS, fill = Generation, group = Generation)) +
 
 Rep_Single <- Rep_Single %>% group_by(Generation) %>% mutate(GenAvg = mean(`Brown Bag Weight`)) %>% ungroup()
 ggplot(Rep_Single, aes(x = `Brown Bag Weight`)) +
-  geom_histogram(binwidth = .9) +
+  geom_histogram(binwidth = 1) +
   facet_grid(~Generation) +
   stat_bin(bins = 60) +
   labs(x = "Average Total Weight (g)",
