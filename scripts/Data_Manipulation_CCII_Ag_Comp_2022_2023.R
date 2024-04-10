@@ -6,30 +6,179 @@ library(ggplot2)
 library(googlesheets4)
 library(tidyr)
 
+setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 ### Load Data
 
-Seed_weights_2022_2023 <- read_sheet('https://docs.google.com/spreadsheets/d/1mxSidDcodD7-Iju9JJZ_YoejhjEqt6JDad3LMGOh61s/edit#gid=1749035245')
-FT_2022_2023 <- read_sheet('https://docs.google.com/spreadsheets/d/1Rb1oN4yeqcQDFKfezf3uGLEOlp-s8x1iAIpAO6cqT4E/edit#gid=682364943')
-Genotype_List_2022_2023 <- read_sheet('https://docs.google.com/spreadsheets/d/1pKOlthCtyF-T8bbU_96xfoUDcQbbVSnP3jAk6iP3egc/edit#gid=326137907')
-Haplo_raw <- read_sheet("https://docs.google.com/spreadsheets/d/13CHW_ZFK7BDMoJ2vgQkm1QhlCm068_m7s1lOCF-lVSc/edit#gid=1521625104")
+#Seed_weights_2022_2023 <- read_sheet('https://docs.google.com/spreadsheets/d/1mxSidDcodD7-Iju9JJZ_YoejhjEqt6JDad3LMGOh61s/edit#gid=1749035245')
+Seed_weights_2022_2023 <- read_delim("Seed Weights - Field 2023.csv")
+Seed_weights_2022_2023 <- Seed_weights_2022_2023 %>% select(-c(Date, Notes))
+#FT_2022_2023 <- read_sheet('https://docs.google.com/spreadsheets/d/1Rb1oN4yeqcQDFKfezf3uGLEOlp-s8x1iAIpAO6cqT4E/edit#gid=682364943')
+FT_2022_2023 <- read_delim("FT_DAYS_2022-2023.xlsx - FT_DAYS.csv")
+FT_2023 <- read_delim('FT_2023.tsv')
+FT_2022 <- read_delim('FT_2022.tsv')
+
+#Genotype_List_2022_2023 <- read_sheet('https://docs.google.com/spreadsheets/d/1pKOlthCtyF-T8bbU_96xfoUDcQbbVSnP3jAk6iP3egc/edit#gid=326137907')
+Genotype_List_2022_2023 <- read_delim("Field 2022-2023 Genotype List - Competition.csv")
+
+#Haplo_raw <- read_sheet("https://docs.google.com/spreadsheets/d/13CHW_ZFK7BDMoJ2vgQkm1QhlCm068_m7s1lOCF-lVSc/edit#gid=1521625104")
+Haplo_raw <- read_delim("Competition Lines - Sheet1 - Working - Competition Lines - Sheet1.csv")
+
+
+Seed_weights_2021_2022 <- read_delim("Seed Weights 2021-2022 - Sheet1.csv")
+Seed_weights_2021_2022 <- Seed_weights_2021_2022 %>% select(c(Genotypes, germinated, Condition, replicate,  `2021BED`, `2021ROW`, Flowering_Date, total_seed_mass_g, subset_seed_count, seed_subset_mass, per_seed_weight_g, `100_seed_weight`))
+
+
+# join seed weights to FT for 2021-2022
+#FT_2022$number_of_plants
+Seed_weights_2021_2022$replicate <- as.numeric(gsub("rep (\\d)", "\\1", Seed_weights_2021_2022$replicate))
+Seed_weights_2021_2022$Flowering_Date <- as.numeric(Seed_weights_2021_2022$Flowering_Date)
+
+PHENO2022 <- full_join(FT_2022, Seed_weights_2021_2022, by=c('Genotypes', 'number_of_plants'='germinated', 'Condition', 'replicate', '2021BED', '2021ROW', 'Flowering_Date'))
+# add year col
+PHENO2022$Exp_year <- 2022
+# filter 2022 phenotype sheet to necessary columns
+PHENO2022 <- PHENO2022 %>% select(c("Genotypes", "number_of_plants","Condition","replicate","Flowering_Date","Generation", "total_seed_mass_g", "100_seed_weight","Exp_year"))
+#         "2021BED"           "2021ROW"
+PHENO2022$Genotypes <- gsub("-", "_", PHENO2022$Genotypes)
+
+
+
+Seed_weights_2022_2023$PLOT_ID <- as.numeric(Seed_weights_2022_2023$PLOT_ID)
+
+FT_2023$replicate <- as.numeric(gsub("rep (\\d)", "\\1", FT_2023$replicate))
+
+PHENO2023 <- full_join(FT_2023, Seed_weights_2022_2023, by='PLOT_ID') %>% select(-c('Bed_2022', 'Row_2022', 'ROW'))
+PHENO2023 <- filter(PHENO2023, PLOT_ID <= 1036)
+PHENO2023$Exp_year <- 2023
+# standardize colnames
+colnames(PHENO2023) <- c("Genotypes", "Condition","replicate","PLOT_ID","number_of_plants","FT_DAYS", "Generation","total_seed_mass_g", "100_seed_weight",  "Exp_year")
+PHENO2023$`100_seed_weight` <- as.numeric(PHENO2023$`100_seed_weight`)
+
+#PHENO2023[which(PHENO2023$total_seed_mass_g <0),]
+#range(PHENO2023$total_seed_mass_g, na.rm=T)
+#PHENO2023[which(PHENO2023$`100_seed_weight` <0),]
+#range(PHENO2023$`100_seed_weight`, na.rm=T)
+### Subtract the Average weight of a brown bag and the average weight of an envelope to get the true weights
+PHENO2023$total_seed_mass_g <- PHENO2023$total_seed_mass_g - 11.24
+PHENO2023$`100_seed_weight` <- PHENO2023$`100_seed_weight` - 1.61
+
+
+
+PHENO_FULL <- full_join(PHENO2023, PHENO2022, by=c('Genotypes', 'number_of_plants', 'Condition', 'replicate', 'FT_DAYS'='Flowering_Date', 'Generation', 'total_seed_mass_g', '100_seed_weight', 'Exp_year')) %>% select(- 'PLOT_ID', 'Generation')
+#range(PHENO2023$total_seed_mass_g, na.rm=T)
+#range(PHENO2023$`100_seed_weight`, na.rm=T)
+
+# remove a few empty rows
+PHENO_FULL <- PHENO_FULL %>% filter(!is.na(Genotypes))
+PHENO_FULL <- PHENO_FULL %>% filter(replicate<3)
+
+
+
+
+#
+PHENO_FT <- PHENO_FULL %>% select(c( "Genotypes","Condition","replicate","number_of_plants","FT_DAYS","Generation", "Exp_year"))
+write_delim(PHENO_FT, "FT_per_year.tsv", "\t")
+
+
+
+#PHENO_FULL <- PHENO_FULL %>% group_by(Genotypes, Condition, Exp_year) %>% summarise(across(where(is.numeric), \(x) mean(x, na.rm=T))) %>% select(-c(replicate, FT_DAYS))
+
+# seed count based on seed weight and seed weight per 100 seeds
+PHENO_FULL$TOTAL_SEED_COUNT <- round(PHENO_FULL$total_seed_mass_g * (100 / PHENO_FULL$`100_seed_weight`))
+# one plot with germination of 0 has a seed weight, so replace the 0 with 1
+PHENO_FULL[which(PHENO_FULL$Genotypes=="2_156" & PHENO_FULL$number_of_plants==0), 4] <- 1
+
+# seed produced per individual
+PHENO_FULL$FECUNDITY <- PHENO_FULL$TOTAL_SEED_COUNT/ PHENO_FULL$number_of_plants
+PHENO_FULL$SURVIVAL <- PHENO_FULL$number_of_plants / 10
+PHENO_FULL$ABS_FITNESS <- PHENO_FULL$SURVIVAL * PHENO_FULL$FECUNDITY
+
+PHENO_FULL$REL_FITNESS <- PHENO_FULL$ABS_FITNESS / max(PHENO_FULL$ABS_FITNESS, na.rm=T)
+
+
+#PHENO_FULL$FIT_SEED_PER_PLANT <- PHENO_FULL$AVG_SEED_PER_PLANT/ mean(PHENO_FULL$AVG_SEED_PER_PLANT, na.rm=T)
+#PHENO_FULL$FIT_TOTAL_SEED_COUNT <- PHENO_FULL$TOTAL_SEED_COUNT/ mean(PHENO_FULL$TOTAL_SEED_COUNT, na.rm=T)
+#quantile(PHENO_FULL$FIT_SEED_PER_PLANT, na.rm=T)
+#quantile(PHENO_FULL$FIT_TOTAL_SEED_COUNT, na.rm=T)
+#PHENO_FULL$POP_FIT <- PHENO_FULL$FITNESS
+
+write_delim(PHENO_FULL, "FT_FITNESS.tsv", "\t")
+
+
+
+
+##########
+# 1) There are some impossible negative numbers.
+# no negative numbers now
+PHENO_FULL %>% reframe(across(where(is.numeric), \(x) range(x, na.rm=T)))
+
+# 2) Typos in the Genotype names for 1_105-1  1_17-2
+# no more dashes now
+grep("-", PHENO_FULL$Genotypes)
+
+# 3) No data for 2_168
+PHENO_FULL[which(PHENO_FULL$Genotypes == "2_168"),]
+# I think 2_168 are all albino and w low germination, so they are included in this full data set but it's not a mistake and can be filtered
+PHENO_FULL <- PHENO_FULL %>% filter(Genotypes=="2_168")
+
+# 4) More than 8 lines for 7_5    63_4     1_6    7_69 , not always clear what happened.
+# 1_6, and 7_69 had extra replicates in 2021-2022 by accident & was continued on purpose the next year. the extra lines are accurate and can be treated as extra replicates and averaged w the others
+
+# 7_5 has one extra line from 2023, not sure why ...
+
+# 63_4 is a merge issue
+
+
+# 5) Extremely high values of X100_seed_weight
+ggplot(PHENO_FULL, aes(`100_seed_weight`)) + geom_histogram()
+ PHENO_FULL[which(PHENO_FULL$`100_seed_weight` > 30),]
+
+
+
+
+
+
+
+## calculate measures of fitness
+
+avg_seed_per_plant <- PHENO_FULL %>% group_by(Generation) %>% summarise(gen_avg = mean(FIT_SEED_PER_PLANT, na.rm=T))
+f18 <- PHENO_FULL %>% filter(Generation==18)
+
+# FITNESS (single only, by year)
+## population relative fitness
+### each genotypes' fitness relative to whole pop in field
+
+## generation relative fitness
+### genotypes' fitness relative to avg seed of the same generation
+
+
+## Atalas relative fitness
+
+
+
+
+
+
+
+
+
+
+
 
 ### Filtering out the Notes column then joining Seed_weights_2022_2023 and FT_2022_2023 to make Conjoined_Data
 
 Seed_weights_2022_2023 <- subset(Seed_weights_2022_2023, select = -Notes)
 FT_2022_2023 <- subset(FT_2022_2023, select = -Notes)
+Seed_weights_2022_2023$PLOT_ID <- as.numeric(Seed_weights_2022_2023$PLOT_ID)
 Conjoined_Data <- full_join(Seed_weights_2022_2023, FT_2022_2023, by = ("PLOT_ID"))
-Conjoined_Data$PLOT_ID <- as.numeric(Conjoined_Data$PLOT_ID)
 Conjoined_Data <- subset(Conjoined_Data, Conjoined_Data$PLOT_ID <= 1036)
+Conjoined_Data$`100 seed weight` <- as.numeric(Conjoined_Data$`100 seed weight`)
 
-### Subtract the Average weight of a brown bag and the average weight of an envelope to get the true weights
-
-Conjoined_Data$`Brown Bag Weight` <- Conjoined_Data$`Brown Bag Weight` - 11.24
-Conjoined_Data$`100 seed weight` <- Conjoined_Data$`100 seed weight` - 1.61
 
 ### Join Conjoined_Data with Genotype_List_2022_2023, rename the Generation column to make it easier to work with, add Fecundity and Fitness columns
 
 Full_Data <- full_join(Conjoined_Data, Genotype_List_2022_2023, by = ("PLOT_ID"))
-Full_Data <- select(Full_Data, !c(Date, ROW, `albino count (not included in germination / survival since they don't survive)`, PLANT_ID, Plot_Survival))
+Full_Data <- select(Full_Data, !c(Date, ROW, `albino count (not included in germination / survival since they don't survive)`, PLANT_ID, Plot_Survival)) #'
 Full_Data$Generation <- gsub("^1_.*", 18, Full_Data$Genotypes)
 Full_Data$Generation <- gsub("^2_.*", 28, Full_Data$Generation)
 Full_Data$Generation <- gsub("^3_.*", 50, Full_Data$Generation)
