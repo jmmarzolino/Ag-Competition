@@ -6,18 +6,9 @@ library(ggplot2)
 library(tidyr)
 library(car)
 
-### Load Data
-
-Full_Data <- read_delim("~/Documents/GitHub/Ag-Competition/Full_Data")
-Average_Haplo_rep <- read_delim("~/Documents/GitHub/Ag-Competition/Average_Haplo_rep")
-Rep_Mixed <- read_delim("~/Documents/GitHub/Ag-Competition/Rep_Mixed")
-Rep_Single <- read_delim("~/Documents/GitHub/Ag-Competition/Rep_Single")
-
-
 test <- Average_Haplo_rep %>% select(c("Genotypes", "Generation", "Condition", "Brown Bag Weight", "Fitness", "Fecundity", "FT_DAYS")) %>% group_by(Genotypes) %>% 
   pivot_wider(names_from = "Condition", values_from = c("Brown Bag Weight", "Fecundity", "Fitness"))
 test <- ifelse(test$)
-
 
 test$new <- ifelse(test$`Brown Bag Weight_single` > test$`Brown Bag Weight_single`, 1,0)
 
@@ -26,13 +17,13 @@ test$new <- ifelse(test$`Brown Bag Weight_single` > test$`Brown Bag Weight_singl
 
 ggplot(Average_Haplo_rep, aes(Genotypes, `Brown Bag Weight`, color = Condition, fill = Condition)) +
   geom_bar(stat = 'identity', position = position_dodge(), alpha = .5, width = .5) +
-  labs(y = "Yield (grams)",
-       title = "Comparing Yield Between Individual Genotypes") +
+  labs(y = "Average Total Seed Weight (grams)",
+       title = "Comparing Average Total Seed Weight Between Individual Genotypes") +
   facet_wrap(~Generation, scales = "free_x") +
   theme(axis.text.x = element_text(size = 5)) +
   theme(axis.text.x = element_text(angle = 90)) +
   scale_y_continuous(breaks = seq(0, 200, 10))
-ggsave("scripts/plotting/03a_Bar_Graph_Yield_Between_Conditions.png", width = 18, height = 10)
+ggsave("scripts/plotting/03a_Bar_Graph_TW_Between_Conditions_2022_2023.png", width = 18, height = 10)
 
 ### 3ai_Bar_Graph_Avg_FT_Between_Genotypes.R
 
@@ -43,7 +34,7 @@ ggplot(Average_Haplo_rep, aes(Genotypes, FT_DAYS, color = Condition, fill = Cond
   facet_wrap(~Generation, scales = "free_x") +
   theme(axis.text.x = element_text(size = 5)) +
   theme(axis.text.x = element_text(angle = 90))
-ggsave("scripts/plotting/03ai_Bar_Graph_FT_Between_Conditions.png", width = 18, height = 10)
+ggsave("scripts/plotting/03ai_Bar_Graph_FT_Between_Conditions_2022_2023.png", width = 18, height = 10)
 
 ### 3aii_Bar_Graph_Avg_Fec_Between_Genotypes.R
 
@@ -54,7 +45,7 @@ ggplot(Average_Haplo_rep, aes(Genotypes, Fecundity, color = Condition, fill = Co
   facet_wrap(~Generation, scales = "free_x") +
   theme(axis.text.x = element_text(size = 5)) +
   theme(axis.text.x = element_text(angle = 90))
-ggsave("scripts/plotting/03aii_Bar_Graph_Fec_Between_Conditions.png", width = 18, height = 10)
+ggsave("scripts/plotting/03aii_Bar_Graph_Fec_Between_Conditions_2022_2023.png", width = 18, height = 10)
 
 ### 3aiii_Bar_Graph_Avg_Fit_Between_Genotypes.R
 
@@ -65,7 +56,7 @@ ggplot(Average_Haplo_rep, aes(Genotypes, Fitness, color = Condition, fill = Cond
   facet_wrap(~Generation, scales = "free_x") +
   theme(axis.text.x = element_text(size = 5)) +
   theme(axis.text.x = element_text(angle = 90))
-ggsave("scripts/plotting/03aiii_Bar_Graph_Fit_Between_Conditions.png",  width = 18, height = 10)
+ggsave("scripts/plotting/03aiii_Bar_Graph_Fit_Between_Conditions_2022_2023.png",  width = 18, height = 10)
 
 ### 3b_Exp_Yield_Per_Plant_by_Condition.R
 
@@ -97,22 +88,23 @@ ggplot(Average_Haplo_rep, aes(Generation, Exp_Fit_Per_Plant, color = Condition, 
        title = "Generational Change in Expected Fitness Per Plant")
 ggsave("scripts/plotting/03bii_Exp_Per_Plant_Fit_by_Condition.png")
 
-### 3c_Average_Yield_Over_Generations.R
+### 3c_Average_TW_Over_Generations.R
 
-Average_Haplo_rep$Generation <- as.numeric(Average_Haplo_rep$Generation)
-fg <- ggplot(Average_Haplo_rep, aes(x = Generation, y = `Brown Bag Weight`, color = Condition, add = "reg.line")) +
+fa <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_TW, color = Condition, add = "reg.line")) +
   geom_jitter() +
   geom_smooth(method = lm) +
+  geom_hline(yintercept = 0, color = 'red') +
   stat_regline_equation() +
   labs(x = "Generation",
-       y = "Average Yield (grams)")
-ggsave("scripts/plotting/03c_Scatterplot_Avg_Yield_by_Condition.png")
+       y = "Average Total Seed Weight (grams)")
+ggsave("scripts/plotting/03c_Scatterplot_Avg_TW_by_Condition.png")
 
 ### 3ci_Average_FT_Over_Generations.R
 
-fa <- ggplot(Average_Haplo_rep, aes(x = Generation, y = FT_DAYS, color = Condition, add = "reg.line")) +
+fb <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_FT, color = Condition, add = "reg.line")) +
   geom_jitter() +
   geom_smooth(method = lm) +
+  geom_hline(yintercept = 0, color = 'red') +
   stat_regline_equation() +
   labs(x = "Generation",
        y = "Average Flowering Time (Days After Sowing)") +
@@ -121,9 +113,10 @@ ggsave("scripts/plotting/03ci_Scatterplot_Avg_FT_by_Condition.png")
 
 ### 3cii_Average_Fecundity_Over_Generations.R
 
-fb <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Fecundity, color = Condition, add = "reg.line")) +
+fc <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_Fec, color = Condition, add = "reg.line")) +
   geom_jitter() +
   geom_smooth(method = lm) +
+  geom_hline(yintercept = 0, color = 'red') +
   stat_regline_equation() +
   labs(x = "Generation",
        y = "Average Fecundity")
@@ -131,9 +124,10 @@ ggsave("scripts/plotting/03cii_Scatterplot_Avg_Fec_by_Condition.png")
 
 ### 3ciii_Average_Fitness_Over_Generations.R
 
-fv <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Fitness, color = Condition, add = "reg.line")) +
+fd <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_Fit, color = Condition, add = "reg.line")) +
   geom_jitter() +
   geom_smooth(method = lm) +
+  geom_hline(yintercept = 0, color = 'red') +
   stat_regline_equation() +
   labs(x = "Generation",
        y = "Average Fitness")
@@ -141,7 +135,7 @@ ggsave("scripts/plotting/03ciii_Scatterplot_Avg_Fit_by_Condition.png")
 
 ### 3ciiii_Combined_Mixed_v_Single_Scatterplots.R
 
-g <- grid.arrange(fg, fa, fb, fv, top = "Comparing Evolution of our Four Measured Phenotypes Between Condition")
+g <- grid.arrange(fa, fb, fc, fd, top = "Evolution of our Four Measured Phenotypes Between Condition 2022-2023 Season")
 ggsave("scripts/plotting/03ciiii_Combined_Mixed_v_Single_Scatterplots.png", g, width = 14, height = 10)
 
 ### 3cc_T_test_Mixed_vs_Single_Yield
@@ -156,7 +150,7 @@ t.test(Fitness ~ Condition, Average_Haplo_rep)
 
 t.test(Fecundity ~ Condition, Average_Haplo_rep)
 
-### 3d_Seed_Yield_Per_Genotype
+### 3d_Seed_TW_Per_Genotype
 
 ggplot(Average_Haplo_rep, aes(x = reorder(Genotypes, +`Brown Bag Weight`), `Brown Bag Weight`, fill = Condition, group = Generation)) +
   geom_bar(stat = 'identity', position = position_dodge()) +
@@ -181,13 +175,13 @@ ggplot(Rep_Single, aes(FT_DAYS, Fecundity)) +
   facet_wrap(~Generation, scales = "free_x")
 ggsave("scripts/plotting/03e_Int_FT_vs_fec.png")
 
-# FT vs. Yield
+# FT vs. TW
 ggplot(Rep_Single, aes(FT_DAYS, `Brown Bag Weight`)) +
   geom_point()+
   geom_smooth() +
-  labs(y = "Yield") +
+  labs(y = "Total Seed Weight (g)") +
   facet_wrap(~Generation, scales = "free_x")
-ggsave("scripts/plotting/03e_Int_FT_vs_Yield.png")
+ggsave("scripts/plotting/03e_Int_FT_vs_TW.png")
 
 
 

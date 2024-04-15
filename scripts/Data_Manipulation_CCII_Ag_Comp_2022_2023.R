@@ -71,13 +71,6 @@ Average_Haplo_rep <- Average_Haplo_rep %>%  mutate(Atlas_Avg_Fec = 2363.51,
                                                    Atlas_Avg_Total_Weight = 126.8267)
 Average_Haplo_rep$Numbers <- ifelse(Average_Haplo_rep$Condition == "mixed", 1, 0)
   
-### Creating Single Condition Dataframe
-
-Rep_Single <- Average_Haplo_rep %>% filter(Condition == "single")
-
-### Creating Mixed Condition Dataframe
-
-Rep_Mixed <- Average_Haplo_rep %>% filter(Condition == 'mixed')
 
 ### Creating replicate dataframe for correlation graphs
 
@@ -119,7 +112,7 @@ Average_Haplo_rep$Exp_Fit_Per_Plant <- ifelse(Average_Haplo_rep$Numbers == 1,
                                                     Exp_Fit_Mixed(Average_Haplo_rep$Fitness),
                                                     Exp_Single(Average_Haplo_rep$Fitness))
 
-### Yield
+### Total Weight
 
 Exp_TW_mix <- function(x){
   TW_mix <- (x/2) + (Average_Haplo_rep$Atlas_Avg_Total_Weight/2)
@@ -130,6 +123,22 @@ Exp_TW_mix <- function(x){
 Average_Haplo_rep$Exp_TW_Per_Plant <- ifelse(Average_Haplo_rep$Numbers == 1,
                                                    Exp_TW_mix(Average_Haplo_rep$`Brown Bag Weight`),
                                                    Exp_Single(Average_Haplo_rep$`Brown Bag Weight`))
+
+### Adding a column for centered data
+Average_Haplo_rep <- Average_Haplo_rep %>% mutate(Centered_Fit = Fitness - mean(Fitness),
+                                    Centered_FT = FT_DAYS - mean(FT_DAYS),
+                                    Centered_Fec = Fecundity - mean(Fecundity),
+                                    Centered_TW = `Brown Bag Weight` - mean(`Brown Bag Weight`, na.rm = TRUE))
+
+
+### Creating Single Condition Dataframe
+
+Rep_Single <- Average_Haplo_rep %>% filter(Condition == "single")
+
+### Creating Mixed Condition Dataframe
+
+Rep_Mixed <- Average_Haplo_rep %>% filter(Condition == 'mixed')
+
 
 ### Write Delims
 write_delim(Full_Data, "Full_Data")

@@ -7,52 +7,56 @@ library(tidyr)
 library(car)
 library(gridExtra)
 
-setwd("/Users/mattkahler/Documents/GitHub/Ag-Competition/scripts/plotting")
-
 #fitness = (Plot Germination * Fecundity)
 ### 02_Single_Fitness_over_Generation.R
 
-fa <- ggplot(Single_2021_2022, aes(Generation, Fitness, add = "reg.line")) +
+fa <- ggplot(Single_2021_2022, aes(Generation, Centered_Fit, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
-  geom_boxplot(aes(Generation, Fitness, group = Generation), width = 1.5, alpha = .5) +
+  geom_hline(aes(yintercept = 0), color = 'red') +
+  geom_boxplot(aes(Generation, Centered_Fit, group = Generation), width = 1.5, alpha = .5) + 
   stat_regline_equation(label.y = 35000) +
-  scale_y_continuous(breaks = seq(0, 40000, 5000)) +
+  scale_y_continuous(breaks = seq(-10000, 50000, 5000)) +
   labs(x = "Generation",
        y = "Average Fitness") 
 ggsave("scripts/plotting/02_Generational_Change_in_Single_Fitness_2021_2022.png")
 
 ### 02a_Single_Fecundity_over_Generations.R
 
-fb <- ggplot(Single_2021_2022, aes(Generation, Fecundity, add = "reg.line")) +
+fb <- ggplot(Single_2021_2022, aes(Generation, Centered_Fec, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
-  geom_boxplot(aes(Generation, Fecundity, group = Generation), width = 1.5, alpha = .5) +
-  stat_regline_equation(label.y = 4000) +
+  geom_hline(aes(yintercept = 0), color = 'red') +
+  geom_boxplot(aes(Generation, Centered_Fec, group = Generation), width = 1.5, alpha = .5) +
+  stat_regline_equation(label.y = 3000) +
+  scale_y_continuous(breaks = seq(-2000, 5000, 1000)) +
   labs(x = "Generation",
        y = "Average Fecundity") 
 ggsave("scripts/plotting/02a_Generational_Change_in_Single_Fecundity_2021_2022.png")
 
 ### 02ai_Single_FT_over_Generations.R
 
-fc <- ggplot(Single_2021_2022, aes(Generation, Flowering_Date, add = "reg.line")) +
+fc <- ggplot(Single_2021_2022, aes(Generation, Centered_FT, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
-  geom_boxplot(aes(Generation, Flowering_Date, group = Generation), width = 1.5, alpha = .5)+
-  stat_regline_equation(label.y = 140) +
+  geom_hline(aes(yintercept = 0), color = 'red') +
+  geom_boxplot(aes(Generation, Centered_FT, group = Generation), width = 1.5, alpha = .5)+
+  stat_regline_equation(label.y = 30) +
+  scale_y_continuous(breaks = seq(-40, 30, 10)) +
   labs(x = "Generation",
        y = "Average Flowering Time (Days)")
 ggsave("scripts/plotting/02ai_Generational_Change_in_Single_FT_2021_2022.png")
 
-### 02aii_Single_Yield_over_Generations.R
+### 02aii_Single_TW_over_Generations.R
 
-fd <- ggplot(Single_2021_2022, aes(Generation, total_seed_mass_g, add = "reg.line")) +
+fd <- ggplot(Single_2021_2022, aes(Generation, Centered_TW, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
-  geom_boxplot(aes(Generation,total_seed_mass_g, group = Generation), width = 1.5, alpha = .5)+
-  stat_regline_equation(label.y = 160) +
+  geom_hline(aes(yintercept = 0), color = 'red') +
+  geom_boxplot(aes(Generation,Centered_TW, group = Generation), width = 1.5, alpha = .5)+
+  stat_regline_equation(label.y = 90) +
   labs(x = "Generation",
-       y = "Average Total Seed Weight (g)")
+       y = "Average Total Seed Weight (g)") 
 ggsave("scripts/plotting/02aii_Generational_Change_in_Single_TW_2021_2022.png")
 
 ### 02aiii_Combined_Single_Evolution_Scatterplots.R
@@ -74,11 +78,11 @@ Averaged_Full_2021_2022$Generation <- as.factor(Averaged_Full_2021_2022$Generati
 ggplot(Averaged_Full_2021_2022, aes(x = Fecundity, fill = Generation, group = Generation)) +
   geom_histogram(alpha = .5, position = 'identity', binwidth = 70) +
   scale_fill_brewer(palette = "Blues")
-ggsave("scripts/plotting/02b_Overlapping_Distributions_Fecundity_Over_Generations.png")
+ggsave("scripts/plotting/02b_Overlapping_Distributions_Fecundity_Over_Generations_2021_2022.png")
 
 ### 02bi_100_SW_Distributions.R
 
-ggplot(Averaged_Full_2021_2022, aes(x = `100 seed weight`, group = Generation, fill = Generation)) +
+ggplot(Averaged_Full_2021_2022, aes(x = "100_seed_weight", group = Generation, fill = Generation)) +
   geom_histogram(alpha =.5, position = 'identity') +
   scale_fill_brewer(palette = "Blues")
 ggsave("scripts/plotting/02bi_Overlapping_Distributions_for_Generational_Change_100SW_Distributions_2021_2022.png")

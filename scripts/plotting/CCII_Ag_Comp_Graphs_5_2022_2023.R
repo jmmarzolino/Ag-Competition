@@ -6,13 +6,6 @@ library(ggplot2)
 library(googlesheets4)
 library(tidyr)
 
-### Load Data
-
-Full_Data <- read_delim("~/Documents/GitHub/Ag-Competition/Full_Data")
-Average_Haplo_rep <- read_delim("~/Documents/GitHub/Ag-Competition/Average_Haplo_rep")
-Rep_Mixed <- read_delim("~/Documents/GitHub/Ag-Competition/Rep_Mixed")
-Rep_Single <- read_delim("~/Documents/GitHub/Ag-Competition/Rep_Single")
-
 ### 5a_Comparing_Yield_Between_Haplotypes.R
 
 Rep_Single <- Rep_Single %>% filter(Haplotype != "NA")
@@ -26,13 +19,13 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_TW, fill = `Avg Yield > Pop & Gen A
   geom_bar(stat = 'identity') +
   geom_hline(yintercept = mean(Haplo_graph$Avg_TW), color = "green") +
   geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
-  labs(y = "Average Yield",
-       title = "Average Yield between Haplotypes") +
+  labs(y = "Average Total Seed Weight (g)",
+       title = "Average Total Seed Weight between Haplotypes") +
   scale_y_continuous(breaks = seq(0, 200, 25)) +
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red")) 
-ggsave("scripts/plotting/05a_Average_Yield_Haplotypes.png", width = 16, height = 12)
+ggsave("scripts/plotting/05a_Average_TW_Haplotypes_2022_2023.png", width = 16, height = 12)
 
 
 ### 5ai_Comparing_FT_Between_Haplotypes.R
@@ -51,7 +44,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_FT, fill = `Avg FT > Pop & Gen Avg 
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red"))
-ggsave("scripts/plotting/05ai_Average_FT_Haplotypes.png", width = 16, height = 12)
+ggsave("scripts/plotting/05ai_Average_FT_Haplotypes_2022_2023.png", width = 16, height = 12)
 
 ### 5aii_Comparing_Fecundity_Between_Haplotypes.R
 
@@ -69,7 +62,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fec, fill = `Avg Fec > Pop & Gen Av
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red"))
-ggsave("scripts/plotting/05aii_Average_Fec_Haplotypes.png", width = 16, height = 12)
+ggsave("scripts/plotting/05aii_Average_Fec_Haplotypes_2022_2023.png", width = 16, height = 12)
 
 ### 5aiii_Comparing_Fitness_Between_Haplotypes.R
 
@@ -88,7 +81,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fit, fill = `Avg Fit > Pop & Gen Av
   facet_wrap(~Generation, scales = "free_x") + 
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red"))
-ggsave("scripts/plotting/05aiii_Average_Fit_Haplotypes.png", width = 16, height = 12)
+ggsave("scripts/plotting/05aiii_Average_Fit_Haplotypes_2022_2023.png", width = 16, height = 12)
 
 
   

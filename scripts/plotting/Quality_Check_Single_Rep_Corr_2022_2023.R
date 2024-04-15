@@ -9,74 +9,65 @@ library(car)
 library(gridExtra)
 library(dunn.test)
 
-### Load Data
-
-Full_Data <- read_delim("~/Documents/GitHub/Ag-Competition/Full_Data")
-Average_Haplo_rep <- read_delim("~/Documents/GitHub/Ag-Competition/Average_Haplo_rep")
-Rep_Mixed <- read_delim("~/Documents/GitHub/Ag-Competition/Rep_Mixed")
-Rep_Single <- read_delim("~/Documents/GitHub/Ag-Competition/Rep_Single")
-Replicate_corr_tbl <- read_delim("~/Documents/GitHub/Ag-Competition/Replicate_corr_tbl")
+Replicate_corr_tbl_Single <- Replicate_corr_tbl %>% filter(Condition == "single")
 
 ### Correlation of Replicates (Total Seed Weight) 
 
-ggplot(Replicate_corr_tbl, aes(x=`Brown Bag Weight`, y=`Brown Bag Weight_2`, add = "reg.line")) +
-  geom_point(alpha = .3) +
+g2 <- ggplot(Replicate_corr_tbl_Single, aes(x=`Brown Bag Weight`, y=`Brown Bag Weight_2`, add = "reg.line")) +
+  geom_point(alpha = .5) +
   geom_abline(slope =1, intercept= 0, color = "red") +
   stat_cor(label.y = 235, label.x = 20) +
   geom_smooth(method = "lm") +
-  labs(x = "Total Seed Weight Replicate 1 (grams)",
-       y= "Total Seed Weight Replicate 2 (grams)",
-       title = "Correlation of Replicates for Total Seed Weight") +
-  facet_wrap(~Condition)
-
-ggsave("scripts/plotting/Correlation_of_Rep1_and_Rep2_Total_SW.png")
+  labs(x = "Rep 1",
+       y= "Rep 2",
+       title = "Total Weight 2022-2023") 
+ggsave("scripts/plotting/Correlation_of_Single_Rep_2022_2023_TW.png")
 
 res <- Replicate_corr_tbl %>% summarise(residuals = resid(lm(`Brown Bag Weight_2` ~ `Brown Bag Weight`)))
 Replicate_corr_tbl$Residuals <- res$residuals
 
-### Correlation of Replicates (Fecundity)
-
-ggplot(Replicate_corr_tbl, aes(x=Fecundity, y= Fecundity_2)) +
-  geom_point(alpha = .5) +
-  stat_cor(label.y = 4200, label.x = 20) +
-  geom_abline(slope =1, intercept= 0, color = "red") +
-  geom_smooth(method = "lm") +
-  labs(x = "Fecundity (replicate 1)",
-       y= "Fecundity (replicate 2)",
-       title = "Correlation of Replicates for Fecundity") +
-  facet_wrap(~Condition)
-
-ggsave("scripts/plotting/Correlation_of_Rep1_and_Rep2_Fecundity.png")
-
-res <- Replicate_corr_tbl %>% summarise(residuals = resid(lm(Fecundity_2 ~ Fecundity)))
-Replicate_corr_tbl$Residuals <- res$residuals
-
 ### Correlation of Replicates (Flowering Time)
 
-ggplot(Replicate_corr_tbl, aes(FT_DAYS, FT_DAYS_2)) +
+g4 <- ggplot(Replicate_corr_tbl_Single, aes(FT_DAYS, FT_DAYS_2)) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = 'lm') +
   stat_cor(label.x = 100, label.y = 135) +
   geom_abline(slope = 1, intercept = 0, col = "red") +
-  labs(x = "Flowering Time Replicate 1 (Days)",
-       y = "Flowering Time Replicate 2 (Days)",
-       title = "Correlation of Replicates for Flowering Time") +
-  facet_wrap(~Condition)
+  labs(x = "Rep 1",
+       y = "Rep 2",
+       title = "Flowering Time 2022-2023")
+ggsave("scripts/plotting/Correlation_of_Single_Rep_2022_2023_FT.png")
+
+### Correlation of Replicates (Fecundity)
+
+g6 <- ggplot(Replicate_corr_tbl_Single, aes(x=Fecundity, y= Fecundity_2)) +
+  geom_point(alpha = .5) +
+  stat_cor(label.y = 4200, label.x = 20) +
+  geom_abline(slope =1, intercept= 0, color = "red") +
+  geom_smooth(method = "lm") +
+  labs(x = "Rep 1",
+       y= "Rep 2",
+       title = "Fecundity 2022-2023") 
+ggsave("scripts/plotting/Correlation_of_Single_Rep_2022_2023_Fecundity.png")
+
+res <- Replicate_corr_tbl %>% summarise(residuals = resid(lm(Fecundity_2 ~ Fecundity)))
+Replicate_corr_tbl$Residuals <- res$residuals
 
 ### Correlation of Replicates (Fitness)
 
-ggplot(Replicate_corr_tbl, aes(Fitness, Fitness_2)) +
+g8 <- ggplot(Replicate_corr_tbl_Single, aes(Fitness, Fitness_2)) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = 'lm') +
   stat_cor(label.x = 100, label.y = 40000) +
   geom_abline(slope = 1, intercept = 0, col = "red") +
-  labs(x = "Fitness Replicate 1",
-       y = "Fitness Replicate 2",
-       title = "Correlation of Replicates for Fitness") +
-  facet_wrap(~Condition)
+  labs(x = "Rep 1",
+       y = "Rep 2",
+       title = "Fitness 2022-2023")
+ggsave("scripts/plotting/Correlation_of_Single_Rep_2022_2023_Fitness.png")
 
 res <- Replicate_corr_tbl %>% summarise(residuals = resid(lm(Fitness_2 ~ Fitness)))
 Replicate_corr_tbl$Residuals <- res$residuals
+
 
 ### Correlation of 100 Seed Weight between Replicates (Single)
 
