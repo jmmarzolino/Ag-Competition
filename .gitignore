@@ -42,6 +42,7 @@ vignettes/*.pdf
 *.png
 *.pdf
 *.jpg
+*.pdf
 
 # Other Scripting Files
 *.stdout
@@ -49,5 +50,6 @@ vignettes/*.pdf
 # Data Files
 *.csv
 *.tsv
+data/*
 
 *.Rproj
