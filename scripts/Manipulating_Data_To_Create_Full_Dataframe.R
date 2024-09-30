@@ -1,3 +1,11 @@
+#!/usr/bin/env Rscript
+
+#SBATCH --ntasks=1
+#SBATCH --mem=30G
+#SBATCH --time=02:00:00
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/competition1.stdout
+#SBATCH -p koeniglab
+
 library(tidyverse)
 library(readr)
 library(dplyr)
@@ -34,7 +42,7 @@ Seed_weights_2022_2023$PLOT_ID <- as.numeric(Seed_weights_2022_2023$PLOT_ID)
 FT_2023$replicate <- as.numeric(gsub("rep (\\d)", "\\1", FT_2023$replicate))
 
 # Creating Dataframe for the 2022-2023 Year
-PHENO2023 <- full_join(FT_2023, Seed_weights_2022_2023, by='PLOT_ID') %>% select(-c('Bed_2022', 'Row_2022', 'ROW')) 
+PHENO2023 <- full_join(FT_2023, Seed_weights_2022_2023, by='PLOT_ID') %>% select(-c('Bed_2022', 'Row_2022', 'ROW'))
 PHENO2023 <- filter(PHENO2023, PLOT_ID <= 1036) %>% mutate(Exp_year = 2023)
 
 # standardize colnames
@@ -101,5 +109,3 @@ PHENO_FULL_AVERAGE$Generation <- gsub("^2_.*", 28, PHENO_FULL_AVERAGE$Generation
 PHENO_FULL_AVERAGE$Generation <- gsub("^3_.*", 50, PHENO_FULL_AVERAGE$Generation)
 PHENO_FULL_AVERAGEGeneration <- gsub("^7_.*", 58, PHENO_FULL_AVERAGE$Generation)
 PHENO_FULL_AVERAGE$Generation <- gsub("^*.*_.*", 0, PHENO_FULL_AVERAGE$Generation)
-
-

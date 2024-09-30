@@ -1,3 +1,11 @@
+#!/usr/bin/env Rscript
+
+#SBATCH --ntasks=1
+#SBATCH --mem=30G
+#SBATCH --time=02:00:00
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/competition1.stdout
+#SBATCH -p koeniglab
+
 library(tidyverse)
 library(readr)
 library(dplyr)
@@ -10,7 +18,7 @@ library(gridExtra)
 
 # Single Scatterplots 2021-2022
 
-Single_2021_2022 <- PHENO_FULL_AVERAGE %>% filter(Condition == 'single' & Exp_year == 2022) 
+Single_2021_2022 <- PHENO_FULL_AVERAGE %>% filter(Condition == 'single' & Exp_year == 2022)
 
 #fitness = (Plot Germination * Fecundity)
 ### 02a_Single_Fitness_over_Generation.R
@@ -20,11 +28,11 @@ a <- ggplot(Single_2021_2022, aes(x= Generation, y = ABS_FITNESS)) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = 'lm') +
   geom_hline(aes(yintercept = 0), color = 'red') +
-  geom_boxplot(aes(Generation, ABS_FITNESS, group = Generation), width = 1.5, alpha = .5) + 
+  geom_boxplot(aes(Generation, ABS_FITNESS, group = Generation), width = 1.5, alpha = .5) +
   stat_regline_equation(label.y = 2.5) +
   labs(x = "Generation",
        y = "Absolute Fitness",
-       title = "Evolution of Centered Absolute Fitness 2021-2022") 
+       title = "Evolution of Centered Absolute Fitness 2021-2022")
 ggsave("scripts/plotting/02a_Generational_Change_in_Single_Fitness_2021_2022.png")
 
 ### 02ai_Single_Fecundity_over_Generations.R
@@ -37,7 +45,7 @@ b <- ggplot(Single_2021_2022, aes(Generation, FECUNDITY, add = "reg.line")) +
   stat_regline_equation(label.y = 3) +
   labs(x = "Generation",
        y = "Average Fecundity",
-       title = "Evolution of Centered Fecundity 2021-2022") 
+       title = "Evolution of Centered Fecundity 2021-2022")
 ggsave("scripts/plotting/02ai_Generational_Change_in_Single_Fecundity_2021_2022.png")
 
 ### 02aii_Single_FT_over_Generations.R
@@ -61,7 +69,7 @@ d <- ggplot(Single_2021_2022, aes(Generation, total_seed_mass_g, add = "reg.line
   stat_regline_equation(label.y = 135) +
   labs(x = "Generation",
        y = "Average Total Seed Weight (g)",
-       title = "Evolution of Average Total Weight (grams) 2021-2022") 
+       title = "Evolution of Average Total Weight (grams) 2021-2022")
 ggsave("scripts/plotting/02aiii_Generational_Change_in_Single_TW_2021_2022.png")
 
 ### 02aiiii_Single_100SW_over_Generations.R
@@ -79,7 +87,7 @@ ggsave("scripts/plotting/02aiiii_Generational_Change_in_Single_100SW_2021_2022.p
 
 # Single Scatterplots 2022-2023
 
-Single_2022_2023 <- PHENO_FULL_AVERAGE %>% filter(Condition == 'single' & Exp_year == 2023) 
+Single_2022_2023 <- PHENO_FULL_AVERAGE %>% filter(Condition == 'single' & Exp_year == 2023)
 
 #fitness = (Plot Germination * Fecundity)
 ### 02b_Single_Fitness_over_Generation.R
@@ -89,11 +97,11 @@ f <- ggplot(Single_2022_2023, aes(x= Generation, y = ABS_FITNESS)) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = 'lm') +
   geom_hline(aes(yintercept = 0), color = 'red') +
-  geom_boxplot(aes(Generation, ABS_FITNESS, group = Generation), width = 1.5, alpha = .5) + 
+  geom_boxplot(aes(Generation, ABS_FITNESS, group = Generation), width = 1.5, alpha = .5) +
   stat_regline_equation(label.y = 2.1) +
   labs(x = "Generation",
        y = "Absolute Fitness",
-       title = "Evolution of Centered Absolute Fitness 2022-2023") 
+       title = "Evolution of Centered Absolute Fitness 2022-2023")
 ggsave("scripts/plotting/02b_Generational_Change_in_Single_Fitness_2022_2023.png")
 
 ### 02bi_Single_Fecundity_over_Generations.R
@@ -106,7 +114,7 @@ g <- ggplot(Single_2022_2023, aes(Generation, FECUNDITY, add = "reg.line")) +
   stat_regline_equation(label.y = 4) +
   labs(x = "Generation",
        y = "Average Fecundity",
-       title = "Evolution of Centered Fecundity 2022-2023") 
+       title = "Evolution of Centered Fecundity 2022-2023")
 ggsave("scripts/plotting/02bi_Generational_Change_in_Single_Fecundity_2022_2023.png")
 
 ### 02bii_Single_FT_over_Generations.R
@@ -130,7 +138,7 @@ i <- ggplot(Single_2022_2023, aes(Generation, total_seed_mass_g, add = "reg.line
   stat_regline_equation(label.y = 155) +
   labs(x = "Generation",
        y = "Average Total Seed Weight (g)",
-       title = "Evolution of Average Total Weight (grams) 2022-2023") 
+       title = "Evolution of Average Total Weight (grams) 2022-2023")
 ggsave("scripts/plotting/02biii_Generational_Change_in_Single_TW_2022_2023.png")
 
 ### 02biiii_Single_100SW_over_Generations.R

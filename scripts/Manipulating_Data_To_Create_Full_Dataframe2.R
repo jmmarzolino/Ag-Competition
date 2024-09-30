@@ -1,3 +1,11 @@
+#!/usr/bin/env Rscript
+
+#SBATCH --ntasks=1
+#SBATCH --mem=30G
+#SBATCH --time=02:00:00
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/competition1.stdout
+#SBATCH -p koeniglab
+
 library(tidyverse)
 library(readr)
 library(dplyr)
@@ -138,7 +146,7 @@ Seed_weights_2021_2022$`100_seed_weight` <- replace(Seed_weights_2021_2022$`100_
 FT_2022$Genotypes <- gsub("-", "_", FT_2022$Genotypes)
 FT_2022 <- FT_2022 %>% select(!c("2021BED", "2021ROW"))
 tmp <- FT_2022 %>% filter(Genotypes == "1_6" | Genotypes == "7_69") %>% group_by(Genotypes, Condition, replicate, Generation) %>% summarise(across(.cols = c("Flowering_Date", "number_of_plants"), .fns = mean, na.rm = T)) %>% ungroup()
-FT_2022 <- FT_2022 %>% filter(Genotypes != "1_6" & Genotypes != "7_69") 
+FT_2022 <- FT_2022 %>% filter(Genotypes != "1_6" & Genotypes != "7_69")
 FT_2022 <- rbind(tmp, FT_2022)
 
 # Averaging genotypes 1_6 and 7_69 because we have 8 replicates of each, so this script averages the replicates into 2 single reps and 2 mixed reps.
@@ -189,13 +197,13 @@ PHENO2022 <- PHENO2022 %>% select(!c("per_seed_weight_g", "subset_seed_count", "
 
 # Preparing Raw data to be joined into the 2023 dataframe
 
-Seed_weights_2022_2023$PLOT_ID <- as.numeric(Seed_weights_2022_2023$PLOT_ID) 
+Seed_weights_2022_2023$PLOT_ID <- as.numeric(Seed_weights_2022_2023$PLOT_ID)
 Seed_weights_2022_2023 <- Seed_weights_2022_2023 %>% filter(PLOT_ID <= 1036)
 
 # Removing one of the duplicated PLOT_ID 839 entries and replacing the existing values with updated TW and 100 SW
 
-Seed_weights_2022_2023 <- Seed_weights_2022_2023 %>% rowid_to_column() 
-Seed_weights_2022_2023 <- Seed_weights_2022_2023 %>% filter(PLOT_ID != 839 | rowid != 804) 
+Seed_weights_2022_2023 <- Seed_weights_2022_2023 %>% rowid_to_column()
+Seed_weights_2022_2023 <- Seed_weights_2022_2023 %>% filter(PLOT_ID != 839 | rowid != 804)
 Seed_weights_2022_2023 <- Seed_weights_2022_2023 %>% select(-c(rowid))
 Seed_weights_2022_2023$`Brown Bag Weight` <- replace(Seed_weights_2022_2023$`Brown Bag Weight`, Seed_weights_2022_2023$PLOT_ID == 839, 72.4)
 Seed_weights_2022_2023$`100 seed weight` <- replace(Seed_weights_2022_2023$`100 seed weight`, Seed_weights_2022_2023$PLOT_ID == 839, 5.3)

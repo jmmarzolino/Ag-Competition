@@ -1,3 +1,11 @@
+#!/usr/bin/env Rscript
+
+#SBATCH --ntasks=1
+#SBATCH --mem=30G
+#SBATCH --time=02:00:00
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/competition1.stdout
+#SBATCH -p koeniglab
+
 library(lme4)
 library(dplyr)
 library(ggplot2)
@@ -30,7 +38,7 @@ tmp$`100_seed_weight` <- standardize(tmp$`100_seed_weight`)
 
 Breeders_funct_0 <- function(x) {
   var_tab <- tibble(trait= character(), genetic_var=double(), total_var=double())
-  
+
   for(i in c(6:ncol(x))){
     df <- x %>%
       filter(Generation == 0) %>%
@@ -46,7 +54,7 @@ Breeders_funct_0 <- function(x) {
     total_variance <- genotypic_variance + (data.frame(geno_mod_summ$varcor)$sdcor[2]^2)
     new_row <- tibble(trait= colnames(PHENO_SINGLE[,i]), genetic_var=genotypic_variance, total_var=total_variance)
     var_tab <- bind_rows(var_tab, new_row)
-  } 
+  }
   ## ratio of Vg and Vp
   var_tab$H2 <- var_tab$genetic_var / var_tab$total_var
   return(var_tab)
@@ -58,7 +66,7 @@ Breeders_funct_0 <- function(x) {
 
 Breeders_funct_18 <- function(x) {
   var_tab <- tibble(trait= character(), genetic_var=double(), total_var=double())
-  
+
   for(i in c(6:ncol(x))){
     df <- x %>%
       filter(Generation == 18) %>%
@@ -74,7 +82,7 @@ Breeders_funct_18 <- function(x) {
     total_variance <- genotypic_variance + (data.frame(geno_mod_summ$varcor)$sdcor[2]^2)
     new_row <- tibble(trait= colnames(PHENO_SINGLE[,i]), genetic_var=genotypic_variance, total_var=total_variance)
     var_tab <- bind_rows(var_tab, new_row)
-  } 
+  }
   ## ratio of Vg and Vp
   var_tab$H2 <- var_tab$genetic_var / var_tab$total_var
   return(var_tab)
@@ -84,7 +92,7 @@ Breeders_funct_18 <- function(x) {
 
 Breeders_funct_28 <- function(x) {
   var_tab <- tibble(trait= character(), genetic_var=double(), total_var=double())
-  
+
   for(i in c(6:ncol(x))){
     df <- x %>%
       filter(Generation == 28) %>%
@@ -100,7 +108,7 @@ Breeders_funct_28 <- function(x) {
     total_variance <- genotypic_variance + (data.frame(geno_mod_summ$varcor)$sdcor[2]^2)
     new_row <- tibble(trait= colnames(PHENO_SINGLE[,i]), genetic_var=genotypic_variance, total_var=total_variance)
     var_tab <- bind_rows(var_tab, new_row)
-  } 
+  }
   ## ratio of Vg and Vp
   var_tab$H2 <- var_tab$genetic_var / var_tab$total_var
   return(var_tab)
@@ -110,7 +118,7 @@ Breeders_funct_28 <- function(x) {
 
 Breeders_funct_50 <- function(x) {
   var_tab <- tibble(trait= character(), genetic_var=double(), total_var=double())
-  
+
   for(i in c(6:ncol(x))){
     df <- x %>%
       filter(Generation == 50) %>%
@@ -126,7 +134,7 @@ Breeders_funct_50 <- function(x) {
     total_variance <- genotypic_variance + (data.frame(geno_mod_summ$varcor)$sdcor[2]^2)
     new_row <- tibble(trait= colnames(PHENO_SINGLE[,i]), genetic_var=genotypic_variance, total_var=total_variance)
     var_tab <- bind_rows(var_tab, new_row)
-  } 
+  }
   ## ratio of Vg and Vp
   var_tab$H2 <- var_tab$genetic_var / var_tab$total_var
   return(var_tab)
@@ -136,7 +144,7 @@ Breeders_funct_50 <- function(x) {
 
 Breeders_funct_58 <- function(x) {
   var_tab <- tibble(trait= character(), genetic_var=double(), total_var=double())
-  
+
   for(i in c(6:ncol(x))){
     df <- x %>%
       filter(Generation == 58) %>%
@@ -152,7 +160,7 @@ Breeders_funct_58 <- function(x) {
     total_variance <- genotypic_variance + (data.frame(geno_mod_summ$varcor)$sdcor[2]^2)
     new_row <- tibble(trait= colnames(PHENO_SINGLE[,i]), genetic_var=genotypic_variance, total_var=total_variance)
     var_tab <- bind_rows(var_tab, new_row)
-  } 
+  }
   ## ratio of Vg and Vp
   var_tab$H2 <- var_tab$genetic_var / var_tab$total_var
   return(var_tab)
@@ -163,7 +171,7 @@ Breeders_funct_58 <- function(x) {
 
 PHENO_SINGLE <- tmp %>% filter(Condition == 'single')
 
-# Creating BLUP dataframe 
+# Creating BLUP dataframe
 
 blup_output <- data.frame(matrix(vector(), 255, 1, dimnames = list(c(), c("Genotypes"))))
 blup_output <- unique(PHENO_SINGLE[, 1])
@@ -389,7 +397,7 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/selection_intensity_sing
 
 ### MIXED
 
-PHENO_MIXED <- tmp %>% filter(Condition == 'mixed') 
+PHENO_MIXED <- tmp %>% filter(Condition == 'mixed')
 
 for (i in 6:ncol(PHENO_MIXED)){
   model <- lmer(as.numeric(unlist(PHENO_MIXED[,i])) ~ Exp_year + (1|Genotypes), data = PHENO_MIXED)
@@ -613,6 +621,3 @@ a4 <- ggplot(selection_intensity_mix, aes(response_years, si_fec)) +
 
 y <- arrangeGrob(a, a1, a2, a3, a4, top = 'Selection Intensity (Mixed)', nrow = 1, ncol =5)
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/selection_intensity_mix.png", y, width = 24, height = 12)
-
-
-

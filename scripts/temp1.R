@@ -1,8 +1,16 @@
+#!/usr/bin/env Rscript
+
+#SBATCH --ntasks=1
+#SBATCH --mem=30G
+#SBATCH --time=02:00:00
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/competition1.stdout
+#SBATCH -p koeniglab
+
 FT_FITNESS <- read_sheet('https://docs.google.com/spreadsheets/d/15-7DX0YVGhldTwaW6nkKnNhryFmxEwo2ZHiZwAtBu58/edit#gid=1001803440')
 
 ### Create function to unlist and convert vectors to numeric
 unlist_numeric <- function(x){
-  unlist(x) %>% 
+  unlist(x) %>%
     as.numeric(x)
 }
 

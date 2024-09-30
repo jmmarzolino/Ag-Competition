@@ -1,3 +1,11 @@
+#!/usr/bin/env Rscript
+
+#SBATCH --ntasks=1
+#SBATCH --mem=30G
+#SBATCH --time=02:00:00
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/competition1.stdout
+#SBATCH -p koeniglab
+
 library(tidyverse)
 library(readr)
 library(dplyr)
@@ -16,7 +24,7 @@ library(dunn.test)
 Single_2021_2022 <- PHENO_FULL_AVERAGE %>% filter(Condition == "single" & Exp_year == 2022)
 
 ### Average Total Weight Distributions
-graph_tmp <- Single_2021_2022 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_TW = mean(total_seed_mass_g)) %>% ungroup() 
+graph_tmp <- Single_2021_2022 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_TW = mean(total_seed_mass_g)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_TW, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -60,7 +68,7 @@ dunn.test(Single_2021_2022$total_seed_mass_g, Single_2021_2022$Generation)
 
 ### Average Flowering Time Distributions
 
-graph_tmp <- Single_2021_2022 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_FT = mean(FT_DAYS)) %>% ungroup() 
+graph_tmp <- Single_2021_2022 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_FT = mean(FT_DAYS)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_FT, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -70,7 +78,7 @@ ggplot(graph_tmp, aes(x = Avg_FT)) +
   facet_grid(~Generation) +
   labs(x = 'Average Flowering Time (Days After Sowing)')
 
-# Levene test - unequal variances between groups 
+# Levene test - unequal variances between groups
 
 leveneTest(FT_DAYS ~ as.factor(Generation), Single_2021_2022)
 
@@ -102,7 +110,7 @@ dunn.test(Single_2021_2022$FT_DAYS, Single_2021_2022$Generation)
 
 ### Average Fecundity Distributions
 
-graph_tmp <- Single_2021_2022 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_Fec = mean(FECUNDITY)) %>% ungroup() 
+graph_tmp <- Single_2021_2022 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_Fec = mean(FECUNDITY)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_Fec, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -151,7 +159,7 @@ dunn.test(Single_2021_2022$FECUNDITY, Single_2021_2022$Generation)
 
 ### Average Fitness Distributions
 
-graph_tmp <- Single_2021_2022 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_Fit = mean(ABS_FITNESS, na.rm = T)) %>% ungroup() 
+graph_tmp <- Single_2021_2022 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_Fit = mean(ABS_FITNESS, na.rm = T)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_Fit, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -192,7 +200,7 @@ dunn.test(Single_2021_2022$ABS_FITNESS, Single_2021_2022$Generation)
 
 # 100 SW Distributions
 
-graph_tmp <- Single_2021_2022 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_100_SW = mean(`100_seed_weight`)) %>% ungroup() 
+graph_tmp <- Single_2021_2022 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_100_SW = mean(`100_seed_weight`)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_100_SW, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -248,7 +256,7 @@ Single_2022_2023 <- PHENO_FULL_AVERAGE %>% filter(Condition == "single" & Exp_ye
 # Average TW Distributions
 
 ### Average Total Weight Distributions
-graph_tmp <- Single_2022_2023 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_TW = mean(total_seed_mass_g)) %>% ungroup() 
+graph_tmp <- Single_2022_2023 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_TW = mean(total_seed_mass_g)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_TW, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -291,7 +299,7 @@ TukeyHSD(ANOVA_TW)
 
 ### Average Flowering Time Distributions
 
-graph_tmp <- Single_2022_2023 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_FT = mean(FT_DAYS)) %>% ungroup() 
+graph_tmp <- Single_2022_2023 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_FT = mean(FT_DAYS)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_FT, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -301,7 +309,7 @@ ggplot(graph_tmp, aes(x = Avg_FT)) +
   facet_grid(~Generation) +
   labs(x = 'Average Flowering Time (Days After Sowing)')
 
-# Levene test - unequal variances between groups 
+# Levene test - unequal variances between groups
 
 leveneTest(FT_DAYS ~ as.factor(Generation), Single_2022_2023)
 
@@ -333,7 +341,7 @@ dunn.test(Single_2022_2023$FT_DAYS, Single_2022_2023$Generation)
 
 ### Average Fecundity Distributions
 
-graph_tmp <- Single_2022_2023 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_Fec = mean(FECUNDITY)) %>% ungroup() 
+graph_tmp <- Single_2022_2023 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_Fec = mean(FECUNDITY)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_Fec, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -375,7 +383,7 @@ dunn.test(Single_2022_2023$FECUNDITY, Single_2022_2023$Generation)
 
 ### Average Fitness Distributions
 
-graph_tmp <- Single_2022_2023 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_Fit = mean(ABS_FITNESS, na.rm = T)) %>% ungroup() 
+graph_tmp <- Single_2022_2023 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_Fit = mean(ABS_FITNESS, na.rm = T)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_Fit, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -418,7 +426,7 @@ TukeyHSD(ANOVA_Fit)
 
 # 100 SW Distributions
 
-graph_tmp <- Single_2022_2023 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_100_SW = mean(`100_seed_weight`)) %>% ungroup() 
+graph_tmp <- Single_2022_2023 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_100_SW = mean(`100_seed_weight`)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_100_SW, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -462,4 +470,3 @@ table(Single_2022_2023$Generation)
 
 kruskal.test(`100_seed_weight` ~ Generation, Single_2022_2023)
 dunn.test(Single_2022_2023$`100_seed_weight`, Single_2022_2023$Generation)
-

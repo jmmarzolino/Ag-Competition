@@ -17,6 +17,7 @@ FT <- read_delim("/rhome/jmarz001/bigdata/Ag-Competition/data/FT_BOTH_YEARS.tsv"
 FT <- FT %>% filter(Condition=="single") %>% select(-c(number_of_plants, Condition))
 FT_avg <- FT %>% group_by(Exp_year, Genotypes, Generation) %>% summarise(avg_FT = mean(Flowering_Date))
 FT_avg_2yr <- FT %>% group_by(Genotypes, Generation) %>% summarise(avg_FT = mean(Flowering_Date))
+write_delim(FT_avg_2yr, "FT_AVG_2YRS.tsv")
 
 
 FT$dummy_yr <- 1

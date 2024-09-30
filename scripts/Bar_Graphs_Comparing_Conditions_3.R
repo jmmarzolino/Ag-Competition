@@ -1,3 +1,12 @@
+#!/usr/bin/env Rscript
+
+#SBATCH --ntasks=1
+#SBATCH --mem=30G
+#SBATCH --time=02:00:00
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/competition1.stdout
+#SBATCH -p koeniglab
+
+
 library(tidyverse)
 library(readr)
 library(dplyr)
@@ -89,7 +98,7 @@ fb <- ggplot(tmp2021, aes(x = Generation, y = FT_DAYS, color = Condition, add = 
   stat_regline_equation() +
   labs(x = "Generation",
        y = "Average Flowering Time (Days After Sowing)",
-       title = "2021-2021") 
+       title = "2021-2021")
 ggsave("scripts/plotting/03ci_Scatterplot_Avg_FT_by_Condition_2021_2022.png")
 
 ### 3bii_Average_Fecundity_Over_Generations.R
@@ -268,7 +277,7 @@ fg <- ggplot(tmp2023, aes(x = Generation, y = FT_DAYS, color = Condition, add = 
   stat_regline_equation() +
   labs(x = "Generation",
        y = "Average Flowering Time (Days After Sowing)",
-       title = "2022-2023") 
+       title = "2022-2023")
 ggsave("scripts/plotting/03ci_Scatterplot_Avg_FT_by_Condition_2022_2023.png")
 
 ### 3gii_Average_Fecundity_Over_Generations.R
@@ -342,7 +351,7 @@ ggplot(Averaged_Full_2021_2022, aes(x = reorder(Genotypes, + total_seed_mass_g),
 
 # 2022-2023
 
-# FT vs. Fit 
+# FT vs. Fit
 ggplot(tmp2023, aes(FT_DAYS, ABS_FITNESS, add = "reg.line")) +
   geom_point() +
   geom_smooth(method = "lm")
@@ -350,7 +359,7 @@ ggplot(tmp2023, aes(FT_DAYS, ABS_FITNESS, add = "reg.line")) +
 # FT vs. Fec
 ggplot(tmp2023, aes(FT_DAYS, FECUNDITY)) +
   geom_point() +
-  geom_smooth(method = "lm") 
+  geom_smooth(method = "lm")
 
 # FT vs. Total Weight
 ggplot(tmp2023, aes(FT_DAYS, total_seed_mass_g)) +
@@ -366,7 +375,7 @@ ggplot(tmp2023, aes(FT_DAYS, `100_seed_weight`)) +
 
 # 2021-2022
 
-# FT vs. Fit 
+# FT vs. Fit
 
 ggplot(tmp2021, aes(FT_DAYS, ABS_FITNESS, add = "reg.line")) +
   geom_point() +
@@ -375,8 +384,8 @@ ggplot(tmp2021, aes(FT_DAYS, ABS_FITNESS, add = "reg.line")) +
 # FT vs. Fec
 ggplot(tmp2021, aes(FT_DAYS, FECUNDITY)) +
   geom_point() +
-  geom_smooth(method = "lm") 
-  
+  geom_smooth(method = "lm")
+
 
 # FT vs. Total Weight
 ggplot(tmp2021, aes(FT_DAYS, total_seed_mass_g)) +

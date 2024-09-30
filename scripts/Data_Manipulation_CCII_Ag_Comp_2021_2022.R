@@ -1,3 +1,11 @@
+#!/usr/bin/env Rscript
+
+#SBATCH --ntasks=1
+#SBATCH --mem=30G
+#SBATCH --time=02:00:00
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/competition1.stdout
+#SBATCH -p koeniglab
+
 library(tidyverse)
 library(readr)
 library(dplyr)
@@ -41,7 +49,7 @@ Averaged_Full_2021_2022 <- Averaged_Full_2021_2022 %>% filter(total_seed_mass_g 
 
 ### Adding Averaged Atlas values into the table and adding columns for centered data
 
-Atlas_tbl_2021_2022 <- Averaged_Full_2021_2022 %>% filter(Genotypes == "48_5") %>% 
+Atlas_tbl_2021_2022 <- Averaged_Full_2021_2022 %>% filter(Genotypes == "48_5") %>%
   mutate(Atlas_Avg_Fec = mean(Fecundity),
          Atlas_Avg_Fit = mean(Fitness),
          Atlas_Avg_TW = mean(total_seed_mass_g))
@@ -60,11 +68,11 @@ Averaged_Full_2021_2022 <- Averaged_Full_2021_2022 %>% mutate(Centered_Fit = Fit
 ### Fecundity
 Exp_Single <- function(x){
   result_single <- x/10
-  return(result_single) 
-} 
+  return(result_single)
+}
 
 Exp_Fec_Mixed <- function(x){
-  TW_mix <- (x/2) + (Averaged_Full_2021_2022$Atlas_Avg_Fec/2) 
+  TW_mix <- (x/2) + (Averaged_Full_2021_2022$Atlas_Avg_Fec/2)
   Exp_Fec_mix <- TW_mix/10
   return(Exp_Fec_mix)
 }
@@ -180,7 +188,7 @@ FT_FITNESS <- read_sheet('https://docs.google.com/spreadsheets/d/15-7DX0YVGhldTw
 
 ### Create function to unlist and convert vectors to numeric
 unlist_numeric <- function(x){
-  unlist(x) %>% 
+  unlist(x) %>%
     as.numeric(x)
 }
 
@@ -199,9 +207,3 @@ outlier_cutoff = quantile(test$FECUNDITY,0.75, na.rm = TRUE) + (1.5 * IQR(test$F
 ggplot(FT_FITNESS, aes(x = FECUNDITY)) +
   geom_histogram(bins = 50) +
   geom_vline(xintercept = outlier_cutoff, color = 'red')
-
-
-
-
-
-

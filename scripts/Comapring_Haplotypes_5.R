@@ -1,3 +1,11 @@
+#!/usr/bin/env Rscript
+
+#SBATCH --ntasks=1
+#SBATCH --mem=30G
+#SBATCH --time=02:00:00
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/competition1.stdout
+#SBATCH -p koeniglab
+
 library(tidyverse)
 library(readr)
 library(dplyr)
@@ -26,9 +34,9 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_TW, fill = `Avg Yield > Pop & Gen A
   labs(y = "Average Total Seed Weight",
        title = "Average Total Seed Weight between Haplotypes 2021-2022") +
   scale_y_continuous(breaks = seq(0, 200, 25)) +
-  facet_wrap(~Generation, scales = "free_x") + 
+  facet_wrap(~Generation, scales = "free_x") +
   theme(axis.text.x = element_text(angle = 90)) +
-  scale_fill_manual(values = c("black", "red")) 
+  scale_fill_manual(values = c("black", "red"))
 ggsave("scripts/plotting/05a_Average_TW_Haplotypes_2021_2022.png", width = 16, height = 12)
 
 ### 5ai_Comparing_FT_Between_Haplotypes.R
@@ -44,7 +52,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_FT, fill = `Avg FT > Pop & Gen Avg 
   geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
   labs(y = "Average Flowering Time (Days)",
        title = "Average Flowering Time between Haplotypes 2021-2022") +
-  facet_wrap(~Generation, scales = "free_x") + 
+  facet_wrap(~Generation, scales = "free_x") +
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red"))
 ggsave("scripts/plotting/05ai_Average_FT_Haplotypes_2021_2022.png", width = 16, height = 12)
@@ -63,7 +71,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fec, fill = `Avg Fec > Pop & Gen Av
   geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
   labs(y = "Average Centered Fecundity",
        title = "Average Fecundity between Haplotypes 2021-2022") +
-  facet_wrap(~Generation, scales = "free_x") + 
+  facet_wrap(~Generation, scales = "free_x") +
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red"))
 ggsave("scripts/plotting/05aii_Average_Fec_Haplotypes_2021_2022.png", width = 16, height = 12)
@@ -83,7 +91,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fit, fill = `Avg Fit > Pop & Gen Av
   geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
   labs(y = "Average Fitness",
        title = "Average Absolute Fitness between Haplotypes 2021-2022") +
-  facet_wrap(~Generation, scales = "free_x") + 
+  facet_wrap(~Generation, scales = "free_x") +
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red"))
 ggsave("scripts/plotting/05aiii_Average_Fit_Haplotypes_2021_2022.png", width = 16, height = 12)
@@ -103,7 +111,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_100SW, fill = `Avg Fit > Pop & Gen 
   geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
   labs(y = "Average 100 Seed Weight (grams)",
        title = "Average 100 Seed Weigh between Haplotypes 2021-2022") +
-  facet_wrap(~Generation, scales = "free_x") + 
+  facet_wrap(~Generation, scales = "free_x") +
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red"))
 ggsave("scripts/plotting/05aiii_Average_Fit_Haplotypes_2021_2022.png", width = 16, height = 12)
@@ -131,9 +139,9 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_TW, fill = `Avg Yield > Pop & Gen A
   labs(y = "Average Total Seed Weight",
        title = "Average Total Seed Weight between Haplotypes 2022-2023") +
   scale_y_continuous(breaks = seq(0, 200, 25)) +
-  facet_wrap(~Generation, scales = "free_x") + 
+  facet_wrap(~Generation, scales = "free_x") +
   theme(axis.text.x = element_text(angle = 90)) +
-  scale_fill_manual(values = c("black", "red")) 
+  scale_fill_manual(values = c("black", "red"))
 ggsave("scripts/plotting/05a_Average_TW_Haplotypes_2021_2022.png", width = 16, height = 12)
 
 ### 5ai_Comparing_FT_Between_Haplotypes.R
@@ -149,7 +157,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_FT, fill = `Avg FT > Pop & Gen Avg 
   geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
   labs(y = "Average Flowering Time (Days)",
        title = "Average Flowering Time between Haplotypes 2022-2023") +
-  facet_wrap(~Generation, scales = "free_x") + 
+  facet_wrap(~Generation, scales = "free_x") +
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red"))
 ggsave("scripts/plotting/05ai_Average_FT_Haplotypes_2021_2022.png", width = 16, height = 12)
@@ -168,7 +176,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fec, fill = `Avg Fec > Pop & Gen Av
   geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
   labs(y = "Average Centered Fecundity",
        title = "Average Fecundity between Haplotypes 2022-2023") +
-  facet_wrap(~Generation, scales = "free_x") + 
+  facet_wrap(~Generation, scales = "free_x") +
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red"))
 ggsave("scripts/plotting/05aii_Average_Fec_Haplotypes_2021_2022.png", width = 16, height = 12)
@@ -188,7 +196,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fit, fill = `Avg Fit > Pop & Gen Av
   geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
   labs(y = "Average Fitness",
        title = "Average Absolute Fitness between Haplotypes 2022-2023") +
-  facet_wrap(~Generation, scales = "free_x") + 
+  facet_wrap(~Generation, scales = "free_x") +
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red"))
 ggsave("scripts/plotting/05aiii_Average_Fit_Haplotypes_2021_2022.png", width = 16, height = 12)
@@ -208,8 +216,7 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_100SW, fill = `Avg Fit > Pop & Gen 
   geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
   labs(y = "Average 100 Seed Weight (grams)",
        title = "Average 100 Seed Weigh between Haplotypes 2022-2023") +
-  facet_wrap(~Generation, scales = "free_x") + 
+  facet_wrap(~Generation, scales = "free_x") +
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red"))
 ggsave("scripts/plotting/05aiii_Average_Fit_Haplotypes_2021_2022.png", width = 16, height = 12)
-

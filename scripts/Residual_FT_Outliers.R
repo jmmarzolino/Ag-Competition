@@ -1,3 +1,11 @@
+#!/usr/bin/env Rscript
+
+#SBATCH --ntasks=1
+#SBATCH --mem=30G
+#SBATCH --time=02:00:00
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/competition1.stdout
+#SBATCH -p koeniglab
+
 library(tidyverse)
 library(readr)
 library(dplyr)
@@ -10,7 +18,7 @@ library(gridExtra)
 library(dunn.test)
 
 
-FT_2022_ranking_mixed$Genotypes <- as.factor(FT_2022_ranking_mixed$Genotypes) 
+FT_2022_ranking_mixed$Genotypes <- as.factor(FT_2022_ranking_mixed$Genotypes)
 FT_2022_ranking_mixed <- FT_2022_ranking_mixed %>% filter(Genotypes != "51_5_3" & Genotypes != '2_17' & Genotypes != '2_202' & Genotypes != '53_5' & Genotypes != '2_148')
 
 a <- ggplot(FT_2022_ranking_mixed, aes(x= Genotypes, y= Flowering_Date)) +
@@ -43,9 +51,8 @@ FT_2023_ranking_single <- FT_2023_ranking_single %>% filter(Genotypes != '7_211'
 d <- ggplot(FT_2023_ranking_single, aes(Genotypes, FT_DAYS)) +
   geom_point() +
   scale_y_continuous(breaks = seq(110, 140, 5)) +
-  labs(y = "Flowering Time", 
+  labs(y = "Flowering Time",
        title = "Residual Outliers Single 2023")
 
 y <- arrangeGrob(a, b, c, d, top = "Residual Flowering Time Outliers", nrow = 2, ncol =2)
 ggsave("scripts/plotting/Residual_FT_Outliers.png", y, width = 14, height = 10)
-

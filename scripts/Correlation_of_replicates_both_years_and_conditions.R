@@ -1,3 +1,11 @@
+#!/usr/bin/env Rscript
+
+#SBATCH --ntasks=1
+#SBATCH --mem=30G
+#SBATCH --time=02:00:00
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/competition1.stdout
+#SBATCH -p koeniglab
+
 library(tidyverse)
 library(readr)
 library(dplyr)
@@ -39,7 +47,7 @@ cmp <- PHENO_MIXED_2022 %>% group_by(Genotypes, Generation, replicate) %>% summa
 p1 <- Graphing_Corr(cmp, "Total Weight (g)", "2021-2022") +
   stat_cor(label.y = 170) +
   xlim(0, 250) +
-  ylim(0, 250) 
+  ylim(0, 250)
 
 outlier_upper <- quantile(PHENO_MIXED_2022$total_seed_mass_g, .75, na.rm = T) + (1.5 * IQR(PHENO_MIXED_2022$total_seed_mass_g, na.rm = T))
 outlier_lower <- quantile(PHENO_MIXED_2022$total_seed_mass_g, .25, na.rm = T) - (1.5 * IQR(PHENO_MIXED_2022$total_seed_mass_g, na.rm = T))
@@ -165,7 +173,7 @@ p5 <- Graphing_Corr(cmp, "100 Seed Weight (g)", "2021-2022") +
   stat_cor(label.y = 4) +
   xlim(2.4, 6.1) +
   ylim(2.4, 6.1)
-  
+
 
 outlier_upper <- quantile(PHENO_MIXED_2022$`100_seed_weight`, .75, na.rm = T) + (1.5 * IQR(PHENO_MIXED_2022$`100_seed_weight`, na.rm = T))
 outlier_lower <- quantile(PHENO_MIXED_2022$`100_seed_weight`, .25, na.rm = T) - (1.5 * IQR(PHENO_MIXED_2022$`100_seed_weight`, na.rm = T))
@@ -397,7 +405,7 @@ PHENO_SINGLE_2022 <- PHENO_FULL %>% filter(Condition == "single" & Exp_year == 2
 
 cmp <- PHENO_SINGLE_2022 %>% group_by(Genotypes, Generation, replicate) %>% summarise(total_seed_mass_g) %>% spread(key = replicate, value = total_seed_mass_g) %>% ungroup()
 p1 <- Graphing_Corr(cmp, "Total Weight (g)", "2021-2022") +
-  stat_cor(label.y = 170) + 
+  stat_cor(label.y = 170) +
   ylim(0, 230) +
   xlim(0, 230)
 
@@ -869,8 +877,8 @@ a10 <- new_graph(mp, "100 Seed Weight") +
   xlim(2.9, 6.6) +
   ylim(2.9, 6.6)
 
-n <- arrangeGrob(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, top = "Correlation Between Years", nrow = 2, ncol = 5)  
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/Correlation_Between_Years.png", n, width =32, height = 16)  
+n <- arrangeGrob(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, top = "Correlation Between Years", nrow = 2, ncol = 5)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/Correlation_Between_Years.png", n, width =32, height = 16)
 
 # Distribution of number of plants survived
 
@@ -892,4 +900,3 @@ ggplot() +
        x = "number of plants",
        title = "Distribution of number of plants")
 ggsave('/bigdata/koeniglab/jmarz001/Ag-Competition/data/Distribution_number_of_plants.pdf', width = 12, height = 10)
-
