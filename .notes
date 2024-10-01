@@ -1,3 +1,20 @@
+# add generation column
+df3$Genotypes <- str_replace(df3$Genotypes, "-", "_")
+#df3$Generation <- str_replace(df3$Genotypes, "(\\d)_\\d+", "\\1")
+#df3$Generation <- str_replace(df3$Generation, "(\\d)_\\d+", "\\1")
+#str_split_fixed(df3$Genotypes, "_", 3)
+#df3[which(df3$Generation > 8), which(colnames(df3) == "Generation")] <- 0
+df3$Generation <- 0
+df3[grep("^1_", df3$Genotypes), which(colnames(df3)=="Generation")] <- 18
+df3[grep("^2_", df3$Genotypes), which(colnames(df3)=="Generation")] <- 28
+df3[grep("^3_", df3$Genotypes), which(colnames(df3)=="Generation")] <- 50
+df3[grep("^7_", df3$Genotypes), which(colnames(df3)=="Generation")] <- 58
+
+# simplify replicate col to a number
+df3$replicate <- gsub("rep (\\d)", "\\1", df3$replicate)
+
+
+
 
 #library(lme4)
 #install_packages("lmeTest")
