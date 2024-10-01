@@ -12,7 +12,7 @@ setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 library(tidyverse)
 
 # load and format data files
-ft22 <- read_delim("FT_2022.tsv", "\t")
+ft22 <- read_delim("FT_2021_2022.tsv", "\t")
 ft22 <- ft22 %>% select(-c('2021BED', '2021ROW'))
 ft22$number_of_plants <- as.numeric(ft22$number_of_plants)
 ft22$Exp_year <- 2022
