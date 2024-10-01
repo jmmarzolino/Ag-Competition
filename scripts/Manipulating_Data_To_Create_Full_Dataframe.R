@@ -17,13 +17,13 @@ library(tidyr)
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 ### Load Data
 
-Seed_weights_2022_2023 <- read_delim("Seed Weights - Field 2023.csv") %>% select(-c(Date, Notes))
-FT_2022_2023 <- read_delim("FT_DAYS_2022-2023.xlsx - FT_DAYS.csv")
+Seed_weights_2022_2023 <- read_delim("SEED_WEIGHTS_2022_2023.csv") %>% select(-c(Date, Notes))
+FT_2022_2023 <- read_delim("FT_DAYS_2022_2023.csv")
 FT_2023 <- read_delim('FT_2023.tsv')
-FT_2022 <- read_delim('FT_2022.tsv')
-Genotype_List_2022_2023 <- read_delim("Field 2022-2023 Genotype List - Competition.csv")
-Haplo_raw <- read_delim("Competition Lines - Sheet1 - Working - Competition Lines - Sheet1.csv")
-Seed_weights_2021_2022 <- read_delim("Seed Weights 2021-2022 - Sheet1.csv") %>% select(c(Genotypes, germinated, Condition, replicate,  `2021BED`, `2021ROW`, Flowering_Date, total_seed_mass_g, subset_seed_count, seed_subset_mass, per_seed_weight_g, `100_seed_weight`))
+FT_2022 <- read_delim('FT_2021_2022.tsv')
+Genotype_List_2022_2023 <- read_delim("Genotype_List_2023_2023.csv")
+Haplo_raw <- read_delim("Competition_Lines_Haplotypes.csv")
+Seed_weights_2021_2022 <- read_delim("SEED_WEIGHTS_2021_2022.csv") %>% select(c(Genotypes, germinated, Condition, replicate,  `2021BED`, `2021ROW`, Flowering_Date, total_seed_mass_g, subset_seed_count, seed_subset_mass, per_seed_weight_g, `100_seed_weight`))
 
 # join seed weights to FT for 2021-2022
 #FT_2022$number_of_plants
