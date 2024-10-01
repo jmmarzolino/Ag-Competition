@@ -18,10 +18,10 @@ library(car)
 library(ggrepel)
 library(ggExtra)
 
+setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data/")
 PHENO_FULL <- read_delim("FT_FITNESS.tsv")
 
 # MIXED
-
 # Creating a function to easily graph all phenos
 # x = dataframe
 # y = phenotype graphed in quotes (included in title)
@@ -369,10 +369,10 @@ j <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
        title = "Residual Plot Mixed 100 Seed Weight (grams) 2023")
 
 y <- arrangeGrob(a,b,c,d,e,f,g,h,i,j, nrow = 2, ncol = 5)
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/Residuals_Mixed_Both_Years.png", y, width = 26, height =14)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Residuals_Mixed_Both_Years.png", y, width = 26, height =14)
 
 z <- arrangeGrob(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, nrow = 2, ncol = 5, top = "Correlation of Mixed Replicates")
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/Correlation_plots_Mixed.png", z, width = 32, height = 16)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Correlation_plots_Mixed.png", z, width = 32, height = 16)
 
 
 
@@ -743,10 +743,10 @@ j <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
        title = "Residuals Single 100 Seed Weight 2023")
 
 g <- arrangeGrob(a,b,c,d,e,f,g,h,i,j, nrow = 2, ncol = 5)
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/Residuals_Single_Both_Years.png", g, width = 26, height = 16)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Residuals_Single_Both_Years.png", g, width = 26, height = 16)
 
 z <- arrangeGrob(p1, p2, p3, p4, p5, p6, p7,p8, p9, p10, nrow = 2, ncol = 5, top = "Correlation of Single Replicates")
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/Correlation_Plot_Single.png", z, width = 32, height = 16)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Correlation_Plot_Single.png", z, width = 32, height = 16)
 
 ############################################
 
@@ -878,7 +878,7 @@ a10 <- new_graph(mp, "100 Seed Weight") +
   ylim(2.9, 6.6)
 
 n <- arrangeGrob(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, top = "Correlation Between Years", nrow = 2, ncol = 5)
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/Correlation_Between_Years.png", n, width =32, height = 16)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Correlation_Between_Years.png", n, width =32, height = 16)
 
 # Distribution of number of plants survived
 

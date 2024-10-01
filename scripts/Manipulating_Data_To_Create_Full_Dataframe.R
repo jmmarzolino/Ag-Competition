@@ -17,6 +17,8 @@ library(tidyr)
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 ### Load Data
 
+Seed_weights_2022_2023 <- read_csv("SEED_WEIGHTS_2022_2023.csv") %>% select (-c(Date, Notes))
+
 Seed_weights_2022_2023 <- read_delim("Seed Weights - Field 2023.csv") %>% select(-c(Date, Notes))
 FT_2022_2023 <- read_delim("FT_DAYS_2022-2023.xlsx - FT_DAYS.csv")
 FT_2023 <- read_delim('FT_2023.tsv')

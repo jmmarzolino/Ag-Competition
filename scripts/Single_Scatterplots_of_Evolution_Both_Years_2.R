@@ -16,6 +16,8 @@ library(tidyr)
 library(car)
 library(gridExtra)
 
+setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
+
 # Single Scatterplots 2021-2022
 
 Single_2021_2022 <- PHENO_FULL_AVERAGE %>% filter(Condition == 'single' & Exp_year == 2022)
@@ -33,7 +35,7 @@ a <- ggplot(Single_2021_2022, aes(x= Generation, y = ABS_FITNESS)) +
   labs(x = "Generation",
        y = "Absolute Fitness",
        title = "Evolution of Centered Absolute Fitness 2021-2022")
-ggsave("scripts/plotting/02a_Generational_Change_in_Single_Fitness_2021_2022.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02a_Generational_Change_in_Single_Fitness_2021_2022.png")
 
 ### 02ai_Single_Fecundity_over_Generations.R
 
@@ -46,7 +48,7 @@ b <- ggplot(Single_2021_2022, aes(Generation, FECUNDITY, add = "reg.line")) +
   labs(x = "Generation",
        y = "Average Fecundity",
        title = "Evolution of Centered Fecundity 2021-2022")
-ggsave("scripts/plotting/02ai_Generational_Change_in_Single_Fecundity_2021_2022.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02ai_Generational_Change_in_Single_Fecundity_2021_2022.png")
 
 ### 02aii_Single_FT_over_Generations.R
 
@@ -58,7 +60,7 @@ c <- ggplot(Single_2021_2022, aes(Generation, FT_DAYS, add = "reg.line")) +
   labs(x = "Generation",
        y = "Average Flowering Time (Days)",
        title = "Evolution of Average Flowering Time 2021-2022")
-ggsave("scripts/plotting/02aii_Generational_Change_in_Single_FT_2021_2022.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02aii_Generational_Change_in_Single_FT_2021_2022.png")
 
 ### 02aiii_Single_TW_over_Generations.R
 
@@ -70,7 +72,7 @@ d <- ggplot(Single_2021_2022, aes(Generation, total_seed_mass_g, add = "reg.line
   labs(x = "Generation",
        y = "Average Total Seed Weight (g)",
        title = "Evolution of Average Total Weight (grams) 2021-2022")
-ggsave("scripts/plotting/02aiii_Generational_Change_in_Single_TW_2021_2022.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02aiii_Generational_Change_in_Single_TW_2021_2022.png")
 
 ### 02aiiii_Single_100SW_over_Generations.R
 
@@ -81,7 +83,7 @@ e <- ggplot(Single_2021_2022, aes(Generation, `100_seed_weight`, add = "reg.line
   stat_regline_equation(label.y = 5.9) +
   labs(y = "Average 100 Seed Weight (grams)",
        title = "Evolution of Average 100 Seed Weight (grams) 2021-2022")
-ggsave("scripts/plotting/02aiiii_Generational_Change_in_Single_100SW_2021_2022.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02aiiii_Generational_Change_in_Single_100SW_2021_2022.png")
 
 ###################################################
 
@@ -102,7 +104,7 @@ f <- ggplot(Single_2022_2023, aes(x= Generation, y = ABS_FITNESS)) +
   labs(x = "Generation",
        y = "Absolute Fitness",
        title = "Evolution of Centered Absolute Fitness 2022-2023")
-ggsave("scripts/plotting/02b_Generational_Change_in_Single_Fitness_2022_2023.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02b_Generational_Change_in_Single_Fitness_2022_2023.png")
 
 ### 02bi_Single_Fecundity_over_Generations.R
 
@@ -115,7 +117,7 @@ g <- ggplot(Single_2022_2023, aes(Generation, FECUNDITY, add = "reg.line")) +
   labs(x = "Generation",
        y = "Average Fecundity",
        title = "Evolution of Centered Fecundity 2022-2023")
-ggsave("scripts/plotting/02bi_Generational_Change_in_Single_Fecundity_2022_2023.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02bi_Generational_Change_in_Single_Fecundity_2022_2023.png")
 
 ### 02bii_Single_FT_over_Generations.R
 
@@ -127,7 +129,7 @@ h <- ggplot(Single_2022_2023, aes(Generation, FT_DAYS, add = "reg.line")) +
   labs(x = "Generation",
        y = "Average Flowering Time (Days)",
        title = "Evolution of Average Flowering Time 2022-2023")
-ggsave("scripts/plotting/02bii_Generational_Change_in_Single_FT_2022_2023.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02bii_Generational_Change_in_Single_FT_2022_2023.png")
 
 ### 02biii_Single_TW_over_Generations.R
 
@@ -139,7 +141,7 @@ i <- ggplot(Single_2022_2023, aes(Generation, total_seed_mass_g, add = "reg.line
   labs(x = "Generation",
        y = "Average Total Seed Weight (g)",
        title = "Evolution of Average Total Weight (grams) 2022-2023")
-ggsave("scripts/plotting/02biii_Generational_Change_in_Single_TW_2022_2023.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02biii_Generational_Change_in_Single_TW_2022_2023.png")
 
 ### 02biiii_Single_100SW_over_Generations.R
 
@@ -150,12 +152,12 @@ j <- ggplot(Single_2022_2023, aes(Generation, `100_seed_weight`, add = "reg.line
   stat_regline_equation(label.y = 6.1) +
   labs(y = "Average 100 Seed Weight (grams)",
        title = "Evolution of Average 100 Seed Weight (grams) 2022-2023")
-ggsave("scripts/plotting/02biiii_Generational_Change_in_Single_100SW_2022_2023.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02biiii_Generational_Change_in_Single_100SW_2022_2023.png")
 
 ### 02biiiii_Combined_Single_Evolution_Scatterplots.R
 
 k <- arrangeGrob(a, b, c, d, e, f, g, h, i, j, top = "Evolution of Our Four Measured Phenotypes (Single)", nrow = 2, ncol = 5)
-ggsave("scripts/plotting/02biiiii_Combined_Single_Evolution_Scatterplots.png",k, width = 30, height = 14)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02biiiii_Combined_Single_Evolution_Scatterplots.png",k, width = 30, height = 14)
 
 
 
