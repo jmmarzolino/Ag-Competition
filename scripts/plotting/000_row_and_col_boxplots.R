@@ -9,7 +9,7 @@ setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 library(tidyverse)
 
 # load FT data & tidy
-ft_22 <- read_delim("FT_2022.tsv")
+ft_22 <- read_delim("FT_2021_2022.tsv")
   ft22 <- ft_22 %>% select(-c(number_of_plants, Generation))
   colnames(ft22) <- c("Genotypes", "Condition", "Replicate", "Bed", "Row", "FT")
   ft22$Exp_year <- 2022

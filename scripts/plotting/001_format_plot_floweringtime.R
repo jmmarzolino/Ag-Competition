@@ -12,8 +12,8 @@ setwd("/rhome/jmarz001/bigdata/Ag-Competition")
 library(tidyverse)
 
 # load phenotyping data
-df <- read_delim("Phenotyping Sheets - germination, survival, flowering time, height - CC II Competition Phenotyping - Formatted.csv", ",")
-ft <- read_delim("FT_DAYS_2022-2023.xlsx - FT_DAYS.csv", ",")
+df <- read_delim("Phenotypes.csv", ",")
+ft <- read_delim("FT_DAYS_2022_2023.csv", ",")
 layout <- read_delim("FT_DAYS_2022-2023.xlsx - FIELD_LAYOUT.csv", ",")
 
 # remove comments and count columns
