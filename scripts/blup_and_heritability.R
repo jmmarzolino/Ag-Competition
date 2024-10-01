@@ -250,7 +250,7 @@ ggplot(heritability_data_single, aes(Generation, H2, color = trait)) +
   geom_smooth(alpha = .4) +
   labs(y = "Broad Sense Heritability",
        title = "Generational Change in Broad Sense Heritability (Single)")
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/broad_sense_over_time.png", width = 14, height = 10)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/broad_sense_over_time.png", width = 14, height = 10)
 
 # Genetic Variance over time (Single)
 
@@ -271,7 +271,7 @@ a1 <- ggplot(heritability_data_single, aes(Generation, total_var, color = trait)
        title = "Generational Change in Phenotypic Variance")
 
 y <- arrangeGrob(a, a1, ncol =2, nrow = 1)
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/scatterplot_genetic_phenotypic_var_single.png", y, width = 22, height = 12)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/scatterplot_genetic_phenotypic_var_single.png", y, width = 22, height = 12)
 
 heritability_data_single <- heritability_data_single %>% group_by(trait) %>% summarise(across(where(is.numeric), .fns = mean, na.rm = T)) %>% select(-c("Generation")) %>% ungroup()
 
@@ -339,7 +339,7 @@ a5 <- ggplot(rts_df, aes(response_years, ABS_FITNESS)) +
   ylim(-.03, .03)
 
 g <- arrangeGrob(a1, a2, a3, a4, a5, top = "Response to Selection (Single)", nrow = 1, ncol = 5)
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/Response_to_Selection_Single.png", g, width = 22, height = 10)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Response_to_Selection_Single.png", g, width = 22, height = 10)
 
 # Calculating Selection Intensity (single)
 
@@ -393,7 +393,7 @@ a4 <- ggplot(selection_intensity_single, aes(response_years, si_fec)) +
   ylim(-.04,.3)
 
 y <- arrangeGrob(a, a1, a2, a3, a4, top = 'Selection Intensity (Single)', nrow = 1, ncol =5)
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/selection_intensity_single.png", y, width = 24, height = 12)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection_intensity_single.png", y, width = 24, height = 12)
 
 ### MIXED
 
@@ -499,7 +499,7 @@ a1 <- ggplot(heritability_data_mixed, aes(Generation, total_var, color = trait))
   ylim(0, 1.2)
 
 y <- arrangeGrob(a, a1, ncol = 2, nrow =1)
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/scatterplots_genetic_phenotypic_var_mixed.png", y, width = 20, height = 12)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/scatterplots_genetic_phenotypic_var_mixed.png", y, width = 20, height = 12)
 
 heritability_data_mixed <- heritability_data_mixed %>% group_by(trait) %>% summarise(across(where(is.numeric), .fns = mean, na.rm = T)) %>% select(-c("Generation")) %>% ungroup()
 
@@ -565,7 +565,7 @@ a5 <- ggplot(rts_df_mix, aes(response_years, ABS_FITNESS)) +
   ylim(0, .0075)
 
 y <- arrangeGrob(a1, a2, a3, a4,a5, top = "Response to Selection (Mixed)", nrow = 1, ncol = 5)
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/response_to_selection_mix.png", y, width = 24, height = 14)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/response_to_selection_mix.png", y, width = 24, height = 14)
 
 
 # Calculating Selection Intensity (Mixed)
@@ -620,4 +620,4 @@ a4 <- ggplot(selection_intensity_mix, aes(response_years, si_fec)) +
   ylim(0,2.8)
 
 y <- arrangeGrob(a, a1, a2, a3, a4, top = 'Selection Intensity (Mixed)', nrow = 1, ncol =5)
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/selection_intensity_mix.png", y, width = 24, height = 12)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection_intensity_mix.png", y, width = 24, height = 12)
