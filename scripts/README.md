@@ -1,7 +1,11 @@
 rhome/jmarz001/bigdata/Ag-Competition/scripts/
 ---
 
+Data_Manipulation
 
+Manipulating Data
+
+Dist...Quality Check
 
 
 
