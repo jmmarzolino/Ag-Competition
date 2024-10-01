@@ -3,7 +3,7 @@
 #SBATCH --ntasks=1
 #SBATCH --mem=30G
 #SBATCH --time=02:00:00
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/competition1.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/Comparing_Haplotypes.stdout
 #SBATCH -p koeniglab
 
 library(tidyverse)
