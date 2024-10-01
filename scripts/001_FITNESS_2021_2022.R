@@ -14,9 +14,6 @@ library(ggplot2)
 library(googlesheets4)
 library(tidyr)
 
-### Data from 2021-2022 Folder in Ag_Comp Drive
-Seed_weight_2021_2022_raw <- read_sheet('https://docs.google.com/spreadsheets/d/1EDoPrAeOsl0JQ_d7ghsxAR_y238zNHFGeSMEOAfMBFM/edit#gid=592417706')
-Haplotype_data_raw <- read_sheet('https://docs.google.com/spreadsheets/d/13CHW_ZFK7BDMoJ2vgQkm1QhlCm068_m7s1lOCF-lVSc/edit#gid=1521625104')
 
 ### Cleaning Raw Data for Seed Weights, adding Fitness column
 Seed_weight_2021_2022_raw <- Seed_weight_2021_2022_raw %>% select(!c("SUB_LINE_ID", "2021BED", "2021ROW", "FAM_ID","LINE_ID","2021BEDROW", "subset_seed_count", "seed_subset_mass")) %>% filter(total_seed_mass_g != "NA")
