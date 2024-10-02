@@ -16,9 +16,10 @@ library(tidyr)
 library(car)
 library(gridExtra)
 library(dunn.test)
+library(data.table)
 
 # MIXED 2021-2022 DISTRIBUTIONS
-
+df <- fread("")
 # Creating dataframe for distributions
 
 Mixed_2021_2022 <- PHENO_FULL_AVERAGE %>% filter(Condition == "mixed" & Exp_year == 2022)
