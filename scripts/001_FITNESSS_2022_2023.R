@@ -197,9 +197,8 @@ Full_Data$Fitness <- Full_Data$Fecundity * Full_Data$Plot_Germination
 Full_Data <- na.omit(Full_Data)
 Full_Data <- Full_Data %>% filter(Genotypes != "7_5")
 
-`%!in%` = Negate(`%in%`)
 delete_geno <- c("396", "516", "910", "1030", "442", "444", "956", "958")
-Full_Data <- Full_Data %>% filter(PLOT_ID %!in% delete_geno)
+Full_Data <- Full_Data %>% filter(!(PLOT_ID %in% delete_geno))
 
 #### Creates a data frame that isolates Atlas Genotypes, then averages the replicates
 

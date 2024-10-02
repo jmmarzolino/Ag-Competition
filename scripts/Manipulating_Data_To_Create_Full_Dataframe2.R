@@ -85,9 +85,9 @@ Seed_tmp <- Seed_tmp %>% mutate(`100_seed_weight` = (seed_subset_mass/subset_see
 single_tmp <- subset(Seed_weights_2021_2022, Condition == "single")
 vc <- c('7_87', '7_158', '72_7_1', '2_156', '7_219', '7_95', '7_198', '7_207', '60_4', '59_5_1', '3_72', '1_8', '56_5', '7_177', '7_84')
 
-`%!in%` <- Negate(`%in%`)
 
-single_tmp <- single_tmp %>% filter(Genotypes %!in% vc)
+
+single_tmp <- single_tmp %>% filter(!(Genotypes %in% vc))
 single_tmp <- rbind(single_tmp, Seed_tmp)
 
 # Don't need to update TW for Mixed 2022 bc reweighed values are close to previous values
