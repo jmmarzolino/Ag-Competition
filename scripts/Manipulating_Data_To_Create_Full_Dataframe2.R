@@ -32,12 +32,7 @@ Seed_weights_2021_2022 <- read_delim("SEED_WEIGHTS_2021_2022.csv") %>% select(c(
 Seed_weights_2021_2022$replicate <- as.numeric(gsub("rep (\\d)", "\\1", Seed_weights_2021_2022$replicate))
 Seed_weights_2021_2022$Flowering_Date <- as.numeric(Seed_weights_2021_2022$Flowering_Date)
 
-# Changing the Flowering Dates for Geno 63_4 for both single replicates. They were marked down as flowering after 108 and 112 days but since they were a hooded variety the confidence in exact flowering was low. For this reason these values will be changed to NA
-
-Seed_weights_2021_2022$Flowering_Date <- replace(Seed_weights_2021_2022$Flowering_Date, Seed_weights_2021_2022$Genotypes == "63_4" & Seed_weights_2021_2022$Condition == "single", NA)
-
 # Updating Seed subset mass for 2022 with reweighed values (residual outliers)
-
 Seed_tmp <- Seed_weights_2021_2022 %>% filter(Condition == "single")
 Seed_tmp <- Seed_tmp %>% filter(Genotypes == '7_87' | Genotypes == '56_5' | Genotypes == '72_7_1' | Genotypes == "7_95" | Genotypes == "7_219" | Genotypes == "7_207" | Genotypes == "7_198" | Genotypes == "2_156" | Genotypes == "60_4" | Genotypes == "3_72" | Genotypes == "7_177" | Genotypes == "7_158" | Genotypes == "59_5_1" | Genotypes == "7_84" | Genotypes == "1_8")
 Seed_tmp$seed_subset_mass <- replace(Seed_tmp$seed_subset_mass, Seed_tmp$Genotypes == '7_158' & Seed_tmp$replicate == 1, 7.8)
