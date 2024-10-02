@@ -3,7 +3,7 @@ library(readr)
 library(dplyr)
 library(ggpubr)
 library(ggplot2)
-library(googlesheets4)
+
 library(tidyr)
 
 ### 5a_Comparing_Yield_Between_Haplotypes.R

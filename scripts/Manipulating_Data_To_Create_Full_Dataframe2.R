@@ -11,7 +11,7 @@ library(readr)
 library(dplyr)
 library(ggpubr)
 library(ggplot2)
-library(googlesheets4)
+
 library(tidyr)
 
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
