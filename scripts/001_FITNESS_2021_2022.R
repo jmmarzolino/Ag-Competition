@@ -13,6 +13,7 @@ library(ggpubr)
 library(ggplot2)
 
 library(tidyr)
+source("rhome/jmarz001/bigdata/Ag-Competition/scripts/CUSTOM_FNS.R")
 
 
 ### Cleaning Raw Data for Seed Weights, adding Fitness column
@@ -27,11 +28,8 @@ colnames(Seed_weight_2021_2022_raw)[which(names(Seed_weight_2021_2022_raw) == "t
 Seed_weight_2021_2022_raw$Fitness <- Seed_weight_2021_2022_raw$Fecundity * Seed_weight_2021_2022_raw$germinated
 
 ### Creating Generation Column
-Seed_weight_2021_2022_raw$Generation <- gsub("^1_.*", 18, Seed_weight_2021_2022_raw$Genotypes)
-Seed_weight_2021_2022_raw$Generation <- gsub("^2_.*", 28, Seed_weight_2021_2022_raw$Generation)
-Seed_weight_2021_2022_raw$Generation <- gsub("^3_.*", 50, Seed_weight_2021_2022_raw$Generation)
-Seed_weight_2021_2022_raw$Generation <- gsub("^7_.*", 58, Seed_weight_2021_2022_raw$Generation)
-Seed_weight_2021_2022_raw$Generation <- gsub("^*.*_.*", 0, Seed_weight_2021_2022_raw$Generation)
+Seed_weight_2021_2022_raw <- add_generation(Seed_weight_2021_2022_raw)
+
 
 ### Average the replicates
 Averaged_Full_2021_2022 <- Seed_weight_2021_2022_raw %>% group_by(Genotypes, Condition, Generation) %>% summarise(across(.cols = c(total_seed_mass_g, '100_seed_weight', Fecundity, Fitness, Flowering_Date), function(x) mean(x))) %>% ungroup()
@@ -63,16 +61,6 @@ Averaged_Full_2021_2022 <- Averaged_Full_2021_2022 %>% mutate(Centered_Fit = Fit
 ### Calculating Contribution of each seed to phenotype
 
 ### Fecundity
-Exp_Single <- function(x){
-  result_single <- x/10
-  return(result_single)
-}
-
-Exp_Fec_Mixed <- function(x){
-  TW_mix <- (x/2) + (Averaged_Full_2021_2022$Atlas_Avg_Fec/2)
-  Exp_Fec_mix <- TW_mix/10
-  return(Exp_Fec_mix)
-}
 
 Averaged_Full_2021_2022$Exp_Fec_Per_Plant <- ifelse(Averaged_Full_2021_2022$Condition == "mixed",
                                               Exp_Fec_Mixed(Averaged_Full_2021_2022$Fecundity),
@@ -80,11 +68,6 @@ Averaged_Full_2021_2022$Exp_Fec_Per_Plant <- ifelse(Averaged_Full_2021_2022$Cond
 
 ### Fitness
 
-Exp_Fit_Mixed <- function(x){
-  fit_mix <- (x/2) + (Averaged_Full_2021_2022$Atlas_Avg_Fit/2)
-  Exp_Fit_mix <- fit_mix/10
-  return(Exp_Fit_mix)
-}
 
 Averaged_Full_2021_2022$Exp_Fit_Per_Plant <- ifelse(Averaged_Full_2021_2022$Condition == 'mixed',
                                               Exp_Fit_Mixed(Averaged_Full_2021_2022$Fitness),
@@ -192,11 +175,8 @@ FT_FITNESS <- FT_FITNESS %>% relocate(Exp_year, .after = replicate)
 FT_FITNESS[5:14] <- lapply(FT_FITNESS[5:14], unlist_numeric)
 FT_FITNESS[which(FT_FITNESS$total_seed_mass_g < 0), (7:ncol(FT_FITNESS))] <- NA
 
-FT_FITNESS$Generation <- gsub("^1_.*", 18, FT_FITNESS$Genotypes)
-FT_FITNESS$Generation <- gsub("^2_.*", 28, FT_FITNESS$Generation)
-FT_FITNESS$Generation <- gsub("^3_.*", 50, FT_FITNESS$Generation)
-FT_FITNESS$Generation <- gsub("^7_.*", 58, FT_FITNESS$Generation)
-FT_FITNESS$Generation <- gsub("^*.*_.*", 0, FT_FITNESS$Generation)
+FT_FITNESS <- add_generation(FT_FITNESS)
+
 
 outlier_cutoff = quantile(test$FECUNDITY,0.75, na.rm = TRUE) + (1.5 * IQR(test$FECUNDITY, na.rm = TRUE))
 ggplot(FT_FITNESS, aes(x = FECUNDITY)) +

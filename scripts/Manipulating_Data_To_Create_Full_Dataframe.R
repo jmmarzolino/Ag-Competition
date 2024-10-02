@@ -13,7 +13,7 @@ library(ggpubr)
 library(ggplot2)
 
 library(tidyr)
-
+source("rhome/jmarz001/bigdata/Ag-Competition/scripts/CUSTOM_FNS.R")
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 ### Load Data
 
@@ -111,8 +111,4 @@ mean_for_summarise <- function(x){
 
 # Dataframe that contains the avveraged replicates for both years
 PHENO_FULL_AVERAGE <- PHENO_FULL %>% group_by(Genotypes, Condition, Exp_year) %>% summarise_at(vars("number_of_plants", "FT_DAYS", "total_seed_mass_g", "100_seed_weight", "TOTAL_SEED_COUNT", "FECUNDITY", "SURVIVAL", "ABS_FITNESS", "REL_FITNESS"), mean_for_summarise)
-PHENO_FULL_AVERAGE$Generation <- gsub("^1_.*", 18, PHENO_FULL_AVERAGE$Genotypes)
-PHENO_FULL_AVERAGE$Generation <- gsub("^2_.*", 28, PHENO_FULL_AVERAGE$Generation)
-PHENO_FULL_AVERAGE$Generation <- gsub("^3_.*", 50, PHENO_FULL_AVERAGE$Generation)
-PHENO_FULL_AVERAGEGeneration <- gsub("^7_.*", 58, PHENO_FULL_AVERAGE$Generation)
-PHENO_FULL_AVERAGE$Generation <- gsub("^*.*_.*", 0, PHENO_FULL_AVERAGE$Generation)
+PHENO_FULL_AVERAGE <- add_generation(PHENO_FULL_AVERAGE)

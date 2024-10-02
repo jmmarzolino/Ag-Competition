@@ -11,7 +11,7 @@ library(dplyr)
 library(ggplot2)
 library(methods)
 library(gridExtra)
-
+source("rhome/jmarz001/bigdata/Ag-Competition/scripts/CUSTOM_FNS.R")
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 # Loading Data
 PHENO_FULL <- read_delim("FT_FITNESS.tsv")
@@ -175,11 +175,7 @@ PHENO_SINGLE <- tmp %>% filter(Condition == 'single')
 
 blup_output <- data.frame(matrix(vector(), 255, 1, dimnames = list(c(), c("Genotypes"))))
 blup_output <- unique(PHENO_SINGLE[, 1])
-blup_output$Generation <- gsub("^1_*.*", "18", blup_output$Genotypes)
-blup_output$Generation <- gsub("^2_*.*", "28", blup_output$Generation)
-blup_output$Generation <- gsub("^3_*.*", "50", blup_output$Generation)
-blup_output$Generation <- gsub("^7_*.*", "58", blup_output$Generation)
-blup_output$Generation <- gsub("^*.*_.*", "0", blup_output$Generation)
+blup_output <- add_generation(blup_output)
 
 
 for (i in 6:ncol(PHENO_SINGLE)){
@@ -414,11 +410,8 @@ for (i in 6:ncol(PHENO_MIXED)){
 
 blup_output <- data.frame(matrix(vector(), 255, 1, dimnames = list(c(), c("Genotypes"))))
 blup_output <- unique(PHENO_MIXED[, 1])
-blup_output$Generation <- gsub("^1_*.*", "18", blup_output$Genotypes)
-blup_output$Generation <- gsub("^2_*.*", "28", blup_output$Generation)
-blup_output$Generation <- gsub("^3_*.*", "50", blup_output$Generation)
-blup_output$Generation <- gsub("^7_*.*", "58", blup_output$Generation)
-blup_output$Generation <- gsub("^*.*_.*", "0", blup_output$Generation)
+
+blup_output <- add_generation(blup_output)
 
 # Joining blups for all traits into a mixed blup dataframe
 

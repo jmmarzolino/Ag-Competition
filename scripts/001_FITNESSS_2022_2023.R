@@ -13,7 +13,7 @@ library(ggpubr)
 library(ggplot2)
 
 library(tidyr)
-
+source("rhome/jmarz001/bigdata/Ag-Competition/scripts/CUSTOM_FNS.R")
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 ### Load Data
 
@@ -181,11 +181,8 @@ Conjoined_Data$`100 seed weight` <- as.numeric(Conjoined_Data$`100 seed weight`)
 
 Full_Data <- full_join(Conjoined_Data, Genotype_List_2022_2023, by = ("PLOT_ID"))
 Full_Data <- select(Full_Data, !c(Date, ROW, `albino count (not included in germination / survival since they don't survive)`, PLANT_ID, Plot_Survival)) #'
-Full_Data$Generation <- gsub("^1_.*", 18, Full_Data$Genotypes)
-Full_Data$Generation <- gsub("^2_.*", 28, Full_Data$Generation)
-Full_Data$Generation <- gsub("^3_.*", 50, Full_Data$Generation)
-Full_Data$Generation <- gsub("^7_.*", 58, Full_Data$Generation)
-Full_Data$Generation <- gsub("^*.*_.*", 0, Full_Data$Generation)
+Full_Data <- add_generation(Full_Data)
+
 Full_Data$Fecundity <- Full_Data$`Brown Bag Weight`/(Full_Data$`100 seed weight`/100)
 Full_Data$Fitness <- Full_Data$Fecundity * Full_Data$Plot_Germination
 Full_Data <- na.omit(Full_Data)
@@ -235,28 +232,11 @@ Replicate_corr_tbl <- na.omit(Replicate_corr_tbl)
 
 ### Fecundity
 
-Exp_Single <- function(x){
-  result_single <- x/10
-  return(result_single)
-}
-
-Exp_Fec_Mixed <- function(x){
-  TW_mix <- (x/2) + (Average_Haplo_rep$Atlas_Avg_Fec/2)
-  Exp_Fec_mix <- TW_mix/10
-  return(Exp_Fec_mix)
-}
-
 Average_Haplo_rep$Exp_Fec_Per_Plant <- ifelse(Average_Haplo_rep$Numbers == 1,
        Exp_Fec_Mixed(Average_Haplo_rep$Fecundity),
        Exp_Single(Average_Haplo_rep$Fecundity))
 
 ### Fitness
-
-Exp_Fit_Mixed <- function(x){
-  fit_mix <- (x/2) + (Average_Haplo_rep$Atlas_Avg_Fitness/2)
-  Exp_Fit_mix <- fit_mix/10
-  return(Exp_Fit_mix)
-}
 
 Average_Haplo_rep$Exp_Fit_Per_Plant <- ifelse(Average_Haplo_rep$Numbers == 1,
                                                     Exp_Fit_Mixed(Average_Haplo_rep$Fitness),
