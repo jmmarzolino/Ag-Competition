@@ -11,26 +11,20 @@ library(readr)
 library(dplyr)
 library(ggpubr)
 library(ggplot2)
-library(googlesheets4)
+
 library(tidyr)
 
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 ### Load Data
 
-#Seed_weights_2022_2023 <- read_sheet('https://docs.google.com/spreadsheets/d/1mxSidDcodD7-Iju9JJZ_YoejhjEqt6JDad3LMGOh61s/edit#gid=1749035245')
 Seed_weights_2022_2023 <- read_delim("SEED_WEIGHTS_2022_2023.csv")
 Seed_weights_2022_2023 <- Seed_weights_2022_2023 %>% select(-c(Date, Notes))
-#FT_2022_2023 <- read_sheet('https://docs.google.com/spreadsheets/d/1Rb1oN4yeqcQDFKfezf3uGLEOlp-s8x1iAIpAO6cqT4E/edit#gid=682364943')
 FT_2022_2023 <- read_delim("FT_DAYS_2022_2023.csv")
 FT_2023 <- read_delim('FT_2023.tsv')
 FT_2022 <- read_delim('FT_2021_2022.tsv')
 
-#Genotype_List_2022_2023 <- read_sheet('https://docs.google.com/spreadsheets/d/1pKOlthCtyF-T8bbU_96xfoUDcQbbVSnP3jAk6iP3egc/edit#gid=326137907')
 Genotype_List_2022_2023 <- read_delim("Genotype_List_2023_2023.csv")
-
-#Haplo_raw <- read_sheet("https://docs.google.com/spreadsheets/d/13CHW_ZFK7BDMoJ2vgQkm1QhlCm068_m7s1lOCF-lVSc/edit#gid=1521625104")
 Haplo_raw <- read_delim("Competition_Lines_Haplotypes.csv")
-
 
 Seed_weights_2021_2022 <- read_delim("SEED_WEIGHTS_2021_2022.csv")
 Seed_weights_2021_2022 <- Seed_weights_2021_2022 %>% select(c(Genotypes, germinated, Condition, replicate,  `2021BED`, `2021ROW`, Flowering_Date, total_seed_mass_g, subset_seed_count, seed_subset_mass, per_seed_weight_g, `100_seed_weight`))
