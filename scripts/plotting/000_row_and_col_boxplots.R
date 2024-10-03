@@ -10,12 +10,12 @@ library(tidyverse)
 
 # load FT data & tidy
 ft_22 <- read_delim("FT_2021_2022.tsv")
-  ft22 <- ft_22 %>% select(-c(number_of_plants, Generation))
-  colnames(ft22) <- c("Genotypes", "Condition", "Replicate", "Bed", "Row", "FT")
+  ft22 <- ft_22 %>% select(-c(Plants, Generation))
+  colnames(ft22) <- c("Genotype", "Condition", "Replicate", "Bed", "Row", "FT")
   ft22$Exp_year <- 2022
 ft_23 <- read_delim("FT_2023.tsv")
   ft23 <- ft_23 %>% select(-c(Plot_Survival, PLOT_ID, Generation))
-  colnames(ft23) <- c("Genotypes", "Condition", "Replicate", "Bed", "Row", "FT")
+  colnames(ft23) <- c("Genotype", "Condition", "Replicate", "Bed", "Row", "FT")
   ft23$Exp_year <- 2023
 ## join ft year data frames
 ft <- full_join(ft22, ft23) %>% filter(!is.na(FT))
@@ -24,10 +24,10 @@ ft <- full_join(ft22, ft23) %>% filter(!is.na(FT))
 
 ## Flowering Time Traits First
 trait = c("Flowering Time", "100 Seed Weight")
-replicate = c("Rep 1", "Rep 2")
+Replicate = c("Rep 1", "Rep 2")
 Year = c(2022, 2023)
 
-## plot flowering time for both years & replicates
+## plot flowering time for both years & Replicates
 tt = trait[1]
 #print(tt)
 
@@ -55,10 +55,10 @@ stat_box_data_row <- function(y, upper_limit = max(tmp$FT) * 1.1) {
 
 for(yr in Year){
   #print(yr)
-  for(rp in replicate){
+  for(rp in Replicate){
     #print(rp)
 
-    # filter data to the right year & replicate
+    # filter data to the right year & Replicate
     tmp <- ft %>% filter(Exp_year == yr) %>% filter(str_to_title(Replicate) == rp)
     print(head(tmp))
 
@@ -109,12 +109,12 @@ dev.off()
 ### Load seed weight phenotypes
 wt <- read_delim("Ag-Comp Seed Weights - Sheet3.csv")
 ## tidy data
-  wt <- wt %>% select(c(Genotypes, Condition, replicate, `2021BED`, `2021ROW`, Flowering_Date, a100_seed_weight)) %>% filter(a100_seed_weight > 1) %>% filter(a100_seed_weight < 10)
-  colnames(wt) <- c("Genotypes", "Condition", "Replicate", "Bed", "Row", "FT", "X100_seed_weight")
+  wt <- wt %>% select(c(Genotype, Condition, Replicate, `BED_2021`, `ROW_2021`, FT, SEED_WEIGHT_100)) %>% filter(SEED_WEIGHT_100 > 1) %>% filter(SEED_WEIGHT_100 < 10)
+  colnames(wt) <- c("Genotype", "Condition", "Replicate", "Bed", "Row", "FT", "SEED_WEIGHT_100")
 
 
 
-  stat_box_data <- function(y, upper_limit = max(tmp$X100_seed_weight) * 1.1) {
+  stat_box_data <- function(y, upper_limit = max(tmp$SEED_WEIGHT_100) * 1.1) {
     return(
       data.frame(
         y = 0.95 * upper_limit,
@@ -124,7 +124,7 @@ wt <- read_delim("Ag-Comp Seed Weights - Sheet3.csv")
       )
     )
   }
-  stat_box_data_row <- function(y, upper_limit = max(tmp$X100_seed_weight) * 1.1) {
+  stat_box_data_row <- function(y, upper_limit = max(tmp$SEED_WEIGHT_100) * 1.1) {
     return(
       data.frame(
         y = 0.95 * upper_limit,
@@ -139,12 +139,12 @@ print(yr)
 tt = trait[2]
 print(tt)
 
-## plot seed weight for 2022 replicates
-for(rp in replicate){
+## plot seed weight for 2022 Replicates
+for(rp in Replicate){
     #print(rp)
     title = paste(tt, rp, yr, sep=" - ")
 
-    # filter data to the right year & replicate
+    # filter data to the right year & Replicate
     tmp <- wt %>% filter(str_to_title(Replicate) == rp)
     print(head(tmp))
 
@@ -152,7 +152,7 @@ for(rp in replicate){
     title = paste(tt, rp, yr, sep=" - ")
     print(title)
 
-    b <- ggplot(tmp, aes(as.factor(Bed), y=X100_seed_weight)) +
+    b <- ggplot(tmp, aes(as.factor(Bed), y=SEED_WEIGHT_100)) +
           geom_boxplot() +
           stat_summary(
               fun.data = stat_box_data,
@@ -167,7 +167,7 @@ for(rp in replicate){
     save_name_bed <- gsub(" ", "_", paste0(paste(tt, rp, yr, "BED", sep="_"), ".png"))
     ggsave(plot = b, filename = save_name_bed, width=13.4, height= 6.9, units = "in")
 
-    b <- ggplot(tmp, aes(x=as.factor(Row), y=X100_seed_weight, group=as.factor(Row))) +
+    b <- ggplot(tmp, aes(x=as.factor(Row), y=SEED_WEIGHT_100, group=as.factor(Row))) +
           geom_boxplot() +
           stat_summary(
               fun.data = stat_box_data_row,

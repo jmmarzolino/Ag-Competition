@@ -52,11 +52,11 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02ai_Generational_Cha
 
 ### 02aii_Single_FT_over_Generations.R
 
-c <- ggplot(Single_2021_2022, aes(Generation, FT_DAYS, add = "reg.line")) +
+c <- ggplot(Single_2021_2022, aes(Generation, FT, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   stat_regline_equation(label.x = 40) +
-  geom_boxplot(aes(Generation, FT_DAYS, group = Generation), width = 1.5, alpha = .5)+
+  geom_boxplot(aes(Generation, FT, group = Generation), width = 1.5, alpha = .5)+
   labs(x = "Generation",
        y = "Average Flowering Time (Days)",
        title = "Evolution of Average Flowering Time 2021-2022")
@@ -64,10 +64,10 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02aii_Generational_Ch
 
 ### 02aiii_Single_TW_over_Generations.R
 
-d <- ggplot(Single_2021_2022, aes(Generation, total_seed_mass_g, add = "reg.line")) +
+d <- ggplot(Single_2021_2022, aes(Generation, TOTAL_MASS, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
-  geom_boxplot(aes(Generation,total_seed_mass_g, group = Generation), width = 1.5, alpha = .5)+
+  geom_boxplot(aes(Generation,TOTAL_MASS, group = Generation), width = 1.5, alpha = .5)+
   stat_regline_equation(label.y = 135) +
   labs(x = "Generation",
        y = "Average Total Seed Weight (g)",
@@ -76,10 +76,10 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02aiii_Generational_C
 
 ### 02aiiii_Single_100SW_over_Generations.R
 
-e <- ggplot(Single_2021_2022, aes(Generation, `100_seed_weight`, add = "reg.line")) +
+e <- ggplot(Single_2021_2022, aes(Generation, SEED_WEIGHT_100, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = 'lm') +
-  geom_boxplot(aes(Generation, `100_seed_weight`, group = Generation), width = 1.5, alpha = .5) +
+  geom_boxplot(aes(Generation, SEED_WEIGHT_100, group = Generation), width = 1.5, alpha = .5) +
   stat_regline_equation(label.y = 5.9) +
   labs(y = "Average 100 Seed Weight (grams)",
        title = "Evolution of Average 100 Seed Weight (grams) 2021-2022")
@@ -121,11 +121,11 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02bi_Generational_Cha
 
 ### 02bii_Single_FT_over_Generations.R
 
-h <- ggplot(Single_2022_2023, aes(Generation, FT_DAYS, add = "reg.line")) +
+h <- ggplot(Single_2022_2023, aes(Generation, FT, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   stat_regline_equation(label.x = 40) +
-  geom_boxplot(aes(Generation, FT_DAYS, group = Generation), width = 1.5, alpha = .5)+
+  geom_boxplot(aes(Generation, FT, group = Generation), width = 1.5, alpha = .5)+
   labs(x = "Generation",
        y = "Average Flowering Time (Days)",
        title = "Evolution of Average Flowering Time 2022-2023")
@@ -133,10 +133,10 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02bii_Generational_Ch
 
 ### 02biii_Single_TW_over_Generations.R
 
-i <- ggplot(Single_2022_2023, aes(Generation, total_seed_mass_g, add = "reg.line")) +
+i <- ggplot(Single_2022_2023, aes(Generation, TOTAL_MASS, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
-  geom_boxplot(aes(Generation,total_seed_mass_g, group = Generation), width = 1.5, alpha = .5)+
+  geom_boxplot(aes(Generation,TOTAL_MASS, group = Generation), width = 1.5, alpha = .5)+
   stat_regline_equation(label.y = 155) +
   labs(x = "Generation",
        y = "Average Total Seed Weight (g)",
@@ -145,10 +145,10 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02biii_Generational_C
 
 ### 02biiii_Single_100SW_over_Generations.R
 
-j <- ggplot(Single_2022_2023, aes(Generation, `100_seed_weight`, add = "reg.line")) +
+j <- ggplot(Single_2022_2023, aes(Generation, SEED_WEIGHT_100, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = 'lm') +
-  geom_boxplot(aes(Generation, `100_seed_weight`, group = Generation), width = 1.5, alpha = .5) +
+  geom_boxplot(aes(Generation, SEED_WEIGHT_100, group = Generation), width = 1.5, alpha = .5) +
   stat_regline_equation(label.y = 6.1) +
   labs(y = "Average 100 Seed Weight (grams)",
        title = "Evolution of Average 100 Seed Weight (grams) 2022-2023")

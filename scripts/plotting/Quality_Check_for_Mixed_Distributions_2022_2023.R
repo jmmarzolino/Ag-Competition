@@ -17,7 +17,7 @@ Rep_Mixed <- read_delim("~/Documents/GitHub/Ag-Competition/Rep_Mixed")
 
 ### Histograms for Avg_FT Over Generations (Mixed)
 
-ggplot(Rep_Mixed, aes(x = FT_DAYS)) +
+ggplot(Rep_Mixed, aes(x = FT)) +
   geom_histogram(binwidth = .6) +
   facet_wrap(~Generation) +
   labs(x = "Average Flowering Time (Days after sowing)",
@@ -26,16 +26,16 @@ ggplot(Rep_Mixed, aes(x = FT_DAYS)) +
 
 ### ANOVA and Homogeneity of Variance (Mixed)
 
-leveneTest(FT_DAYS ~ as.factor(Generation), Rep_Mixed)
-ANOVA_FT <- aov(FT_DAYS ~ as.factor(Generation), Rep_Mixed)
+leveneTest(FT ~ as.factor(Generation), Rep_Mixed)
+ANOVA_FT <- aov(FT ~ as.factor(Generation), Rep_Mixed)
 summary(ANOVA_FT)
 TukeyHSD(ANOVA_FT)
 
 ### QQ-plot for FT & Shapiro Normality (Mixed)
 
-T <- Rep_Mixed %>% select(FT_DAYS, Generation, Genotypes) %>%  arrange(Generation)
-T <- T %>% mutate(FT  = FT_DAYS)
-T <- T %>% select(c("Generation", "Genotypes", "FT"))
+T <- Rep_Mixed %>% select(FT, Generation, Genotype) %>%  arrange(Generation)
+T <- T %>% mutate(FT  = FT)
+T <- T %>% select(c("Generation", "Genotype", "FT"))
 
 par(mfrow = c(2, 3))
 for (i in unique(T$Generation)) {
@@ -54,12 +54,12 @@ table(T$Generation)
 
 ### Kruskal-Wallis Test
 
-kruskal.test(FT_DAYS ~ Generation, Rep_Mixed)
-dunn.test(Rep_Mixed$FT_DAYS, g = Rep_Mixed$Generation)
+kruskal.test(FT ~ Generation, Rep_Mixed)
+dunn.test(Rep_Mixed$FT, g = Rep_Mixed$Generation)
 
 ### Overlapping Histograms for Flowering Time
 
-ggplot(Rep_Mixed, aes(x = FT_DAYS, fill = Generation, group = Generation)) +
+ggplot(Rep_Mixed, aes(x = FT, fill = Generation, group = Generation)) +
   geom_histogram(alpha = .5, position = 'identity') +
   labs(x = "Average Flowering Time (Days after sowing)",
        y = "Frequency",
@@ -88,9 +88,9 @@ leveneTest(`Brown Bag Weight` ~ as.factor(Generation), Rep_Mixed)
 
 ### QQ-Plot for Total Weight & Shaprio Normality (Mixed)
 
-T <- Rep_Mixed %>% select(`Brown Bag Weight`, Generation, Genotypes) %>%  arrange(Generation)
+T <- Rep_Mixed %>% select(`Brown Bag Weight`, Generation, Genotype) %>%  arrange(Generation)
 T <- T %>% mutate(TW  = `Brown Bag Weight`)
-T <- T %>% select(c("Generation", "Genotypes", "TW"))
+T <- T %>% select(c("Generation", "Genotype", "TW"))
 
 par(mfrow = c(2, 3))
 for (i in unique(T$Generation)) {
@@ -127,9 +127,9 @@ leveneTest(Fecundity ~ as.factor(Generation), Rep_Mixed)
 
 ### QQ plot Average Fecundity (Mixed)
 
-T <- Rep_Mixed %>% select(Fecundity, Generation, Genotypes) %>%  arrange(Generation)
+T <- Rep_Mixed %>% select(Fecundity, Generation, Genotype) %>%  arrange(Generation)
 T <- T %>% mutate(fec  = Fecundity)
-T <- T %>% select(c("Generation", "Genotypes", "fec"))
+T <- T %>% select(c("Generation", "Genotype", "fec"))
 
 par(mfrow = c(2, 3))
 for (i in unique(T$Generation)) {
@@ -167,9 +167,9 @@ leveneTest(Fitness ~ as.factor(Generation), Rep_Mixed)
 
 ### QQ plot Average Fitness (Mixed)
 
-T <- Rep_Mixed %>% select(Fitness, Generation, Genotypes) %>%  arrange(Generation)
+T <- Rep_Mixed %>% select(Fitness, Generation, Genotype) %>%  arrange(Generation)
 T <- T %>% mutate(fit  = Fitness)
-T <- T %>% select(c("Generation", "Genotypes", "fit"))
+T <- T %>% select(c("Generation", "Genotype", "fit"))
 
 par(mfrow = c(2, 3))
 for (i in unique(T$Generation)) {

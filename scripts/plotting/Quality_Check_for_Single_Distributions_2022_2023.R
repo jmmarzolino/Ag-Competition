@@ -17,7 +17,7 @@ Rep_Single <- read_delim("~/Documents/GitHub/Ag-Competition/Rep_Single")
 
 ### Histograms for Average Flowering Time Over Generations Single
 
-ggplot(Rep_Single, aes(x = FT_DAYS)) +
+ggplot(Rep_Single, aes(x = FT)) +
   geom_histogram(binwidth = .9) +
   facet_grid(~Generation) +
   stat_bin(bins = 50) +
@@ -28,17 +28,17 @@ ggplot(Rep_Single, aes(x = FT_DAYS)) +
 
 ### Testing for Homogeneity of Variance and ANOVA for FT
 
-ANOVA_FT <- aov(FT_DAYS ~ as.factor(Generation), Rep_Single)
+ANOVA_FT <- aov(FT ~ as.factor(Generation), Rep_Single)
 summary(ANOVA_FT)
 TukeyHSD(ANOVA_FT)
-leveneTest(FT_DAYS ~ as.factor(Generation), Rep_Single)
+leveneTest(FT ~ as.factor(Generation), Rep_Single)
 
 ### QQ-plot for Single FT & Shapiro Normality
 
-T <- Rep_Single %>% select(FT_DAYS, Generation, Genotypes) %>%  arrange(Generation)
-T <- T %>% mutate(FT  = FT_DAYS)
-T <- T %>% select(c("Generation", "Genotypes", "FT"))
-T$Genotypes <- factor(T$Genotypes, levels = T$Genotypes[order(T$FT)])
+T <- Rep_Single %>% select(FT, Generation, Genotype) %>%  arrange(Generation)
+T <- T %>% mutate(FT  = FT)
+T <- T %>% select(c("Generation", "Genotype", "FT"))
+T$Genotype <- factor(T$Genotype, levels = T$Genotype[order(T$FT)])
 
 par(mfrow = c(2, 3))
 for (i in unique(T$Generation)) {
@@ -58,7 +58,7 @@ table(T$Generation)
 ### Bar Graphs Single For Each Generation (FT)
 
 for (i in unique(T$Generation)){
-  tmp <- ggplot(subset(T, Generation == i), aes(Genotypes, FT)) + geom_bar(stat = 'identity') + 
+  tmp <- ggplot(subset(T, Generation == i), aes(Genotype, FT)) + geom_bar(stat = 'identity') + 
     labs(y = "Flowering Time (Days After Sowing)") +
     coord_flip() +
     ggtitle(paste0("Generation ", i)) 
@@ -67,12 +67,12 @@ for (i in unique(T$Generation)){
 
 ### Kruskal-Wallis Test
 
-kruskal.test(FT_DAYS ~ Generation, Rep_Single)
-dunn.test(Rep_Single$FT_DAYS, g = Rep_Single$Generation)
+kruskal.test(FT ~ Generation, Rep_Single)
+dunn.test(Rep_Single$FT, g = Rep_Single$Generation)
 
 ### Overlapping Histograms for Flowering Time
 
-ggplot(Rep_Single, aes(x = FT_DAYS, fill = Generation, group = Generation)) +
+ggplot(Rep_Single, aes(x = FT, fill = Generation, group = Generation)) +
   geom_histogram(alpha = .5, position = 'identity') +
   labs(x = "Average Flowering Time (Days)",
        y = "Frequency",
@@ -102,10 +102,10 @@ leveneTest(`Brown Bag Weight` ~ as.factor(Generation), Rep_Single)
 
 ### QQ plot for Total Weight (Single)
 
-T <- Rep_Single %>% select(`Brown Bag Weight`, Generation, Genotypes) %>%  arrange(Generation)
+T <- Rep_Single %>% select(`Brown Bag Weight`, Generation, Genotype) %>%  arrange(Generation)
 T <- T %>% mutate(TW  = `Brown Bag Weight`)
-T <- T %>% select(c("Generation", "Genotypes", "TW")) 
-T$Genotypes <- factor(T$Genotypes, levels = T$Genotypes[order(T$TW)])
+T <- T %>% select(c("Generation", "Genotype", "TW")) 
+T$Genotype <- factor(T$Genotype, levels = T$Genotype[order(T$TW)])
 
 par(mfrow = c(2, 3))
 for (i in unique(T$Generation)) {
@@ -123,7 +123,7 @@ for(i in unique(T$Generation)){
 ### Bar Graphs Single For Each Generation (Total Weight)
 
 for (i in unique(T$Generation)){
-  tmp <- ggplot(subset(T, Generation == i), aes(Genotypes, TW)) + geom_bar(stat = 'identity') + 
+  tmp <- ggplot(subset(T, Generation == i), aes(Genotype, TW)) + geom_bar(stat = 'identity') + 
     labs(y = "Total Weight (g)") +
     coord_flip() +
     ggtitle(paste0("Generation ", i)) 
@@ -154,10 +154,10 @@ leveneTest(Fecundity ~ as.factor(Generation), Rep_Single)
 
 ### QQ plot Average Fecundity (Single)
 
-T <- Rep_Single %>% select(Fecundity, Generation, Genotypes) %>%  arrange(Generation)
+T <- Rep_Single %>% select(Fecundity, Generation, Genotype) %>%  arrange(Generation)
 T <- T %>% mutate(fec  = Fecundity)
-T <- T %>% select(c("Generation", "Genotypes", "fec"))
-T$Genotypes <- factor(T$Genotypes, levels = T$Genotypes[order(T$fec)])
+T <- T %>% select(c("Generation", "Genotype", "fec"))
+T$Genotype <- factor(T$Genotype, levels = T$Genotype[order(T$fec)])
 
 par(mfrow = c(2, 3))
 for (i in unique(T$Generation)) {
@@ -175,7 +175,7 @@ for(i in unique(T$Generation)){
 ### Bar Graphs Single For Each Generation (Fecundity)
 
 for (i in unique(T$Generation)){
-  tmp <- ggplot(subset(T, Generation == i), aes(Genotypes, fec)) + geom_bar(stat = 'identity') + 
+  tmp <- ggplot(subset(T, Generation == i), aes(Genotype, fec)) + geom_bar(stat = 'identity') + 
     labs(y = "Fecundity") +
     coord_flip() +
     ggtitle(paste0("Generation ", i)) 
@@ -205,10 +205,10 @@ leveneTest(Fitness ~ as.factor(Generation), Rep_Single)
 
 ### QQ plot Average Fitness (Single)
 
-T <- Rep_Single %>% select(Fitness, Generation, Genotypes) %>%  arrange(Generation)
+T <- Rep_Single %>% select(Fitness, Generation, Genotype) %>%  arrange(Generation)
 T <- T %>% mutate(fit  = Fitness)
-T <- T %>% select(c("Generation", "Genotypes", "fit"))
-T$Genotypes <- factor(T$Genotypes, levels = T$Genotypes[order(T$fit)])
+T <- T %>% select(c("Generation", "Genotype", "fit"))
+T$Genotype <- factor(T$Genotype, levels = T$Genotype[order(T$fit)])
 
 par(mfrow = c(2, 3))
 for (i in unique(T$Generation)) {
@@ -226,7 +226,7 @@ for(i in unique(T$Generation)){
 ### Bar Graphs Single For Each Generation (Fitness)
 
 for (i in unique(T$Generation)){
-  tmp <- ggplot(subset(T, Generation == i), aes(Genotypes, fit)) + geom_bar(stat = 'identity') + 
+  tmp <- ggplot(subset(T, Generation == i), aes(Genotype, fit)) + geom_bar(stat = 'identity') + 
     labs(y = "Fitness") +
     coord_flip() +
     ggtitle(paste0("Generation ", i)) 

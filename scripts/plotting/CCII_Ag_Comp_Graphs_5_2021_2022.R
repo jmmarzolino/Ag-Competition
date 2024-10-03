@@ -10,7 +10,7 @@ library(tidyr)
 
 Single_2021_2022 <- Single_2021_2022 %>% filter(Haplotype != "NA")
 Single_2021_2022$Haplotype <- as.factor(Single_2021_2022$Haplotype)
-Haplo_graph <- Single_2021_2022 %>% group_by(Generation, Haplotype) %>% summarise(Avg_TW = mean(total_seed_mass_g)) %>% ungroup()
+Haplo_graph <- Single_2021_2022 %>% group_by(Generation, Haplotype) %>% summarise(Avg_TW = mean(TOTAL_MASS)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_TW)) %>% ungroup()
 Haplo_graph$`Avg Yield > Pop & Gen Avg Yield` <- ifelse(Haplo_graph$Avg_TW > Haplo_graph$GenAvg & Haplo_graph$Avg_TW > mean(Haplo_graph$Avg_TW), TRUE, FALSE)
 f_AY <- Haplo_graph %>% filter(`Avg Yield > Pop & Gen Avg Yield` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
@@ -29,7 +29,7 @@ ggsave("scripts/plotting/05a_Average_TW_Haplotypes_2021_2022.png", width = 16, h
 
 ### 5ai_Comparing_FT_Between_Haplotypes.R
 
-Haplo_graph <- Single_2021_2022 %>% group_by(Generation, Haplotype) %>% summarise(Avg_FT = mean(Flowering_Date)) %>% ungroup()
+Haplo_graph <- Single_2021_2022 %>% group_by(Generation, Haplotype) %>% summarise(Avg_FT = mean(FT)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_FT)) %>% ungroup()
 Haplo_graph$`Avg FT > Pop & Gen Avg FT` <- ifelse(Haplo_graph$Avg_FT > Haplo_graph$GenAvg & Haplo_graph$Avg_FT > mean(Haplo_graph$Avg_FT), TRUE, FALSE)
 f_FT <- Haplo_graph %>% filter(`Avg FT > Pop & Gen Avg FT` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
@@ -87,7 +87,7 @@ ggsave("scripts/plotting/05aiii_Average_Fit_Haplotypes_2021_2022.png", width = 1
 
 
 for (i in unique(T$Generation)){
-  tmp <-  ggplot(subset(T, Generation == i), aes(Genotypes, TW)) + geom_bar(stat = 'identity') + 
+  tmp <-  ggplot(subset(T, Generation == i), aes(Genotype, TW)) + geom_bar(stat = 'identity') + 
     theme(axis.text.x = element_text(angle = 60)) + labs(y = "Total Weight (g)") +
     ggtitle(paste0("Generation ", i))
   ggsave(tmp, file = paste0("Bar_Plot_Total_Weight_Generation_", i, ".png"))

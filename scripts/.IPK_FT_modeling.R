@@ -14,22 +14,22 @@ library(lme4)
 
 #########   MODEL FLOWERING TIME TO ONE VALUE PER GENOTYPE
 FT <- read_delim("/rhome/jmarz001/bigdata/Ag-Competition/data/FT_BOTH_YEARS.tsv")
-FT <- FT %>% filter(Condition=="single") %>% select(-c(number_of_plants, Condition))
-FT_avg <- FT %>% group_by(Exp_year, Genotypes, Generation) %>% summarise(avg_FT = mean(Flowering_Date))
-FT_avg_2yr <- FT %>% group_by(Genotypes, Generation) %>% summarise(avg_FT = mean(Flowering_Date))
+FT <- FT %>% filter(Condition=="single") %>% select(-c(Plants, Condition))
+FT_avg <- FT %>% group_by(Exp_year, Genotype, Generation) %>% summarise(avg_FT = mean(FT))
+FT_avg_2yr <- FT %>% group_by(Genotype, Generation) %>% summarise(avg_FT = mean(FT))
 write_delim(FT_avg_2yr, "FT_AVG_2YRS.tsv")
 
 
 FT$dummy_yr <- 1
 FT[which(FT$Exp_year == 2023), 6] <- 2
-# FT[which(FT$Genotypes == "1_100"),]
+# FT[which(FT$Genotype == "1_100"),]
 
-model <- lmer(Flowering_Date ~ dummy_yr + (1| Genotypes), data=FT)
-#lmer(Flowering_Date ~ dummy_yr + (1| Genotypes), data=FT) %>% coef
+model <- lmer(FT ~ dummy_yr + (1| Genotype), data=FT)
+#lmer(FT ~ dummy_yr + (1| Genotype), data=FT) %>% coef
 
 # divide up and store genotypes modelled FT
 model_coefs <- coef(model)
-model_coefs <- model_coefs$Genotypes
+model_coefs <- model_coefs$Genotype
 model_coefs <- rownames_to_column(model_coefs)
 colnames(model_coefs) <- c("Genotype", "Intercept", "Year_Coef")
 model_coefs$FT <- model_coefs$Intercept + model_coefs$Year_Coef

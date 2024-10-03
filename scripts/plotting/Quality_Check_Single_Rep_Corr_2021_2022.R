@@ -11,7 +11,7 @@ library(dunn.test)
 
 ### Correlation For TW
 
-g1 <- ggplot(Rep_2021_2022_Single, aes(total_seed_mass_g, total_seed_mass_g_2, add = "reg.line")) +
+g1 <- ggplot(Rep_2021_2022_Single, aes(TOTAL_MASS, TOTAL_MASS_2, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   stat_cor(label.y = 175) +
   geom_abline(slope = 1, intercept = 0, color = 'red') +
@@ -22,7 +22,7 @@ g1 <- ggplot(Rep_2021_2022_Single, aes(total_seed_mass_g, total_seed_mass_g_2, a
 
 ### Correlation for FT
 
-g3 <- ggplot(Rep_2021_2022_Single, aes(Flowering_Date, Flowering_Date_2, add = "reg.line")) +
+g3 <- ggplot(Rep_2021_2022_Single, aes(FT, FT_2, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   stat_cor(label.y = 120) +
   geom_abline(slope = 1, intercept = 0, color = 'red') +

@@ -9,8 +9,8 @@ source("rhome/jmarz001/bigdata/Ag-Competition/scripts/CUSTOM_FNS.R")
 PHENO_FULL <- read_delim("FT_FITNESS.tsv")
 
 # Creating Single and Mixed dataframes for BLUP analysis
-tmp <- PHENO_FULL %>% select(-c("Haplotype", "TOTAL_SEED_COUNT", "REL_FITNESS", "number_of_plants", "SURVIVAL"))
-tmp <- relocate(tmp, Genotypes, Generation, Condition, replicate, Exp_year, FT_DAYS, total_seed_mass_g, `100_seed_weight`, FECUNDITY, ABS_FITNESS)
+tmp <- PHENO_FULL %>% select(-c("Haplotype", "TOTAL_SEED_COUNT", "REL_FITNESS", "Plants", "SURVIVAL"))
+tmp <- relocate(tmp, Genotype, Generation, Condition, Replicate, Exp_year, FT, TOTAL_MASS, SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS)
 
 # Standardize data
 
@@ -18,11 +18,11 @@ standardize <- function(x){
   (x - mean(x, na.rm = T))/sd(x, na.rm = T)
 }
 
-tmp$FT_DAYS <- standardize(tmp$FT_DAYS)
-tmp$total_seed_mass_g <- standardize(tmp$total_seed_mass_g)
-tmp$FECUNDITY <- tmp$FECUNDITY/sd(tmp$FECUNDITY, na.rm = T)
+tmp$FT <- standardize(tmp$FT)
+tmp$TOTAL_MASS <- standardize(tmp$TOTAL_MASS)
+tmp$FEC <- tmp$FEC/sd(tmp$FEC, na.rm = T)
 tmp$ABS_FITNESS <- tmp$ABS_FITNESS/sd(tmp$ABS_FITNESS, na.rm = T)
-tmp$`100_seed_weight` <- standardize(tmp$`100_seed_weight`)
+tmp$SEED_WEIGHT_100 <- standardize(tmp$SEED_WEIGHT_100)
 
 # Breeders Function for calculating Heritability
 
@@ -34,9 +34,9 @@ Breeders_funct_0 <- function(x) {
   for(i in c(6:ncol(x))){
     df <- x %>%
       filter(Generation == 0) %>%
-      select(c(all_of(i), Genotypes, replicate, Generation, Exp_year))
+      select(c(all_of(i), Genotype, Replicate, Generation, Exp_year))
     # calculate mixed model
-    genotype_mod <- lmer(df[,1][[1]] ~ Exp_year + (1| Genotypes), data = df)
+    genotype_mod <- lmer(df[,1][[1]] ~ Exp_year + (1| Genotype), data = df)
     ## summary of the model
     geno_mod_summ <- summary(genotype_mod)
     data.frame(geno_mod_summ$varcor)
@@ -62,9 +62,9 @@ Breeders_funct_18 <- function(x) {
   for(i in c(6:ncol(x))){
     df <- x %>%
       filter(Generation == 18) %>%
-      select(c(all_of(i), Genotypes, replicate, Generation, Exp_year))
+      select(c(all_of(i), Genotype, Replicate, Generation, Exp_year))
     # calculate mixed model
-    genotype_mod <- lmer(df[,1][[1]] ~ Exp_year + (1| Genotypes), data = df)
+    genotype_mod <- lmer(df[,1][[1]] ~ Exp_year + (1| Genotype), data = df)
     ## summary of the model
     geno_mod_summ <- summary(genotype_mod)
     data.frame(geno_mod_summ$varcor)
@@ -88,9 +88,9 @@ Breeders_funct_28 <- function(x) {
   for(i in c(6:ncol(x))){
     df <- x %>%
       filter(Generation == 28) %>%
-      select(c(all_of(i), Genotypes, replicate, Generation, Exp_year))
+      select(c(all_of(i), Genotype, Replicate, Generation, Exp_year))
     # calculate mixed model
-    genotype_mod <- lmer(df[,1][[1]] ~ Exp_year + (1| Genotypes), data = df)
+    genotype_mod <- lmer(df[,1][[1]] ~ Exp_year + (1| Genotype), data = df)
     ## summary of the model
     geno_mod_summ <- summary(genotype_mod)
     data.frame(geno_mod_summ$varcor)
@@ -114,9 +114,9 @@ Breeders_funct_50 <- function(x) {
   for(i in c(6:ncol(x))){
     df <- x %>%
       filter(Generation == 50) %>%
-      select(c(all_of(i), Genotypes, replicate, Generation, Exp_year))
+      select(c(all_of(i), Genotype, Replicate, Generation, Exp_year))
     # calculate mixed model
-    genotype_mod <- lmer(df[,1][[1]] ~ Exp_year + (1| Genotypes), data = df)
+    genotype_mod <- lmer(df[,1][[1]] ~ Exp_year + (1| Genotype), data = df)
     ## summary of the model
     geno_mod_summ <- summary(genotype_mod)
     data.frame(geno_mod_summ$varcor)
@@ -140,9 +140,9 @@ Breeders_funct_58 <- function(x) {
   for(i in c(6:ncol(x))){
     df <- x %>%
       filter(Generation == 58) %>%
-      select(c(all_of(i), Genotypes, replicate, Generation, Exp_year))
+      select(c(all_of(i), Genotype, Replicate, Generation, Exp_year))
     # calculate mixed model
-    genotype_mod <- lmer(df[,1][[1]] ~ Exp_year + (1| Genotypes), data = df)
+    genotype_mod <- lmer(df[,1][[1]] ~ Exp_year + (1| Genotype), data = df)
     ## summary of the model
     geno_mod_summ <- summary(genotype_mod)
     data.frame(geno_mod_summ$varcor)
@@ -165,19 +165,19 @@ PHENO_SINGLE <- tmp %>% filter(Condition == 'single')
 
 # Creating BLUP dataframe
 
-blup_output <- data.frame(matrix(vector(), 255, 1, dimnames = list(c(), c("Genotypes"))))
+blup_output <- data.frame(matrix(vector(), 255, 1, dimnames = list(c(), c("Genotype"))))
 blup_output <- unique(PHENO_SINGLE[, 1])
 blup_output <- add_generation(blup_output)
 
 
 for (i in 6:ncol(PHENO_SINGLE)){
-  model <- lmer(as.numeric(unlist(PHENO_SINGLE[,i])) ~ Exp_year + (1|Genotypes), data = PHENO_SINGLE)
+  model <- lmer(as.numeric(unlist(PHENO_SINGLE[,i])) ~ Exp_year + (1|Genotype), data = PHENO_SINGLE)
   summary(model)
   model_ranefs <- ranef(model)
   geno_blups <- model_ranefs[[1]][[1]]
   geno_blups <- tibble(geno_blups)
   geno_blups$Replicate <- rownames(model_ranefs[[1]])
-  colnames(geno_blups) <- c(paste(colnames(PHENO_SINGLE[,i]),"blup",sep="_"), "Genotypes")
+  colnames(geno_blups) <- c(paste(colnames(PHENO_SINGLE[,i]),"blup",sep="_"), "Genotype")
   assign(x = paste("blup_df",i,sep="_"), value = geno_blups)
 }
 
@@ -272,49 +272,49 @@ subtract <- function(x, y){
 # P to F58
 
 preserved <- PHENO_SINGLE %>% filter(Generation == 0 | Generation == 58)
-P_F58 <- preserved %>% group_by(Generation) %>% summarise(across(.cols = c(`100_seed_weight`, FECUNDITY, ABS_FITNESS, total_seed_mass_g, FT_DAYS), mean, na.rm = T)) %>% ungroup()
-P_F58 <- P_F58 %>% summarise(across(.cols = c(`100_seed_weight`, FECUNDITY, ABS_FITNESS, total_seed_mass_g, FT_DAYS), subtract)) %>% ungroup()
-P_F58 <- P_F58 %>% mutate(`100_seed_weight` = `100_seed_weight`/58,
+P_F58 <- preserved %>% group_by(Generation) %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), mean, na.rm = T)) %>% ungroup()
+P_F58 <- P_F58 %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), subtract)) %>% ungroup()
+P_F58 <- P_F58 %>% mutate(SEED_WEIGHT_100 = SEED_WEIGHT_100/58,
                           FECUNDITY = FECUNDITY/58,
                           ABS_FITNESS = ABS_FITNESS/58,
-                          FT_DAYS = FT_DAYS/58,
-                          total_seed_mass_g = total_seed_mass_g/58,
+                          FT = FT/58,
+                          TOTAL_MASS = TOTAL_MASS/58,
                           response_years = "P_F58")
 # P to F18
 
 preserved <- PHENO_SINGLE %>% filter(Generation == 0 | Generation == 18)
-P_F18 <- preserved %>% group_by(Generation) %>% summarise(across(.cols = c(`100_seed_weight`, FECUNDITY, ABS_FITNESS, total_seed_mass_g, FT_DAYS), mean, na.rm = T)) %>% ungroup()
-P_F18 <- P_F18 %>% summarise(across(.cols = c(`100_seed_weight`, FECUNDITY, ABS_FITNESS, total_seed_mass_g, FT_DAYS), subtract)) %>% ungroup()
-P_F18 <- P_F18 %>% mutate(`100_seed_weight` = `100_seed_weight`/18,
+P_F18 <- preserved %>% group_by(Generation) %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), mean, na.rm = T)) %>% ungroup()
+P_F18 <- P_F18 %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), subtract)) %>% ungroup()
+P_F18 <- P_F18 %>% mutate(SEED_WEIGHT_100 = SEED_WEIGHT_100/18,
                           FECUNDITY = FECUNDITY/18,
                           ABS_FITNESS = ABS_FITNESS/18,
-                          FT_DAYS = FT_DAYS/18,
-                          total_seed_mass_g = total_seed_mass_g/18,
+                          FT = FT/18,
+                          TOTAL_MASS = TOTAL_MASS/18,
                           response_years = "P_F18")
 
 # F18 to F58
 
 preserved <- PHENO_SINGLE %>% filter(Generation == 18 | Generation == 58)
-F18_F58 <- preserved %>% group_by(Generation) %>% summarise(across(.cols = c(`100_seed_weight`, FECUNDITY, ABS_FITNESS, total_seed_mass_g, FT_DAYS), mean, na.rm = T)) %>% ungroup()
-F18_F58 <- F18_F58 %>% summarise(across(.cols = c(`100_seed_weight`, FECUNDITY, ABS_FITNESS, total_seed_mass_g, FT_DAYS), subtract)) %>% ungroup()
-F18_F58 <- F18_F58 %>% mutate(`100_seed_weight` = `100_seed_weight`/40,
+F18_F58 <- preserved %>% group_by(Generation) %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), mean, na.rm = T)) %>% ungroup()
+F18_F58 <- F18_F58 %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), subtract)) %>% ungroup()
+F18_F58 <- F18_F58 %>% mutate(SEED_WEIGHT_100 = SEED_WEIGHT_100/40,
                           FECUNDITY = FECUNDITY/40,
                           ABS_FITNESS = ABS_FITNESS/40,
-                          FT_DAYS = FT_DAYS/40,
-                          total_seed_mass_g = total_seed_mass_g/40,
+                          FT = FT/40,
+                          TOTAL_MASS = TOTAL_MASS/40,
                           response_years = "F18_F58")
 
 rts_df <- rbind(P_F18, P_F58, F18_F58)
 
-a1 <- ggplot(rts_df, aes(response_years, total_seed_mass_g)) +
+a1 <- ggplot(rts_df, aes(response_years, TOTAL_MASS)) +
   geom_point() +
   ylim(-.03, .030)
 
-a2 <- ggplot(rts_df, aes(response_years, `100_seed_weight`)) +
+a2 <- ggplot(rts_df, aes(response_years, SEED_WEIGHT_100)) +
   geom_point() +
   ylim(-.03, .03)
 
-a3 <- ggplot(rts_df, aes(response_years, FT_DAYS)) +
+a3 <- ggplot(rts_df, aes(response_years, FT)) +
   geom_point() +
   ylim(-.03, .03)
 
@@ -337,10 +337,10 @@ rts_df <- rts_df %>% mutate(H2_FT = heritability_data_single$H2[4],
                             H2_fec = heritability_data_single$H2[3],
                             H2_fit = heritability_data_single$H2[2])
 
-rts_df <- rts_df %>% mutate(si_100 = `100_seed_weight`/ H2_100,
+rts_df <- rts_df %>% mutate(si_100 = SEED_WEIGHT_100/ H2_100,
                             si_fec = FECUNDITY / H2_fec,
-                            si_ft = FT_DAYS/H2_FT,
-                            si_tw = total_seed_mass_g/H2_tw,
+                            si_ft = FT/H2_FT,
+                            si_tw = TOTAL_MASS/H2_tw,
                             si_fit = ABS_FITNESS/H2_fit)
 
 selection_intensity_single <- rts_df %>% select(starts_with("si"), response_years)
@@ -388,19 +388,19 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection_intensity_s
 PHENO_MIXED <- tmp %>% filter(Condition == 'mixed')
 
 for (i in 6:ncol(PHENO_MIXED)){
-  model <- lmer(as.numeric(unlist(PHENO_MIXED[,i])) ~ Exp_year + (1|Genotypes), data = PHENO_MIXED)
+  model <- lmer(as.numeric(unlist(PHENO_MIXED[,i])) ~ Exp_year + (1|Genotype), data = PHENO_MIXED)
   summary(model)
   model_ranefs <- ranef(model)
   geno_blups <- model_ranefs[[1]][[1]]
   geno_blups <- tibble(geno_blups)
   geno_blups$Replicate <- rownames(model_ranefs[[1]])
-  colnames(geno_blups) <- c(paste(colnames(PHENO_MIXED[,i]),"blup_df",sep="_"), "Genotypes")
+  colnames(geno_blups) <- c(paste(colnames(PHENO_MIXED[,i]),"blup_df",sep="_"), "Genotype")
   assign(x = paste("blup_mixed_df",i,sep="_"), value = geno_blups)
 }
 
 # Creating blup dataframe for mixed
 
-blup_output <- data.frame(matrix(vector(), 255, 1, dimnames = list(c(), c("Genotypes"))))
+blup_output <- data.frame(matrix(vector(), 255, 1, dimnames = list(c(), c("Genotype"))))
 blup_output <- unique(PHENO_MIXED[, 1])
 
 blup_output <- add_generation(blup_output)
@@ -494,51 +494,51 @@ heritability_data_mixed <- heritability_data_mixed %>% group_by(trait) %>% summa
 # P to F58
 
 preserved <- PHENO_MIXED %>% filter(Generation == 0 | Generation == 58)
-P_F58 <- preserved %>% group_by(Generation) %>% summarise(across(.cols = c(`100_seed_weight`, FECUNDITY, ABS_FITNESS, total_seed_mass_g, FT_DAYS), mean, na.rm = T)) %>% ungroup()
-P_F58 <- P_F58 %>% summarise(across(.cols = c(`100_seed_weight`, FECUNDITY, ABS_FITNESS, total_seed_mass_g, FT_DAYS), subtract)) %>% ungroup()
-P_F58 <- P_F58 %>% mutate(`100_seed_weight` = `100_seed_weight`/58,
+P_F58 <- preserved %>% group_by(Generation) %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), mean, na.rm = T)) %>% ungroup()
+P_F58 <- P_F58 %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), subtract)) %>% ungroup()
+P_F58 <- P_F58 %>% mutate(SEED_WEIGHT_100 = SEED_WEIGHT_100/58,
                           FECUNDITY = FECUNDITY/58,
                           ABS_FITNESS = ABS_FITNESS/58,
-                          FT_DAYS = FT_DAYS/58,
-                          total_seed_mass_g = total_seed_mass_g/58,
+                          FT = FT/58,
+                          TOTAL_MASS = TOTAL_MASS/58,
                           response_years = 'P_F58')
 # P to F18
 
 preserved <- PHENO_MIXED %>% filter(Generation == 0 | Generation == 18)
-P_F18 <- preserved %>% group_by(Generation) %>% summarise(across(.cols = c(`100_seed_weight`, FECUNDITY, ABS_FITNESS, total_seed_mass_g, FT_DAYS), mean, na.rm = T)) %>% ungroup()
-P_F18 <- P_F18 %>% summarise(across(.cols = c(`100_seed_weight`, FECUNDITY, ABS_FITNESS, total_seed_mass_g, FT_DAYS), subtract)) %>% ungroup()
-P_F18 <- P_F18 %>% mutate(`100_seed_weight` = `100_seed_weight`/18,
+P_F18 <- preserved %>% group_by(Generation) %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), mean, na.rm = T)) %>% ungroup()
+P_F18 <- P_F18 %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), subtract)) %>% ungroup()
+P_F18 <- P_F18 %>% mutate(SEED_WEIGHT_100 = SEED_WEIGHT_100/18,
                           FECUNDITY = FECUNDITY/18,
                           ABS_FITNESS = ABS_FITNESS/18,
-                          FT_DAYS = FT_DAYS/18,
-                          total_seed_mass_g = total_seed_mass_g/18,
+                          FT = FT/18,
+                          TOTAL_MASS = TOTAL_MASS/18,
                           response_years = 'P_F18')
 
 # F18 to F58
 
 preserved <- PHENO_MIXED %>% filter(Generation == 18 | Generation == 58)
-F18_F58 <- preserved %>% group_by(Generation) %>% summarise(across(.cols = c(`100_seed_weight`, FECUNDITY, ABS_FITNESS, total_seed_mass_g, FT_DAYS), mean, na.rm = T)) %>% ungroup()
-F18_F58 <- F18_F58 %>% summarise(across(.cols = c(`100_seed_weight`, FECUNDITY, ABS_FITNESS, total_seed_mass_g, FT_DAYS), subtract)) %>% ungroup()
-F18_F58 <- F18_F58 %>% mutate(`100_seed_weight` = `100_seed_weight`/40,
+F18_F58 <- preserved %>% group_by(Generation) %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), mean, na.rm = T)) %>% ungroup()
+F18_F58 <- F18_F58 %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), subtract)) %>% ungroup()
+F18_F58 <- F18_F58 %>% mutate(SEED_WEIGHT_100 = SEED_WEIGHT_100/40,
                               FECUNDITY = FECUNDITY/40,
                               ABS_FITNESS = ABS_FITNESS/40,
-                              FT_DAYS = FT_DAYS/40,
-                              total_seed_mass_g = total_seed_mass_g/40,
+                              FT = FT/40,
+                              TOTAL_MASS = TOTAL_MASS/40,
                               response_years = 'F18_F58')
 
 # Response to Selection (Mixed)
 
 rts_df_mix <- rbind(P_F18, P_F58, F18_F58)
 
-a1 <- ggplot(rts_df_mix, aes(response_years, total_seed_mass_g)) +
+a1 <- ggplot(rts_df_mix, aes(response_years, TOTAL_MASS)) +
   geom_point() +
   ylim(0, .0075)
 
-a2 <- ggplot(rts_df_mix, aes(response_years, `100_seed_weight`)) +
+a2 <- ggplot(rts_df_mix, aes(response_years, SEED_WEIGHT_100)) +
   geom_point() +
   ylim(0, .0075)
 
-a3 <- ggplot(rts_df_mix, aes(response_years, FT_DAYS)) +
+a3 <- ggplot(rts_df_mix, aes(response_years, FT)) +
   geom_point() +
   ylim(0, .0075)
 
@@ -562,10 +562,10 @@ rts_df_mix <- rts_df_mix %>% mutate(H2_FT = heritability_data_mixed$H2[4],
                             H2_fec = heritability_data_mixed$H2[3],
                             H2_fit = heritability_data_mixed$H2[2])
 
-rts_df_mix <- rts_df_mix %>% mutate(si_100 = `100_seed_weight`/ H2_100,
+rts_df_mix <- rts_df_mix %>% mutate(si_100 = SEED_WEIGHT_100/ H2_100,
                             si_fec = FECUNDITY / H2_fec,
-                            si_ft = FT_DAYS/H2_FT,
-                            si_tw = total_seed_mass_g/H2_tw,
+                            si_ft = FT/H2_FT,
+                            si_tw = TOTAL_MASS/H2_tw,
                             si_fit = ABS_FITNESS/H2_fit)
 
 selection_intensity_mix <- rts_df_mix %>% select(starts_with("si"), response_years)

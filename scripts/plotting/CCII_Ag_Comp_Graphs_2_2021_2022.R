@@ -82,7 +82,7 @@ ggsave("scripts/plotting/02b_Overlapping_Distributions_Fecundity_Over_Generation
 
 ### 02bi_100_SW_Distributions.R
 
-ggplot(Averaged_Full_2021_2022, aes(x = "100_seed_weight", group = Generation, fill = Generation)) +
+ggplot(Averaged_Full_2021_2022, aes(x = "SEED_WEIGHT_100", group = Generation, fill = Generation)) +
   geom_histogram(alpha =.5, position = 'identity') +
   scale_fill_brewer(palette = "Blues")
 ggsave("scripts/plotting/02bi_Overlapping_Distributions_for_Generational_Change_100SW_Distributions_2021_2022.png")

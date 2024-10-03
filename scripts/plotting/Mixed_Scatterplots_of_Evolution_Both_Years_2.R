@@ -50,11 +50,11 @@ ggsave("scripts/plotting/02ai_Generational_Change_in_Mixed_Fecundity_2021_2022.p
 
 ### 02aii_Mixed_FT_over_Generations.R
 
-c <- ggplot(Mixed_2021_2022, aes(Generation, FT_DAYS, add = "reg.line")) +
+c <- ggplot(Mixed_2021_2022, aes(Generation, FT, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   stat_regline_equation(label.x = 40) +
-  geom_boxplot(aes(Generation, FT_DAYS, group = Generation), width = 1.5, alpha = .5)+
+  geom_boxplot(aes(Generation, FT, group = Generation), width = 1.5, alpha = .5)+
   labs(x = "Generation",
        y = "Average Flowering Time (Days)",
        title = "Evolution of Average Flowering Time 2021-2022")
@@ -62,10 +62,10 @@ ggsave("scripts/plotting/02aii_Generational_Change_in_Mixed_FT_2021_2022.png")
 
 ### 02aiii_Mixed_TW_over_Generations.R
 
-d <- ggplot(Mixed_2021_2022, aes(Generation, total_seed_mass_g, add = "reg.line")) +
+d <- ggplot(Mixed_2021_2022, aes(Generation, TOTAL_MASS, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
-  geom_boxplot(aes(Generation,total_seed_mass_g, group = Generation), width = 1.5, alpha = .5)+
+  geom_boxplot(aes(Generation,TOTAL_MASS, group = Generation), width = 1.5, alpha = .5)+
   stat_regline_equation(label.y = 135) +
   labs(x = "Generation",
        y = "Average Total Seed Weight (g)",
@@ -74,10 +74,10 @@ ggsave("scripts/plotting/02aiii_Generational_Change_in_Mixed_TW_2021_2022.png")
 
 ### 02aiiii_Mixed_100SW_over_Generations.R
 
-e <- ggplot(Single_2021_2022, aes(Generation, `100_seed_weight`, add = "reg.line")) +
+e <- ggplot(Single_2021_2022, aes(Generation, SEED_WEIGHT_100, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = 'lm') +
-  geom_boxplot(aes(Generation, `100_seed_weight`, group = Generation), width = 1.5, alpha = .5) +
+  geom_boxplot(aes(Generation, SEED_WEIGHT_100, group = Generation), width = 1.5, alpha = .5) +
   stat_regline_equation(label.x = 5) +
   labs(y = "Average 100 Seed Weight (grams)",
        title = "Evolution of Average 100 Seed Weight (grams) 2021-2022")
@@ -119,11 +119,11 @@ ggsave("scripts/plotting/02bi_Generational_Change_in_Mixed_Fecundity_2022_2023.p
 
 ### 02bii_Mixed_FT_over_Generations.R
 
-h <- ggplot(Mixed_2022_2023, aes(Generation, FT_DAYS, add = "reg.line")) +
+h <- ggplot(Mixed_2022_2023, aes(Generation, FT, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   stat_regline_equation(label.x = 40) +
-  geom_boxplot(aes(Generation, FT_DAYS, group = Generation), width = 1.5, alpha = .5)+
+  geom_boxplot(aes(Generation, FT, group = Generation), width = 1.5, alpha = .5)+
   labs(x = "Generation",
        y = "Average Flowering Time (Days)",
        title = "Evolution of Average Flowering Time 2022-2023")
@@ -131,10 +131,10 @@ ggsave("scripts/plotting/02bii_Generational_Change_in_Mixed_FT_2022_2023.png")
 
 ### 02biii_Mixed_TW_over_Generations.R
 
-i <- ggplot(Mixed_2022_2023, aes(Generation, total_seed_mass_g, add = "reg.line")) +
+i <- ggplot(Mixed_2022_2023, aes(Generation, TOTAL_MASS, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
-  geom_boxplot(aes(Generation,total_seed_mass_g, group = Generation), width = 1.5, alpha = .5)+
+  geom_boxplot(aes(Generation,TOTAL_MASS, group = Generation), width = 1.5, alpha = .5)+
   stat_regline_equation(label.y = 155) +
   labs(x = "Generation",
        y = "Average Total Seed Weight (g)",
@@ -143,10 +143,10 @@ ggsave("scripts/plotting/02biii_Generational_Change_in_Mixed_TW_2022_2023.png")
 
 ### 02biiii_Mixed_100SW_over_Generations.R
 
-j <- ggplot(Mixed_2022_2023, aes(Generation, `100_seed_weight`, add = "reg.line")) +
+j <- ggplot(Mixed_2022_2023, aes(Generation, SEED_WEIGHT_100, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = 'lm') +
-  geom_boxplot(aes(Generation, `100_seed_weight`, group = Generation), width = 1.5, alpha = .5) +
+  geom_boxplot(aes(Generation, SEED_WEIGHT_100, group = Generation), width = 1.5, alpha = .5) +
   stat_regline_equation(label.y = 6.1) +
   labs(y = "Average 100 Seed Weight (grams)",
        title = "Evolution of Average 100 Seed Weight (grams) 2022-2023")

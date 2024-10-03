@@ -28,7 +28,7 @@ Replicate_corr_tbl$Residuals <- res$residuals
 
 ### Correlation of Replicates (Flowering Time)
 
-g4 <- ggplot(Replicate_corr_tbl_Mixed, aes(FT_DAYS, FT_DAYS_2)) +
+g4 <- ggplot(Replicate_corr_tbl_Mixed, aes(FT, FT_2)) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = 'lm') +
   stat_cor(label.x = 100, label.y = 135) +

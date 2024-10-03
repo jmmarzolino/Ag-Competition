@@ -43,15 +43,15 @@ PHENO_MIXED_2022 <- PHENO_FULL %>% filter(Condition == "mixed" & Exp_year == 202
 
 # Mixed Correlation 2021-2022 TW
 
-cmp <- PHENO_MIXED_2022 %>% group_by(Genotypes, Generation, replicate) %>% summarise(total_seed_mass_g) %>% spread(key = replicate, value = total_seed_mass_g) %>% ungroup()
+cmp <- PHENO_MIXED_2022 %>% group_by(Genotype, Generation, Replicate) %>% summarise(TOTAL_MASS) %>% spread(key = Replicate, value = TOTAL_MASS) %>% ungroup()
 p1 <- Graphing_Corr(cmp, "Total Weight (g)", "2021-2022") +
   stat_cor(label.y = 170) +
   xlim(0, 250) +
   ylim(0, 250)
 
-outlier_upper <- quantile(PHENO_MIXED_2022$total_seed_mass_g, .75, na.rm = T) + (1.5 * IQR(PHENO_MIXED_2022$total_seed_mass_g, na.rm = T))
-outlier_lower <- quantile(PHENO_MIXED_2022$total_seed_mass_g, .25, na.rm = T) - (1.5 * IQR(PHENO_MIXED_2022$total_seed_mass_g, na.rm = T))
-outlier_data <- PHENO_MIXED_2022 %>% filter(total_seed_mass_g > outlier_upper | total_seed_mass_g < outlier_lower)
+outlier_upper <- quantile(PHENO_MIXED_2022$TOTAL_MASS, .75, na.rm = T) + (1.5 * IQR(PHENO_MIXED_2022$TOTAL_MASS, na.rm = T))
+outlier_lower <- quantile(PHENO_MIXED_2022$TOTAL_MASS, .25, na.rm = T) - (1.5 * IQR(PHENO_MIXED_2022$TOTAL_MASS, na.rm = T))
+outlier_data <- PHENO_MIXED_2022 %>% filter(TOTAL_MASS > outlier_upper | TOTAL_MASS < outlier_lower)
 
 # Residual Plotting
 cmp <- na.omit(cmp)
@@ -68,7 +68,7 @@ a <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 30) +
   labs(x = 'Total Weight (grams)',
        title = "Residual Plot Mixed Total Weight 2022")
@@ -76,13 +76,13 @@ a <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
 
 # Mixed Correlation 2021-2022 Fecundity
 
-cmp <- PHENO_MIXED_2022 %>% group_by(Genotypes, Generation, replicate) %>% summarise(FECUNDITY) %>% spread(key = replicate, value = FECUNDITY) %>% ungroup()
+cmp <- PHENO_MIXED_2022 %>% group_by(Genotype, Generation, Replicate) %>% summarise(FECUNDITY) %>% spread(key = Replicate, value = FECUNDITY) %>% ungroup()
 p2 <- Graphing_Corr(cmp, "Relative Fecundity", "2021-2022") +
   stat_cor(label.y = 2.5, label.x = 6.5) +
   ylim(-1.1, 3)+
   xlim(-1.1, 3) +
   geom_text_repel(label = ifelse(cmp$`1` > 3 | cmp$`2` > 3,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust =1, max.overlaps = 30)
 
 # Residual Plotting
@@ -100,14 +100,14 @@ b <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 30) +
   labs(x = 'Centered Fecundity',
        title = "Residual Plot Mixed Centered Fecundity 2022")
 
 # Mixed Correlation 2021-2022 Fitness
 
-cmp <- PHENO_MIXED_2022 %>% group_by(Genotypes, Generation, replicate) %>% summarise(ABS_FITNESS) %>% spread(key = replicate, value = ABS_FITNESS) %>% ungroup()
+cmp <- PHENO_MIXED_2022 %>% group_by(Genotype, Generation, Replicate) %>% summarise(ABS_FITNESS) %>% spread(key = Replicate, value = ABS_FITNESS) %>% ungroup()
 p3 <- Graphing_Corr(cmp, "Absolute Fitness", "2021-2022") +
   stat_cor(label.y = 3) +
   xlim(-2.5, 4.2) +
@@ -128,22 +128,22 @@ c <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 30) +
   labs(x = 'Centered Fitness',
        title = "Residual Plot Mixed Centered Fitness 2022")
 
 # Mixed Correlation 2021-2022 Flowering Time
 
-cmp <- PHENO_MIXED_2022 %>% group_by(Genotypes, Generation, replicate) %>% summarise(FT_DAYS) %>% spread(key = replicate, value = FT_DAYS) %>% ungroup()
+cmp <- PHENO_MIXED_2022 %>% group_by(Genotype, Generation, Replicate) %>% summarise(FT) %>% spread(key = Replicate, value = FT) %>% ungroup()
 p4 <- Graphing_Corr(cmp, "Flowering Time", "2021-2022") +
   stat_cor(label.y = 105) +
   xlim(75, 135) +
   ylim(75, 135)
 
-outlier_upper <- quantile(PHENO_MIXED_2022$FT_DAYS, .75, na.rm = T) + (1.5 * IQR(PHENO_MIXED_2022$FT_DAYS, na.rm = T))
-outlier_lower <- quantile(PHENO_MIXED_2022$FT_DAYS, .25, na.rm = T) - (1.5 * IQR(PHENO_MIXED_2022$FT_DAYS, na.rm = T))
-outlier_data <- PHENO_MIXED_2022 %>% filter(FT_DAYS > outlier_upper | FT_DAYS < outlier_lower)
+outlier_upper <- quantile(PHENO_MIXED_2022$FT, .75, na.rm = T) + (1.5 * IQR(PHENO_MIXED_2022$FT, na.rm = T))
+outlier_lower <- quantile(PHENO_MIXED_2022$FT, .25, na.rm = T) - (1.5 * IQR(PHENO_MIXED_2022$FT, na.rm = T))
+outlier_data <- PHENO_MIXED_2022 %>% filter(FT > outlier_upper | FT < outlier_lower)
 
 # Residual Plotting
 cmp <- na.omit(cmp)
@@ -160,7 +160,7 @@ d <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 30) +
   labs(x = 'Flowering Time',
        title = "Residual Plot Mixed Flowering Time 2022")
@@ -168,16 +168,16 @@ d <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
 
 # Mixed Correlation 2021-2022 100 SW
 
-cmp <- PHENO_MIXED_2022 %>% group_by(Genotypes, Generation, replicate) %>% summarise(`100_seed_weight`) %>% spread(key = replicate, value = `100_seed_weight`) %>% ungroup()
+cmp <- PHENO_MIXED_2022 %>% group_by(Genotype, Generation, Replicate) %>% summarise(SEED_WEIGHT_100) %>% spread(key = Replicate, value = SEED_WEIGHT_100) %>% ungroup()
 p5 <- Graphing_Corr(cmp, "100 Seed Weight (g)", "2021-2022") +
   stat_cor(label.y = 4) +
   xlim(2.4, 6.1) +
   ylim(2.4, 6.1)
 
 
-outlier_upper <- quantile(PHENO_MIXED_2022$`100_seed_weight`, .75, na.rm = T) + (1.5 * IQR(PHENO_MIXED_2022$`100_seed_weight`, na.rm = T))
-outlier_lower <- quantile(PHENO_MIXED_2022$`100_seed_weight`, .25, na.rm = T) - (1.5 * IQR(PHENO_MIXED_2022$`100_seed_weight`, na.rm = T))
-outlier_data <- PHENO_MIXED_2022 %>% filter(`100_seed_weight` > outlier_upper | `100_seed_weight` < outlier_lower)
+outlier_upper <- quantile(PHENO_MIXED_2022$SEED_WEIGHT_100, .75, na.rm = T) + (1.5 * IQR(PHENO_MIXED_2022$SEED_WEIGHT_100, na.rm = T))
+outlier_lower <- quantile(PHENO_MIXED_2022$SEED_WEIGHT_100, .25, na.rm = T) - (1.5 * IQR(PHENO_MIXED_2022$SEED_WEIGHT_100, na.rm = T))
+outlier_data <- PHENO_MIXED_2022 %>% filter(SEED_WEIGHT_100 > outlier_upper | SEED_WEIGHT_100 < outlier_lower)
 
 # Residual Plotting
 cmp <- na.omit(cmp)
@@ -194,7 +194,7 @@ e <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 35) +
   labs(x = '100 Seed Weight (grams)',
        title = "Residual Plot Mixed 100 Seed Weight (grams) 2022")
@@ -205,7 +205,7 @@ PHENO_MIXED_2023 <- PHENO_FULL %>% filter(Condition == "mixed" & Exp_year == 202
 
 # Mixed Correlation 2022-2023 TW
 
-cmp <- PHENO_MIXED_2023 %>% group_by(Genotypes, Generation, replicate) %>% summarise(total_seed_mass_g) %>% spread(key = replicate, value = total_seed_mass_g) %>% ungroup()
+cmp <- PHENO_MIXED_2023 %>% group_by(Genotype, Generation, Replicate) %>% summarise(TOTAL_MASS) %>% spread(key = Replicate, value = TOTAL_MASS) %>% ungroup()
 p6 <- Graphing_Corr(cmp, "Total Weight (g)", "2022-2023") +
   stat_cor(label.y = 200) +
   xlim(0, 250) +
@@ -213,9 +213,9 @@ p6 <- Graphing_Corr(cmp, "Total Weight (g)", "2022-2023") +
 
 PHENO_tmp <- PHENO2023 %>% filter(Condition == "mixed")
 
-outlier_upper <- quantile(PHENO_tmp$total_seed_mass_g, .75, na.rm = T) + (1.5 * IQR(PHENO_tmp$total_seed_mass_g, na.rm = T))
-outlier_lower <- quantile(PHENO_tmp$total_seed_mass_g, .25, na.rm = T) - (1.5 * IQR(PHENO_tmp$total_seed_mass_g, na.rm = T))
-outlier_data <- PHENO_tmp %>% filter(total_seed_mass_g > outlier_upper | total_seed_mass_g < outlier_lower)
+outlier_upper <- quantile(PHENO_tmp$TOTAL_MASS, .75, na.rm = T) + (1.5 * IQR(PHENO_tmp$TOTAL_MASS, na.rm = T))
+outlier_lower <- quantile(PHENO_tmp$TOTAL_MASS, .25, na.rm = T) - (1.5 * IQR(PHENO_tmp$TOTAL_MASS, na.rm = T))
+outlier_data <- PHENO_tmp %>% filter(TOTAL_MASS > outlier_upper | TOTAL_MASS < outlier_lower)
 
 # Residual Plotting
 cmp <- na.omit(cmp)
@@ -232,7 +232,7 @@ f <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 35) +
   labs(x = 'Total Weight (grams)',
        title = "Residual Plot Mixed Total Weight (grams) 2023")
@@ -240,13 +240,13 @@ f <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
 
 # Mixed Correlation 2022-2023 Fecundity
 
-cmp <- PHENO_MIXED_2023 %>% group_by(Genotypes, Generation, replicate) %>% summarise(FECUNDITY) %>% spread(key = replicate, value = FECUNDITY) %>% ungroup()
+cmp <- PHENO_MIXED_2023 %>% group_by(Genotype, Generation, Replicate) %>% summarise(FECUNDITY) %>% spread(key = Replicate, value = FECUNDITY) %>% ungroup()
 p7 <- Graphing_Corr(cmp, "Relative Fecundity", "2022-2023") +
   stat_cor(label.y = 13) +
   xlim(-1.1, 3) +
   ylim(-1.1, 3) +
   geom_text_repel(label = ifelse(cmp$`1` > 3 | cmp$`2` > 3,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust =1, max.overlaps = 30)
 
 
@@ -266,14 +266,14 @@ g <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 35) +
   labs(x = 'Centered Fecundity',
        title = "Residual Plot Mixed Centered Fecundity 2023")
 
 # Mixed Correlation 2022-2023 Fitness
 
-cmp <- PHENO_MIXED_2023 %>% group_by(Genotypes, Generation, replicate) %>% summarise(ABS_FITNESS) %>% spread(key = replicate, value = ABS_FITNESS) %>% ungroup()
+cmp <- PHENO_MIXED_2023 %>% group_by(Genotype, Generation, Replicate) %>% summarise(ABS_FITNESS) %>% spread(key = Replicate, value = ABS_FITNESS) %>% ungroup()
 p8 <- Graphing_Corr(cmp, "Absolute Fitness", "2022-2023") +
   stat_cor(label.y = 3) +
   xlim(-2.5, 4.2) +
@@ -295,14 +295,14 @@ h <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 35) +
   labs(x = 'Centered Absolute Fitness',
        title = "Residual Plot Mixed Centered Absolute Fitness 2023")
 
 # Mixed Correlation 2022-2023 Flowering Time
 
-cmp <- PHENO_MIXED_2023 %>% group_by(Genotypes, Generation, replicate) %>% summarise(FT_DAYS) %>% spread(key = replicate, value = FT_DAYS) %>% ungroup()
+cmp <- PHENO_MIXED_2023 %>% group_by(Genotype, Generation, Replicate) %>% summarise(FT) %>% spread(key = Replicate, value = FT) %>% ungroup()
 p9 <- Graphing_Corr(cmp, "Flowering Time", "2022-2023") +
   stat_cor(label.y = 125) +
   xlim(75, 135) +
@@ -310,9 +310,9 @@ p9 <- Graphing_Corr(cmp, "Flowering Time", "2022-2023") +
 
 
 PHENO_tmp <- PHENO2023 %>% filter(Condition == "mixed")
-outlier_upper <- quantile(PHENO_tmp$FT_DAYS, .75, na.rm = T) + (1.5 * IQR(PHENO_tmp$FT_DAYS, na.rm = T))
-outlier_lower <- quantile(PHENO_tmp$FT_DAYS, .25, na.rm = T) - (1.5 * IQR(PHENO_tmp$FT_DAYS, na.rm = T))
-outlier_data <- PHENO_tmp %>% filter(FT_DAYS > outlier_upper | FT_DAYS < outlier_lower)
+outlier_upper <- quantile(PHENO_tmp$FT, .75, na.rm = T) + (1.5 * IQR(PHENO_tmp$FT, na.rm = T))
+outlier_lower <- quantile(PHENO_tmp$FT, .25, na.rm = T) - (1.5 * IQR(PHENO_tmp$FT, na.rm = T))
+outlier_data <- PHENO_tmp %>% filter(FT > outlier_upper | FT < outlier_lower)
 
 
 # Residual Plotting
@@ -330,23 +330,23 @@ i <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 35) +
   labs(x = 'Flowering Time',
        title = "Residual Plot Mixed Flowering Time 2023")
 
 # Mixed Correlation 2022-2023 100 SW
 
-cmp <- PHENO_MIXED_2023 %>% group_by(Genotypes, Generation, replicate) %>% summarise(`100_seed_weight`) %>% spread(key = replicate, value = `100_seed_weight`) %>% ungroup()
+cmp <- PHENO_MIXED_2023 %>% group_by(Genotype, Generation, Replicate) %>% summarise(SEED_WEIGHT_100) %>% spread(key = Replicate, value = SEED_WEIGHT_100) %>% ungroup()
 p10 <- Graphing_Corr(cmp, "100 Seed Weight (g)", "2022-2023") +
   stat_cor(label.y = 6) +
   xlim(2.4, 6.1) +
   ylim(2.4, 6.1)
 
 PHENO_tmp <- PHENO2023 %>% filter(Condition == "mixed")
-outlier_upper <- quantile(PHENO_tmp$`100_seed_weight`, .75, na.rm = T) + (1.5 * IQR(PHENO_tmp$`100_seed_weight`, na.rm = T))
-outlier_lower <- quantile(PHENO_tmp$`100_seed_weight`, .25, na.rm = T) - (1.5 * IQR(PHENO_tmp$`100_seed_weight`, na.rm = T))
-outlier_data <- PHENO_tmp %>% filter(`100_seed_weight` > outlier_upper | `100_seed_weight` < outlier_lower)
+outlier_upper <- quantile(PHENO_tmp$SEED_WEIGHT_100, .75, na.rm = T) + (1.5 * IQR(PHENO_tmp$SEED_WEIGHT_100, na.rm = T))
+outlier_lower <- quantile(PHENO_tmp$SEED_WEIGHT_100, .25, na.rm = T) - (1.5 * IQR(PHENO_tmp$SEED_WEIGHT_100, na.rm = T))
+outlier_data <- PHENO_tmp %>% filter(SEED_WEIGHT_100 > outlier_upper | SEED_WEIGHT_100 < outlier_lower)
 
 # Residual Plotting
 cmp <- na.omit(cmp)
@@ -363,7 +363,7 @@ j <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 35) +
   labs(x = '100 Seed Weight (grams)',
        title = "Residual Plot Mixed 100 Seed Weight (grams) 2023")
@@ -403,17 +403,17 @@ PHENO_SINGLE_2022 <- PHENO_FULL %>% filter(Condition == "single" & Exp_year == 2
 
 # Single Correlation 2021-2022 TW
 
-cmp <- PHENO_SINGLE_2022 %>% group_by(Genotypes, Generation, replicate) %>% summarise(total_seed_mass_g) %>% spread(key = replicate, value = total_seed_mass_g) %>% ungroup()
+cmp <- PHENO_SINGLE_2022 %>% group_by(Genotype, Generation, Replicate) %>% summarise(TOTAL_MASS) %>% spread(key = Replicate, value = TOTAL_MASS) %>% ungroup()
 p1 <- Graphing_Corr(cmp, "Total Weight (g)", "2021-2022") +
   stat_cor(label.y = 170) +
   ylim(0, 230) +
   xlim(0, 230)
 
-outlier_upper <- quantile(PHENO_SINGLE_2022$total_seed_mass_g, .75, na.rm = T) + (1.5 * IQR(PHENO_SINGLE_2022$total_seed_mass_g, na.rm = T))
-outlier_lower <- quantile(PHENO_SINGLE_2022$total_seed_mass_g, .25, na.rm = T) - (1.5 * IQR(PHENO_SINGLE_2022$total_seed_mass_g, na.rm = T))
-outlier_data <- PHENO_SINGLE_2022 %>% filter(total_seed_mass_g > outlier_upper | total_seed_mass_g < outlier_lower)
+outlier_upper <- quantile(PHENO_SINGLE_2022$TOTAL_MASS, .75, na.rm = T) + (1.5 * IQR(PHENO_SINGLE_2022$TOTAL_MASS, na.rm = T))
+outlier_lower <- quantile(PHENO_SINGLE_2022$TOTAL_MASS, .25, na.rm = T) - (1.5 * IQR(PHENO_SINGLE_2022$TOTAL_MASS, na.rm = T))
+outlier_data <- PHENO_SINGLE_2022 %>% filter(TOTAL_MASS > outlier_upper | TOTAL_MASS < outlier_lower)
 
-ggplot(PHENO_SINGLE_2022, aes(x = total_seed_mass_g)) +
+ggplot(PHENO_SINGLE_2022, aes(x = TOTAL_MASS)) +
   geom_histogram(bins = 60) +
   geom_vline(xintercept = outlier_upper, color = "red")
 
@@ -432,20 +432,20 @@ a <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 30) +
   labs(x = 'Total Weight (grams)',
        title = "Residual Plot Single Total Weight 2022")
 
 # Single Correlation 2021-2022 Fecundity
 
-cmp <- PHENO_SINGLE_2022 %>% group_by(Genotypes, Generation, replicate) %>% summarise(FECUNDITY) %>% spread(key = replicate, value = FECUNDITY) %>% ungroup()
+cmp <- PHENO_SINGLE_2022 %>% group_by(Genotype, Generation, Replicate) %>% summarise(FECUNDITY) %>% spread(key = Replicate, value = FECUNDITY) %>% ungroup()
 p2 <- Graphing_Corr(cmp, "Relative Fecundity", "2021-2022") +
   stat_cor(label.y = 2, label.x = 1) +
   xlim(-1.1, 3) +
   ylim(-1.1, 3) +
   geom_text_repel(label = ifelse(cmp$`1` > 3 | cmp$`2` > 3,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust =1, max.overlaps = 30)
 
 # Residual Plotting
@@ -463,14 +463,14 @@ b <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = .8, max.overlaps = 20) +
   labs(x = "Centered Fecundity",
        title = "Residuals Single Centered Fecundity 2022")
 
 # Single Correlation 2021-2022 Fitness
 
-cmp <- PHENO_SINGLE_2022 %>% group_by(Genotypes, Generation, replicate) %>% summarise(ABS_FITNESS) %>% spread(key = replicate, value = ABS_FITNESS) %>% ungroup()
+cmp <- PHENO_SINGLE_2022 %>% group_by(Genotype, Generation, Replicate) %>% summarise(ABS_FITNESS) %>% spread(key = Replicate, value = ABS_FITNESS) %>% ungroup()
 p3 <- Graphing_Corr(cmp, "Absolute Fitness", "2021-2022") +
   stat_cor(label.y = 3) +
   ylim(-1.8, 5) +
@@ -491,24 +491,24 @@ c <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = .8, max.overlaps = 20) +
   labs(x = "Centered Absolute Fitness",
        title = "Residuals Single Centered Absolute Fitness 2022")
 
 # Single Correlation 2021-2022 Flowering Time
 
-cmp <- PHENO_SINGLE_2022 %>% group_by(Genotypes, Generation, replicate) %>% summarise(FT_DAYS) %>% spread(key = replicate, value = FT_DAYS) %>% ungroup()
+cmp <- PHENO_SINGLE_2022 %>% group_by(Genotype, Generation, Replicate) %>% summarise(FT) %>% spread(key = Replicate, value = FT) %>% ungroup()
 p4 <- Graphing_Corr(cmp, "Flowering Time", "2021-2022") +
   stat_cor(label.y = 105) +
   xlim(65, 145) +
   ylim(65, 145)
 
-outlier_upper <- quantile(PHENO_SINGLE_2022$FT_DAYS, .75, na.rm = T) + (1.5 * (quantile(PHENO_SINGLE_2022$FT_DAYS, .75, na.rm = T) - quantile(PHENO_SINGLE_2022$FT_DAYS, .25, na.rm =T)))
-outlier_lower <- quantile(PHENO_SINGLE_2022$FT_DAYS, .25, na.rm = T) - (1.5 * (quantile(PHENO_SINGLE_2022$FT_DAYS, .75, na.rm = T) - quantile(PHENO_SINGLE_2022$FT_DAYS, .25, na.rm =T)))
-outlier_data <- PHENO_SINGLE_2022 %>% filter(FT_DAYS > outlier_upper | FT_DAYS < outlier_lower)
+outlier_upper <- quantile(PHENO_SINGLE_2022$FT, .75, na.rm = T) + (1.5 * (quantile(PHENO_SINGLE_2022$FT, .75, na.rm = T) - quantile(PHENO_SINGLE_2022$FT, .25, na.rm =T)))
+outlier_lower <- quantile(PHENO_SINGLE_2022$FT, .25, na.rm = T) - (1.5 * (quantile(PHENO_SINGLE_2022$FT, .75, na.rm = T) - quantile(PHENO_SINGLE_2022$FT, .25, na.rm =T)))
+outlier_data <- PHENO_SINGLE_2022 %>% filter(FT > outlier_upper | FT < outlier_lower)
 
-ggplot(PHENO_SINGLE_2022, aes(x = FT_DAYS)) +
+ggplot(PHENO_SINGLE_2022, aes(x = FT)) +
   geom_histogram(bins = 50) +
   geom_vline(xintercept = outlier_upper, color = "red")
 
@@ -528,24 +528,24 @@ d <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = .5, max.overlaps = 20) +
   labs(x = "Flowering Time",
        title = "Residual Plot Single Flowering Time 2022")
 
 # Single Correlation 2021-2022 100 SW
 
-cmp <- PHENO_SINGLE_2022 %>% group_by(Genotypes, Generation, replicate) %>% summarise(`100_seed_weight`) %>% spread(key = replicate, value = `100_seed_weight`) %>% ungroup()
+cmp <- PHENO_SINGLE_2022 %>% group_by(Genotype, Generation, Replicate) %>% summarise(SEED_WEIGHT_100) %>% spread(key = Replicate, value = SEED_WEIGHT_100) %>% ungroup()
 p5 <- Graphing_Corr(cmp, "100 Seed Weight (g)", "2021-2022") +
   stat_cor(label.y = 5.5) +
   ylim(2.5, 7) +
   xlim(2.5,7)
 
-outlier_upper <- quantile(PHENO_SINGLE_2022$`100_seed_weight`, .75, na.rm = T) + (1.5 * (quantile(PHENO_SINGLE_2022$`100_seed_weight`, .75, na.rm = T) - quantile(PHENO_SINGLE_2022$`100_seed_weight`, .25, na.rm =T)))
-outlier_lower <- quantile(PHENO_SINGLE_2022$`100_seed_weight`, .25, na.rm = T) - (1.5 * (quantile(PHENO_SINGLE_2022$`100_seed_weight`, .75, na.rm = T) - quantile(PHENO_SINGLE_2022$`100_seed_weight`, .25, na.rm =T)))
-outlier_data <- PHENO_SINGLE_2022 %>% filter(`100_seed_weight` > outlier_upper | `100_seed_weight` < outlier_lower)
+outlier_upper <- quantile(PHENO_SINGLE_2022$SEED_WEIGHT_100, .75, na.rm = T) + (1.5 * (quantile(PHENO_SINGLE_2022$SEED_WEIGHT_100, .75, na.rm = T) - quantile(PHENO_SINGLE_2022$SEED_WEIGHT_100, .25, na.rm =T)))
+outlier_lower <- quantile(PHENO_SINGLE_2022$SEED_WEIGHT_100, .25, na.rm = T) - (1.5 * (quantile(PHENO_SINGLE_2022$SEED_WEIGHT_100, .75, na.rm = T) - quantile(PHENO_SINGLE_2022$SEED_WEIGHT_100, .25, na.rm =T)))
+outlier_data <- PHENO_SINGLE_2022 %>% filter(SEED_WEIGHT_100 > outlier_upper | SEED_WEIGHT_100 < outlier_lower)
 
-ggplot(PHENO_SINGLE_2022, aes(x = `100_seed_weight`)) +
+ggplot(PHENO_SINGLE_2022, aes(x = SEED_WEIGHT_100)) +
   geom_histogram(bins = 400) +
   geom_vline(xintercept = outlier_upper, color = "red")
 
@@ -564,7 +564,7 @@ e <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = .5, max.overlaps = 20) +
   labs(x = "100 Seed Weight",
        title = "Residuals Single 100 Seed Weigh 2022")
@@ -576,7 +576,7 @@ PHENO_SINGLE_2023 <- PHENO_FULL %>% filter(Condition == "single" & Exp_year == 2
 
 # Single Correlation 2022-2023 TW
 
-cmp <- PHENO_SINGLE_2023 %>% group_by(Genotypes, Generation, replicate) %>% reframe(total_seed_mass_g) %>% spread(key = replicate, value = total_seed_mass_g) %>% ungroup()
+cmp <- PHENO_SINGLE_2023 %>% group_by(Genotype, Generation, Replicate) %>% reframe(TOTAL_MASS) %>% spread(key = Replicate, value = TOTAL_MASS) %>% ungroup()
 p6 <- Graphing_Corr(cmp, "Total Weight (g)", "2022-2023") +
   stat_cor(label.y = 170) +
   xlim(0, 230) +
@@ -585,12 +585,12 @@ p6 <- Graphing_Corr(cmp, "Total Weight (g)", "2022-2023") +
 # Identifying Outliers
 PHENO_tmp <- PHENO2023 %>% filter(Condition == "single")
 
-outlier_upper <- quantile(PHENO_tmp$total_seed_mass_g, .75, na.rm = T) + (1.5 * (quantile(PHENO_tmp$total_seed_mass_g, .75, na.rm = T) - quantile(PHENO_tmp$total_seed_mass_g, .25, na.rm =T)))
-outlier_lower <- quantile(PHENO_tmp$total_seed_mass_g, .25, na.rm = T) - (1.5 * (quantile(PHENO_tmp$total_seed_mass_g, .75, na.rm = T) - quantile(PHENO_tmp$total_seed_mass_g, .25, na.rm =T)))
-outlier_data <- PHENO_tmp %>% filter(total_seed_mass_g > outlier_upper | total_seed_mass_g < outlier_lower)
+outlier_upper <- quantile(PHENO_tmp$TOTAL_MASS, .75, na.rm = T) + (1.5 * (quantile(PHENO_tmp$TOTAL_MASS, .75, na.rm = T) - quantile(PHENO_tmp$TOTAL_MASS, .25, na.rm =T)))
+outlier_lower <- quantile(PHENO_tmp$TOTAL_MASS, .25, na.rm = T) - (1.5 * (quantile(PHENO_tmp$TOTAL_MASS, .75, na.rm = T) - quantile(PHENO_tmp$TOTAL_MASS, .25, na.rm =T)))
+outlier_data <- PHENO_tmp %>% filter(TOTAL_MASS > outlier_upper | TOTAL_MASS < outlier_lower)
 
 
-ggplot(PHENO_SINGLE_2023, aes(x = total_seed_mass_g)) +
+ggplot(PHENO_SINGLE_2023, aes(x = TOTAL_MASS)) +
   geom_histogram(bins = 100) +
   geom_vline(xintercept = outlier_upper, color = "red") +
   geom_vline(xintercept = outlier_lower, color = 'blue')
@@ -610,20 +610,20 @@ f <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = .8, max.overlaps = 20) +
   labs(x = "Total Weight (grams)",
        title = "Residuals Total Weight 2023")
 
 # Single Correlation 2022-2023 Fecundity
 
-cmp <- PHENO_SINGLE_2023 %>% group_by(Genotypes, Generation, replicate) %>% summarise(FECUNDITY) %>% spread(key = replicate, value = FECUNDITY) %>% ungroup()
+cmp <- PHENO_SINGLE_2023 %>% group_by(Genotype, Generation, Replicate) %>% summarise(FECUNDITY) %>% spread(key = Replicate, value = FECUNDITY) %>% ungroup()
 p7 <- Graphing_Corr(cmp, "Relative Fecundity", "2022-2023") +
   stat_cor(label.y = 2.5) +
   xlim(-1.1, 3) +
   ylim(-1.1, 3) +
   geom_text_repel(label = ifelse(cmp$`1` > 3 | cmp$`2` > 3,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust =1, max.overlaps = 30)
 
 # Residual Plotting
@@ -641,14 +641,14 @@ g <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = .8, max.overlaps = 20) +
   labs(x = "Centered Fecundity",
        title = "Residuals Single Fecundity 2023")
 
 # Single Correlation 2022-2023 Fitness
 
-cmp <- PHENO_SINGLE_2023 %>% group_by(Genotypes, Generation, replicate) %>% summarise(ABS_FITNESS) %>% spread(key = replicate, value = ABS_FITNESS) %>% ungroup()
+cmp <- PHENO_SINGLE_2023 %>% group_by(Genotype, Generation, Replicate) %>% summarise(ABS_FITNESS) %>% spread(key = Replicate, value = ABS_FITNESS) %>% ungroup()
 p8 <- Graphing_Corr(cmp, "Absolute Fitness", "2022-2023") +
   stat_cor(label.y = 3) +
   ylim(-1.8, 5) +
@@ -669,14 +669,14 @@ h <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = .8, max.overlaps = 20) +
   labs(x = "Centered Absolute Fitness",
        title = "Residuals Single Centered Absolute Fitness 2023")
 
 # Single Correlation 2022-2023 Flowering Time
 
-cmp <- PHENO_SINGLE_2023 %>% group_by(Genotypes, Generation, replicate) %>% summarise(FT_DAYS) %>% spread(key = replicate, value = FT_DAYS) %>% ungroup()
+cmp <- PHENO_SINGLE_2023 %>% group_by(Genotype, Generation, Replicate) %>% summarise(FT) %>% spread(key = Replicate, value = FT) %>% ungroup()
 p9 <- Graphing_Corr(cmp, "Flowering Time", "2022-2023") +
   stat_cor(label.y = 125) +
   ylim(65, 145) +
@@ -697,30 +697,30 @@ i <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = .8, max.overlaps = 20) +
   labs(x = "Flowering Time",
        title = "Residuals Single Flowering Time 2023")
 
 
 PHENO_tmp <- PHENO2023 %>% filter(Condition == "single")
-outlier_upper <- quantile(PHENO_tmp$FT_DAYS, .75, na.rm = T) + (1.5 * (quantile(PHENO_tmp$FT_DAYS, .75, na.rm = T) - quantile(PHENO_tmp$FT_DAYS, .25, na.rm =T)))
-outlier_lower <- quantile(PHENO_tmp$FT_DAYS, .25, na.rm = T) - (1.5 * (quantile(PHENO_tmp$FT_DAYS, .75, na.rm = T) - quantile(PHENO_tmp$FT_DAYS, .25, na.rm =T)))
-outlier_data <- PHENO_tmp %>% filter(FT_DAYS > outlier_upper | FT_DAYS < outlier_lower)
+outlier_upper <- quantile(PHENO_tmp$FT, .75, na.rm = T) + (1.5 * (quantile(PHENO_tmp$FT, .75, na.rm = T) - quantile(PHENO_tmp$FT, .25, na.rm =T)))
+outlier_lower <- quantile(PHENO_tmp$FT, .25, na.rm = T) - (1.5 * (quantile(PHENO_tmp$FT, .75, na.rm = T) - quantile(PHENO_tmp$FT, .25, na.rm =T)))
+outlier_data <- PHENO_tmp %>% filter(FT > outlier_upper | FT < outlier_lower)
 
 
 # Single Correlation 2022-2023 100 SW
 
-cmp <- PHENO_SINGLE_2023 %>% group_by(Genotypes, Generation, replicate) %>% summarise(`100_seed_weight`) %>% spread(key = replicate, value = `100_seed_weight`) %>% ungroup()
+cmp <- PHENO_SINGLE_2023 %>% group_by(Genotype, Generation, Replicate) %>% summarise(SEED_WEIGHT_100) %>% spread(key = Replicate, value = SEED_WEIGHT_100) %>% ungroup()
 p10 <- Graphing_Corr(cmp, "100 Seed Weight (g)", "2022-2023") +
   stat_cor(label.y = 5.5) +
   ylim(2.5, 7) +
   xlim(2.5,7)
 
 PHENO_tmp <- PHENO2023 %>% filter(Condition == "single")
-outlier_upper <- quantile(PHENO_tmp$`100_seed_weight`, .75, na.rm = T) + (1.5 * (quantile(PHENO_tmp$`100_seed_weight`, .75, na.rm = T) - quantile(PHENO_tmp$`100_seed_weight`, .25, na.rm =T)))
-outlier_lower <- quantile(PHENO_tmp$`100_seed_weight`, .25, na.rm = T) - (1.5 * (quantile(PHENO_tmp$`100_seed_weight`, .75, na.rm = T) - quantile(PHENO_tmp$`100_seed_weight`, .25, na.rm =T)))
-outlier_data <- PHENO_tmp %>% filter(`100_seed_weight` > outlier_upper | `100_seed_weight` < outlier_lower)
+outlier_upper <- quantile(PHENO_tmp$SEED_WEIGHT_100, .75, na.rm = T) + (1.5 * (quantile(PHENO_tmp$SEED_WEIGHT_100, .75, na.rm = T) - quantile(PHENO_tmp$SEED_WEIGHT_100, .25, na.rm =T)))
+outlier_lower <- quantile(PHENO_tmp$SEED_WEIGHT_100, .25, na.rm = T) - (1.5 * (quantile(PHENO_tmp$SEED_WEIGHT_100, .75, na.rm = T) - quantile(PHENO_tmp$SEED_WEIGHT_100, .25, na.rm =T)))
+outlier_data <- PHENO_tmp %>% filter(SEED_WEIGHT_100 > outlier_upper | SEED_WEIGHT_100 < outlier_lower)
 
 # Residual Plotting
 cmp <- na.omit(cmp)
@@ -737,7 +737,7 @@ j <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_hline(yintercept = -2, color = 'blue') +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
-                                 cmp$Genotypes,
+                                 cmp$Genotype,
                                  ""), size = 3, hjust = .8, max.overlaps = 20) +
   labs(x = "100 Seed Weight (grams)",
        title = "Residuals Single 100 Seed Weight 2023")
@@ -765,9 +765,9 @@ new_graph <- function(x, y){
          y = "Rep 2",
          title = paste("Correlation of", sep = " ", y, "Single Replicates"))}
 
-# Averaging the replicates between the years
+# Averaging the Replicates between the years
 
-tmp <- PHENO_FULL %>% group_by(Genotypes, replicate, Generation, Condition) %>% summarise(across(.cols = where(is.numeric), .fns = mean, na.rm = T)) %>% ungroup
+tmp <- PHENO_FULL %>% group_by(Genotype, Replicate, Generation, Condition) %>% summarise(across(.cols = where(is.numeric), .fns = mean, na.rm = T)) %>% ungroup
 
 ### SINGLE
 
@@ -775,7 +775,7 @@ smp <- tmp %>% filter(Condition == 'single')
 
 # TOTAL WEIGHT
 
-mp <- smp %>% group_by(Genotypes, Generation, replicate) %>% summarise(total_seed_mass_g) %>% spread(key = replicate, value = total_seed_mass_g) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(TOTAL_MASS) %>% spread(key = Replicate, value = TOTAL_MASS) %>% ungroup()
 
 a1 <- new_graph(mp, "Total Weight (grams)") +
   stat_cor(label.y = 170) +
@@ -784,7 +784,7 @@ a1 <- new_graph(mp, "Total Weight (grams)") +
 
 # CENTERED FECUNDITY
 
-mp <- smp %>% group_by(Genotypes, Generation, replicate) %>% summarise(FECUNDITY) %>% spread(key = replicate, value = FECUNDITY) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FECUNDITY) %>% spread(key = Replicate, value = FECUNDITY) %>% ungroup()
 
 a2 <- new_graph(mp, "Centered Fecundity") +
   stat_cor(label.y = 5, label.x = 1.5) +
@@ -793,7 +793,7 @@ a2 <- new_graph(mp, "Centered Fecundity") +
 
 # ABSOLUTE FITNESS
 
-mp <- smp %>% group_by(Genotypes, Generation, replicate) %>% summarise(ABS_FITNESS) %>% spread(key = replicate, value = ABS_FITNESS) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(ABS_FITNESS) %>% spread(key = Replicate, value = ABS_FITNESS) %>% ungroup()
 
 a3 <- new_graph(mp, "Centered Absolute Fitness") +
   stat_cor() +
@@ -802,7 +802,7 @@ a3 <- new_graph(mp, "Centered Absolute Fitness") +
 
 # FLOWERING TIME
 
-mp <- smp %>% group_by(Genotypes, Generation, replicate) %>% summarise(FT_DAYS) %>% spread(key = replicate, value = FT_DAYS) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FT) %>% spread(key = Replicate, value = FT) %>% ungroup()
 
 a4 <- new_graph(mp, "Flowering Time") +
   stat_cor() +
@@ -811,7 +811,7 @@ a4 <- new_graph(mp, "Flowering Time") +
 
 # 100 SEED WEIGHT
 
-mp <- smp %>% group_by(Genotypes, Generation, replicate) %>% summarise(`100_seed_weight`) %>% spread(key = replicate, value = `100_seed_weight`) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(SEED_WEIGHT_100) %>% spread(key = Replicate, value = SEED_WEIGHT_100) %>% ungroup()
 
 a5 <- new_graph(mp, "100 Seed Weight") +
   stat_cor() +
@@ -834,7 +834,7 @@ new_graph <- function(x, y){
 smp <- tmp %>% filter(Condition == 'mixed')
 
 # TOTAL WEIGHT
-mp <- smp %>% group_by(Genotypes, Generation, replicate) %>% summarise(total_seed_mass_g) %>% spread(key = replicate, value = total_seed_mass_g) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(TOTAL_MASS) %>% spread(key = Replicate, value = TOTAL_MASS) %>% ungroup()
 
 a6 <- new_graph(mp, "Total Weight (grams)") +
   stat_cor(label.y = 170) +
@@ -843,7 +843,7 @@ a6 <- new_graph(mp, "Total Weight (grams)") +
 
 # CENTERED FECUNDITY
 
-mp <- smp %>% group_by(Genotypes, Generation, replicate) %>% summarise(FECUNDITY) %>% spread(key = replicate, value = FECUNDITY) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FECUNDITY) %>% spread(key = Replicate, value = FECUNDITY) %>% ungroup()
 
 a7 <- new_graph(mp, "Centered Fecundity") +
   stat_cor(label.y = 5, label.x = 1.5) +
@@ -852,7 +852,7 @@ a7 <- new_graph(mp, "Centered Fecundity") +
 
 # ABSOLUTE FITNESS
 
-mp <- smp %>% group_by(Genotypes, Generation, replicate) %>% summarise(ABS_FITNESS) %>% spread(key = replicate, value = ABS_FITNESS) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(ABS_FITNESS) %>% spread(key = Replicate, value = ABS_FITNESS) %>% ungroup()
 
 a8 <- new_graph(mp, "Centered Absolute Fitness") +
   stat_cor() +
@@ -861,7 +861,7 @@ a8 <- new_graph(mp, "Centered Absolute Fitness") +
 
 # FLOWERING TIME
 
-mp <- smp %>% group_by(Genotypes, Generation, replicate) %>% summarise(FT_DAYS) %>% spread(key = replicate, value = FT_DAYS) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FT) %>% spread(key = Replicate, value = FT) %>% ungroup()
 
 a9 <- new_graph(mp, "Flowering Time") +
   stat_cor() +
@@ -870,7 +870,7 @@ a9 <- new_graph(mp, "Flowering Time") +
 
 # 100 SEED WEIGHT
 
-mp <- smp %>% group_by(Genotypes, Generation, replicate) %>% summarise(`100_seed_weight`) %>% spread(key = replicate, value = `100_seed_weight`) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(SEED_WEIGHT_100) %>% spread(key = Replicate, value = SEED_WEIGHT_100) %>% ungroup()
 
 a10 <- new_graph(mp, "100 Seed Weight") +
   stat_cor() +
@@ -882,12 +882,12 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Correlation_Between_Y
 
 # Distribution of number of plants survived
 
-tok <- PHENO_FULL %>% filter(number_of_plants != 0)
-k <- tok$number_of_plants
-l <- test$number_of_plants
+tok <- PHENO_FULL %>% filter(Plants != 0)
+k <- tok$Plants
+l <- test$Plants
 
-mean_val <- mean(tok$number_of_plants)
-median_val <- median(tok$number_of_plants)
+mean_val <- mean(tok$Plants)
+median_val <- median(tok$Plants)
 
 ggplot() +
   geom_histogram(aes(k), alpha = .5) +
@@ -899,4 +899,4 @@ ggplot() +
   labs(colour = "Mean and Median",
        x = "number of plants",
        title = "Distribution of number of plants")
-ggsave('/bigdata/koeniglab/jmarz001/Ag-Competition/data/Distribution_number_of_plants.pdf', width = 12, height = 10)
+ggsave('/bigdata/koeniglab/jmarz001/Ag-Competition/data/Distribution_Plants.pdf', width = 12, height = 10)

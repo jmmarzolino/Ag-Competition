@@ -25,7 +25,7 @@ df <- fread("")
 Mixed_2021_2022 <- PHENO_FULL_AVERAGE %>% filter(Condition == "mixed" & Exp_year == 2022)
 
 ### Average Total Weight Distributions
-graph_tmp <- Mixed_2021_2022 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_TW = mean(total_seed_mass_g)) %>% ungroup()
+graph_tmp <- Mixed_2021_2022 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_TW = mean(TOTAL_MASS)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_TW, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -38,14 +38,14 @@ ggplot(graph_tmp, aes(x = Avg_TW)) +
 
 # Levene Test (checking for homogeneity of variance, assumption of ANOVA) - insignificant means we can assume homogeneity of variance
 
-leveneTest(total_seed_mass_g ~ as.factor(Generation), Mixed_2021_2022)
+leveneTest(TOTAL_MASS ~ as.factor(Generation), Mixed_2021_2022)
 
 ### QQ-plot & Shapiro Normality for TW - (SOME GROUPS NOT NORMAL, need Kruskal Wallis and Dunn test)
 
-h <- Mixed_2021_2022 %>% select(total_seed_mass_g, Generation, Genotypes) %>%  arrange(Generation)
-h <- h %>% mutate(TW = total_seed_mass_g)
-h <- h %>% select(c("Generation", "Genotypes", "TW"))
-h$Genotypes <- factor(h$Genotypes, levels = h$Genotypes[order(h$TW)])
+h <- Mixed_2021_2022 %>% select(TOTAL_MASS, Generation, Genotype) %>%  arrange(Generation)
+h <- h %>% mutate(TW = TOTAL_MASS)
+h <- h %>% select(c("Generation", "Genotype", "TW"))
+h$Genotype <- factor(h$Genotype, levels = h$Genotype[order(h$TW)])
 
 par(mfrow = c(2, 3))
 for (i in unique(h$Generation)) {
@@ -62,13 +62,13 @@ for(i in unique(h$Generation)){
 
 ### Kruskal Wallis and Dunn Tests
 
-kruskal.test(total_seed_mass_g ~ Generation, Mixed_2021_2022)
-dunn.test(Mixed_2021_2022$total_seed_mass_g, Mixed_2021_2022$Generation)
+kruskal.test(TOTAL_MASS ~ Generation, Mixed_2021_2022)
+dunn.test(Mixed_2021_2022$TOTAL_MASS, Mixed_2021_2022$Generation)
 
 
 ### Average Flowering Time Distributions
 
-graph_tmp <- Mixed_2021_2022 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_FT = mean(FT_DAYS)) %>% ungroup()
+graph_tmp <- Mixed_2021_2022 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_FT = mean(FT)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_FT, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -80,14 +80,14 @@ ggplot(graph_tmp, aes(x = Avg_FT)) +
 
 # Levene test - unequal variances between groups
 
-leveneTest(FT_DAYS ~ as.factor(Generation), Mixed_2021_2022)
+leveneTest(FT ~ as.factor(Generation), Mixed_2021_2022)
 
 ### QQ-plot for Single FT & Shapiro Normality | (SOME GROUPS NOT NORMAL)
 
-h <- Mixed_2021_2022 %>% select(FT_DAYS, Generation, Genotypes) %>%  arrange(Generation)
-h <- h %>% mutate(FT = FT_DAYS)
-h <- h %>% select(c("Generation", "Genotypes", "FT"))
-h$Genotypes <- factor(h$Genotypes, levels = h$Genotypes[order(h$FT)])
+h <- Mixed_2021_2022 %>% select(FT, Generation, Genotype) %>%  arrange(Generation)
+h <- h %>% mutate(FT = FT)
+h <- h %>% select(c("Generation", "Genotype", "FT"))
+h$Genotype <- factor(h$Genotype, levels = h$Genotype[order(h$FT)])
 
 par(mfrow = c(2, 3))
 for (i in unique(h$Generation)) {
@@ -104,12 +104,12 @@ for(i in unique(h$Generation)){
 
 ### Kruskal Wallis and Dunn test
 
-kruskal.test(FT_DAYS ~ Generation, Mixed_2021_2022)
-dunn.test(Mixed_2021_2022$FT_DAYS, Mixed_2021_2022$Generation)
+kruskal.test(FT ~ Generation, Mixed_2021_2022)
+dunn.test(Mixed_2021_2022$FT, Mixed_2021_2022$Generation)
 
 ### Average Fecundity Distributions
 
-graph_tmp <- Mixed_2021_2022 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_Fec = mean(FECUNDITY)) %>% ungroup()
+graph_tmp <- Mixed_2021_2022 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_Fec = mean(FECUNDITY)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_Fec, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -126,10 +126,10 @@ leveneTest(FECUNDITY ~ as.factor(Generation), Mixed_2021_2022)
 
 ### QQ-plot for Single Fec & Shapiro Normality (NOT NORMAL)
 
-h <- Mixed_2021_2022 %>% select(FECUNDITY, Generation, Genotypes) %>%  arrange(Generation)
+h <- Mixed_2021_2022 %>% select(FECUNDITY, Generation, Genotype) %>%  arrange(Generation)
 h <- h %>% mutate(Fec = FECUNDITY)
-h <- h %>% select(c("Generation", "Genotypes", "Fec"))
-h$Genotypes <- factor(h$Genotypes, levels = h$Genotypes[order(h$Fec)])
+h <- h %>% select(c("Generation", "Genotype", "Fec"))
+h$Genotype <- factor(h$Genotype, levels = h$Genotype[order(h$Fec)])
 
 par(mfrow = c(2, 3))
 for (i in unique(h$Generation)) {
@@ -147,12 +147,12 @@ for(i in unique(h$Generation)){
 ### Kruskal Wallis and Dunn test
 
 kruskal.test(FECUNDITY ~ Generation, Mixed_2021_2022)
-dunn.test(Mixed_2021_2022$FECUNDITY, Mixed_2021_2022$Generation)
+dunn.test(Mixed_2021_2022$FEC, Mixed_2021_2022$Generation)
 
 
 ### Average Fitness Distributions
 
-graph_tmp <- Mixed_2021_2022 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_Fit = mean(ABS_FITNESS, na.rm = T)) %>% ungroup()
+graph_tmp <- Mixed_2021_2022 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_Fit = mean(ABS_FITNESS, na.rm = T)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_Fit, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -168,10 +168,10 @@ leveneTest(ABS_FITNESS ~ as.factor(Generation), Mixed_2021_2022)
 
 ### QQ-plot for Fitness & Shapiro Normality (NOT ALL NORMAL)
 
-h <- Mixed_2021_2022 %>% select(ABS_FITNESS, Generation, Genotypes) %>%  arrange(Generation)
+h <- Mixed_2021_2022 %>% select(ABS_FITNESS, Generation, Genotype) %>%  arrange(Generation)
 h <- h %>% mutate(Fit = ABS_FITNESS)
-h <- h %>% select(c("Generation", "Genotypes", "Fit"))
-h$Genotypes <- factor(h$Genotypes, levels = h$Genotypes[order(h$Fit)])
+h <- h %>% select(c("Generation", "Genotype", "Fit"))
+h$Genotype <- factor(h$Genotype, levels = h$Genotype[order(h$Fit)])
 
 par(mfrow = c(2, 3))
 for (i in unique(h$Generation)) {
@@ -193,7 +193,7 @@ dunn.test(Mixed_2021_2022$ABS_FITNESS, Mixed_2021_2022$Generation)
 
 # 100 SW Distributions
 
-graph_tmp <- Mixed_2021_2022 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_100_SW = mean(`100_seed_weight`)) %>% ungroup()
+graph_tmp <- Mixed_2021_2022 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_100_SW = mean(SEED_WEIGHT_100)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_100_SW, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -207,14 +207,14 @@ ggplot(graph_tmp, aes(x = Avg_100_SW)) +
 
 # Levene Test (EQUAL VARIANCE)
 
-leveneTest(`100_seed_weight` ~ as.factor(Generation), Mixed_2021_2022)
+leveneTest(SEED_WEIGHT_100 ~ as.factor(Generation), Mixed_2021_2022)
 
 ### QQ-plot & Shapiro Normality for 100 SW (NORMAL)
 
-h <- Single_2021_2022 %>% select(`100_seed_weight`, Generation, Genotypes) %>%  arrange(Generation)
-h <- h %>% mutate(SW = `100_seed_weight`)
-h <- h %>% select(c("Generation", "Genotypes", "SW"))
-h$Genotypes <- factor(h$Genotypes, levels = h$Genotypes[order(h$SW)])
+h <- Single_2021_2022 %>% select(SEED_WEIGHT_100, Generation, Genotype) %>%  arrange(Generation)
+h <- h %>% mutate(SW = SEED_WEIGHT_100)
+h <- h %>% select(c("Generation", "Genotype", "SW"))
+h$Genotype <- factor(h$Genotype, levels = h$Genotype[order(h$SW)])
 
 par(mfrow = c(2, 3))
 for (i in unique(h$Generation)) {
@@ -231,7 +231,7 @@ for(i in unique(h$Generation)){
 
 # ANOVA & TUKEY for 100 SW
 
-ANOVA_100 <- aov(`100_seed_weight` ~ as.factor(Generation), Mixed_2021_2022)
+ANOVA_100 <- aov(SEED_WEIGHT_100 ~ as.factor(Generation), Mixed_2021_2022)
 summary(ANOVA_100)
 TukeyHSD(ANOVA_100)
 
@@ -249,7 +249,7 @@ Mixed_2022_2023 <- PHENO_FULL_AVERAGE %>% filter(Condition == "mixed" & Exp_year
 # Average TW Distributions
 
 ### Average Total Weight Distributions
-graph_tmp <- Mixed_2022_2023 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_TW = mean(total_seed_mass_g)) %>% ungroup()
+graph_tmp <- Mixed_2022_2023 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_TW = mean(TOTAL_MASS)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_TW, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -262,14 +262,14 @@ ggplot(graph_tmp, aes(x = Avg_TW)) +
 
 # Levene Test (EQUAL VARIANCE)
 
-leveneTest(total_seed_mass_g ~ as.factor(Generation), Single_2022_2023)
+leveneTest(TOTAL_MASS ~ as.factor(Generation), Single_2022_2023)
 
 ### QQ-plot & Shapiro Normality for TW - (NORMAL)
 
-h <- Single_2022_2023 %>% select(total_seed_mass_g, Generation, Genotypes) %>%  arrange(Generation)
-h <- h %>% mutate(TW = total_seed_mass_g)
-h <- h %>% select(c("Generation", "Genotypes", "TW"))
-h$Genotypes <- factor(h$Genotypes, levels = h$Genotypes[order(h$TW)])
+h <- Single_2022_2023 %>% select(TOTAL_MASS, Generation, Genotype) %>%  arrange(Generation)
+h <- h %>% mutate(TW = TOTAL_MASS)
+h <- h %>% select(c("Generation", "Genotype", "TW"))
+h$Genotype <- factor(h$Genotype, levels = h$Genotype[order(h$TW)])
 
 par(mfrow = c(2, 3))
 for (i in unique(h$Generation)) {
@@ -286,13 +286,13 @@ for(i in unique(h$Generation)){
 
 ### ANOVA and TUKEY TW
 
-ANOVA_TW <- aov(total_seed_mass_g ~ as.factor(Generation), Mixed_2022_2023)
+ANOVA_TW <- aov(TOTAL_MASS ~ as.factor(Generation), Mixed_2022_2023)
 summary(ANOVA_TW)
 TukeyHSD(ANOVA_TW)
 
 ### Average Flowering Time Distributions
 
-graph_tmp <- Mixed_2022_2023 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_FT = mean(FT_DAYS)) %>% ungroup()
+graph_tmp <- Mixed_2022_2023 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_FT = mean(FT)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_FT, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -304,14 +304,14 @@ ggplot(graph_tmp, aes(x = Avg_FT)) +
 
 # Levene test - unequal variances between groups
 
-leveneTest(FT_DAYS ~ as.factor(Generation), Mixed_2022_2023)
+leveneTest(FT ~ as.factor(Generation), Mixed_2022_2023)
 
 ### QQ-plot for Single FT & Shapiro Normality | (SOME GROUPS NOT NORMAL)
 
-h <- Mixed_2022_2023 %>% select(FT_DAYS, Generation, Genotypes) %>%  arrange(Generation)
-h <- h %>% mutate(FT = FT_DAYS)
-h <- h %>% select(c("Generation", "Genotypes", "FT"))
-h$Genotypes <- factor(h$Genotypes, levels = h$Genotypes[order(h$FT)])
+h <- Mixed_2022_2023 %>% select(FT, Generation, Genotype) %>%  arrange(Generation)
+h <- h %>% mutate(FT = FT)
+h <- h %>% select(c("Generation", "Genotype", "FT"))
+h$Genotype <- factor(h$Genotype, levels = h$Genotype[order(h$FT)])
 
 par(mfrow = c(2, 3))
 for (i in unique(h$Generation)) {
@@ -328,13 +328,13 @@ for(i in unique(h$Generation)){
 
 ### Kruskal Wallis and Dunn test
 
-kruskal.test(FT_DAYS ~ Generation, Mixed_2022_2023)
-dunn.test(Mixed_2022_2023$FT_DAYS, Mixed_2022_2023$Generation)
+kruskal.test(FT ~ Generation, Mixed_2022_2023)
+dunn.test(Mixed_2022_2023$FT, Mixed_2022_2023$Generation)
 
 
 ### Average Fecundity Distributions
 
-graph_tmp <- Mixed_2022_2023 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_Fec = mean(FECUNDITY)) %>% ungroup()
+graph_tmp <- Mixed_2022_2023 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_Fec = mean(FECUNDITY)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_Fec, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -351,10 +351,10 @@ leveneTest(FECUNDITY ~ as.factor(Generation), Mixed_2022_2023)
 
 ### QQ-plot for Single Fec & Shapiro Normality (NOT NORMAL)
 
-h <- Mixed_2022_2023 %>% select(FECUNDITY, Generation, Genotypes) %>%  arrange(Generation)
+h <- Mixed_2022_2023 %>% select(FECUNDITY, Generation, Genotype) %>%  arrange(Generation)
 h <- h %>% mutate(Fec = FECUNDITY)
-h <- h %>% select(c("Generation", "Genotypes", "Fec"))
-h$Genotypes <- factor(h$Genotypes, levels = h$Genotypes[order(h$Fec)])
+h <- h %>% select(c("Generation", "Genotype", "Fec"))
+h$Genotype <- factor(h$Genotype, levels = h$Genotype[order(h$Fec)])
 
 par(mfrow = c(2, 3))
 for (i in unique(h$Generation)) {
@@ -372,11 +372,11 @@ for(i in unique(h$Generation)){
 ### Kruskal Wallis and Dunn test
 
 kruskal.test(FECUNDITY ~ Generation, Mixed_2022_2023)
-dunn.test(Mixed_2022_2023$FECUNDITY, Mixed_2022_2023$Generation)
+dunn.test(Mixed_2022_2023$FEC, Mixed_2022_2023$Generation)
 
 ### Average Fitness Distributions
 
-graph_tmp <- Mixed_2022_2023 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_Fit = mean(ABS_FITNESS, na.rm = T)) %>% ungroup()
+graph_tmp <- Mixed_2022_2023 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_Fit = mean(ABS_FITNESS, na.rm = T)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_Fit, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -392,10 +392,10 @@ leveneTest(ABS_FITNESS ~ as.factor(Generation), Mixed_2022_2023)
 
 ### QQ-plot for Fitness & Shapiro Normality (NORMAL)
 
-h <- Mixed_2022_2023 %>% select(ABS_FITNESS, Generation, Genotypes) %>%  arrange(Generation)
+h <- Mixed_2022_2023 %>% select(ABS_FITNESS, Generation, Genotype) %>%  arrange(Generation)
 h <- h %>% mutate(Fit = ABS_FITNESS)
-h <- h %>% select(c("Generation", "Genotypes", "Fit"))
-h$Genotypes <- factor(h$Genotypes, levels = h$Genotypes[order(h$Fit)])
+h <- h %>% select(c("Generation", "Genotype", "Fit"))
+h$Genotype <- factor(h$Genotype, levels = h$Genotype[order(h$Fit)])
 
 par(mfrow = c(2, 3))
 for (i in unique(h$Generation)) {
@@ -419,7 +419,7 @@ TukeyHSD(ANOVA_Fit)
 
 # 100 SW Distributions
 
-graph_tmp <- Mixed_2022_2023 %>% group_by(Generation, Genotypes, Exp_year) %>% summarise(Avg_100_SW = mean(`100_seed_weight`)) %>% ungroup()
+graph_tmp <- Mixed_2022_2023 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_100_SW = mean(SEED_WEIGHT_100)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_100_SW, na.rm = T))
 graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
 
@@ -433,14 +433,14 @@ ggplot(graph_tmp, aes(x = Avg_100_SW)) +
 
 # Levene Test (EQUAL VARIANCE) - 100 SW
 
-leveneTest(`100_seed_weight` ~ as.factor(Generation), Mixed_2022_2023)
+leveneTest(SEED_WEIGHT_100 ~ as.factor(Generation), Mixed_2022_2023)
 
 ### QQ-plot & Shapiro Normality for 100 SW (NOT ALL NORMAL)
 
-h <- Mixed_2022_2023 %>% select(`100_seed_weight`, Generation, Genotypes) %>%  arrange(Generation)
-h <- h %>% mutate(SW = `100_seed_weight`)
-h <- h %>% select(c("Generation", "Genotypes", "SW"))
-h$Genotypes <- factor(h$Genotypes, levels = h$Genotypes[order(h$SW)])
+h <- Mixed_2022_2023 %>% select(SEED_WEIGHT_100, Generation, Genotype) %>%  arrange(Generation)
+h <- h %>% mutate(SW = SEED_WEIGHT_100)
+h <- h %>% select(c("Generation", "Genotype", "SW"))
+h$Genotype <- factor(h$Genotype, levels = h$Genotype[order(h$SW)])
 
 par(mfrow = c(2, 3))
 for (i in unique(h$Generation)) {
@@ -461,5 +461,5 @@ table(Single_2022_2023$Generation)
 
 # Kruskal Wallis and Dunn - 100 SW
 
-kruskal.test(`100_seed_weight` ~ Generation, Mixed_2022_2023)
-dunn.test(Mixed_2022_2023$`100_seed_weight`, Mixed_2022_2023$Generation)
+kruskal.test(SEED_WEIGHT_100 ~ Generation, Mixed_2022_2023)
+dunn.test(Mixed_2022_2023$SEED_WEIGHT_100, Mixed_2022_2023$Generation)

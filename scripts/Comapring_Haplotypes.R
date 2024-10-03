@@ -22,7 +22,7 @@ Single_2021_2022 <- PHENO_FULL_AVERAGE %>% filter(Condition == 'single' & Exp_ye
 
 Single_2021_2022 <- Single_2021_2022 %>% filter(Haplotype != "NA")
 Single_2021_2022$Haplotype <- as.factor(Single_2021_2022$Haplotype)
-Haplo_graph <- Single_2021_2022 %>% group_by(Generation, Haplotype) %>% summarise(Avg_TW = mean(total_seed_mass_g, na.rm = T)) %>% ungroup()
+Haplo_graph <- Single_2021_2022 %>% group_by(Generation, Haplotype) %>% summarise(Avg_TW = mean(TOTAL_MASS, na.rm = T)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_TW, na.rm = T)) %>% ungroup()
 Haplo_graph$`Avg Yield > Pop & Gen Avg Yield` <- ifelse(Haplo_graph$Avg_TW > Haplo_graph$GenAvg & Haplo_graph$Avg_TW > mean(Haplo_graph$Avg_TW, na.rm = T), TRUE, FALSE)
 f_AY <- Haplo_graph %>% filter(`Avg Yield > Pop & Gen Avg Yield` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
@@ -41,7 +41,7 @@ ggsave("scripts/plotting/05a_Average_TW_Haplotypes_2021_2022.png", width = 16, h
 
 ### 5ai_Comparing_FT_Between_Haplotypes.R
 
-Haplo_graph <- Single_2021_2022 %>% group_by(Generation, Haplotype) %>% summarise(Avg_FT = mean(FT_DAYS, na.rm = T)) %>% ungroup()
+Haplo_graph <- Single_2021_2022 %>% group_by(Generation, Haplotype) %>% summarise(Avg_FT = mean(FT, na.rm = T)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_FT, na.rm = T)) %>% ungroup()
 Haplo_graph$`Avg FT > Pop & Gen Avg FT` <- ifelse(Haplo_graph$Avg_FT > Haplo_graph$GenAvg & Haplo_graph$Avg_FT > mean(Haplo_graph$Avg_FT, na.rm = T), TRUE, FALSE)
 f_FT <- Haplo_graph %>% filter(`Avg FT > Pop & Gen Avg FT` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
@@ -98,7 +98,7 @@ ggsave("scripts/plotting/05aiii_Average_Fit_Haplotypes_2021_2022.png", width = 1
 
 ### 5aiiii_Comparing_100SW_Between_Haplotypes.R
 
-Haplo_graph <- Single_2021_2022 %>% group_by(Generation, Haplotype) %>% summarise(Avg_100SW = mean(`100_seed_weight`, na.rm = T)) %>% ungroup()
+Haplo_graph <- Single_2021_2022 %>% group_by(Generation, Haplotype) %>% summarise(Avg_100SW = mean(SEED_WEIGHT_100, na.rm = T)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% filter(Avg_100SW != "NA")
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_100SW, na.rm = T)) %>% ungroup()
 Haplo_graph$`Avg Fit > Pop & Gen Avg Fit` <- ifelse(Haplo_graph$Avg_100SW > Haplo_graph$GenAvg & Haplo_graph$Avg_100SW > mean(Haplo_graph$Avg_100SW, na.rm = T), TRUE, FALSE)
@@ -127,7 +127,7 @@ Single_2022_2023 <- PHENO_FULL_AVERAGE %>% filter(Condition == 'single' & Exp_ye
 
 Single_2022_2023 <- Single_2022_2023 %>% filter(Haplotype != "NA")
 Single_2022_2023$Haplotype <- as.factor(Single_2022_2023$Haplotype)
-Haplo_graph <- Single_2022_2023 %>% group_by(Generation, Haplotype) %>% summarise(Avg_TW = mean(total_seed_mass_g, na.rm = T)) %>% ungroup()
+Haplo_graph <- Single_2022_2023 %>% group_by(Generation, Haplotype) %>% summarise(Avg_TW = mean(TOTAL_MASS, na.rm = T)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_TW, na.rm = T)) %>% ungroup()
 Haplo_graph$`Avg Yield > Pop & Gen Avg Yield` <- ifelse(Haplo_graph$Avg_TW > Haplo_graph$GenAvg & Haplo_graph$Avg_TW > mean(Haplo_graph$Avg_TW, na.rm = T), TRUE, FALSE)
 f_AY <- Haplo_graph %>% filter(`Avg Yield > Pop & Gen Avg Yield` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
@@ -146,7 +146,7 @@ ggsave("scripts/plotting/05a_Average_TW_Haplotypes_2021_2022.png", width = 16, h
 
 ### 5ai_Comparing_FT_Between_Haplotypes.R
 
-Haplo_graph <- Single_2022_2023 %>% group_by(Generation, Haplotype) %>% summarise(Avg_FT = mean(FT_DAYS, na.rm = T)) %>% ungroup()
+Haplo_graph <- Single_2022_2023 %>% group_by(Generation, Haplotype) %>% summarise(Avg_FT = mean(FT, na.rm = T)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_FT, na.rm = T)) %>% ungroup()
 Haplo_graph$`Avg FT > Pop & Gen Avg FT` <- ifelse(Haplo_graph$Avg_FT > Haplo_graph$GenAvg & Haplo_graph$Avg_FT > mean(Haplo_graph$Avg_FT, na.rm = T), TRUE, FALSE)
 f_FT <- Haplo_graph %>% filter(`Avg FT > Pop & Gen Avg FT` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
@@ -203,7 +203,7 @@ ggsave("scripts/plotting/05aiii_Average_Fit_Haplotypes_2021_2022.png", width = 1
 
 ### 5aiiii_Comparing_100SW_Between_Haplotypes.R
 
-Haplo_graph <- Single_2022_2023 %>% group_by(Generation, Haplotype) %>% summarise(Avg_100SW = mean(`100_seed_weight`, na.rm = T)) %>% ungroup()
+Haplo_graph <- Single_2022_2023 %>% group_by(Generation, Haplotype) %>% summarise(Avg_100SW = mean(SEED_WEIGHT_100, na.rm = T)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% filter(Avg_100SW != "NA")
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_100SW, na.rm = T)) %>% ungroup()
 Haplo_graph$`Avg Fit > Pop & Gen Avg Fit` <- ifelse(Haplo_graph$Avg_100SW > Haplo_graph$GenAvg & Haplo_graph$Avg_100SW > mean(Haplo_graph$Avg_100SW, na.rm = T), TRUE, FALSE)
