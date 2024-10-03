@@ -25,7 +25,6 @@ FT_2022_2023 <- read_delim("FT_DAYS_2022-2023.xlsx - FT_DAYS.csv")
 =======
 Seed_weights_2022_2023 <- read_delim("SEED_WEIGHTS_2022_2023.csv") %>% select(-c(Date, Notes))
 FT_2022_2023 <- read_delim("FT_DAYS_2022_2023.csv")
-
 FT_2023 <- read_delim('FT_2023.tsv')
 FT_2022 <- read_delim('FT_2021_2022.tsv')
 Genotype_List_2022_2023 <- read_delim("Genotype_List_2023_2023.csv")
@@ -34,11 +33,13 @@ Seed_weights_2021_2022 <- read_delim("SEED_WEIGHTS_2021_2022.csv") %>% select(c(
 
 # join seed weights to FT for 2021-2022
 #FT_2022$number_of_plants
-Seed_weights_2021_2022$replicate <- as.numeric(gsub("rep (\\d)", "\\1", Seed_weights_2021_2022$replicate))
-Seed_weights_2021_2022$Flowering_Date <- as.numeric(Seed_weights_2021_2022$Flowering_Date)
+Seed_weights_2021_2022$replicate <- as.numeric(gsub("rep (\\d)", "\\1", Seed_weights_2021_2022$Replicate))
+Seed_weights_2021_2022$Flowering_Date <- as.numeric(Seed_weights_2021_2022$FT)
 
 ### Creating 2022 Dataframe, Adding in the Exp_Year, and removing "2021BED" and "2021ROW" columns
-PHENO2022 <- full_join(FT_2022, Seed_weights_2021_2022, by=c('Genotypes', 'number_of_plants'='germinated', 'Condition', 'replicate', '2021BED', '2021ROW', 'Flowering_Date')) %>% mutate(Exp_year = 2022) %>% select(c("Genotypes", "number_of_plants","Condition","replicate","Flowering_Date","Generation", "total_seed_mass_g", "100_seed_weight","Exp_year"))
+PHENO2022 <- full_join(FT_2022, Seed_weights_2021_2022, by=c('Genotype', 'Condition', 'Replicate')) 
+
+%>% mutate(Exp_year = 2022) %>% select(c("Genotype", "Plants","Condition","Replicate","FT","Generation", "total_seed_mass_g", "100_seed_weight","Exp_year"))
 
 ### Correcting any typos in the genotype
 PHENO2022$Genotypes <- gsub("-", "_", PHENO2022$Genotypes)
