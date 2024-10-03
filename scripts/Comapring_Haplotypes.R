@@ -18,6 +18,57 @@ library(tidyr)
 
 Single_2021_2022 <- PHENO_FULL_AVERAGE %>% filter(Condition == 'single' & Exp_year == 2022)
 
+
+
+
+### Cleaning the Haplotype Dataframe and adding it onto sw_avg
+Haplotype_df <- Haplotype_data_raw %>% select(c("Family", "Haplotype", "Generation"))
+Haplotype_df$Haplotype <- unlist(Haplotype_df$Haplotype) %>% as.character(Haplotype_df$Haplotype)
+Haplotype_df$Family <- unlist(Haplotype_df$Family) %>% as.character(Haplotype_df$Family)
+sw_avg <- full_join(sw_avg, Haplotype_df, by = c("Genotype" = "Family", "Generation"))
+sw_avg <- sw_avg %>% filter(TOTAL_MASS != "NA")
+
+### Adding Averaged Atlas values into the table and adding columns for centered data
+
+Atlas_tbl_2021_2022 <- sw_avg %>% filter(Genotype == "48_5") %>%
+  mutate(Atlas_Avg_Fec = mean(FECUNDITY),
+         Atlas_Avg_Fit = mean(FITNESS),
+         Atlas_Avg_TW = mean(TOTAL_MASS))
+
+sw_avg <- sw_avg %>% mutate(Atlas_Avg_Fec = 1413.799,
+                                                              Atlas_Avg_Fit = 12880.63,
+                                                              Atlas_Avg_TW = 64.55571)
+
+sw_avg <- sw_avg %>% mutate(Centered_Fit = FITNESS - mean(FITNESS, na.rm = TRUE),
+                                                  Centered_FT = FT - mean(FT, na.rm = TRUE),
+                                                  Centered_Fec = FECUNDITY - mean(FECUNDITY, na.rm = TRUE),
+                                                  Centered_TW = TOTAL_MASS - mean(TOTAL_MASS))
+
+### Calculating Contribution of each seed to phenotype
+
+### FECUNDITY
+sw_avg$Exp_Fec_Per_Plant <- ifelse(sw_avg$Condition == "mixed",
+                                              Exp_Fec_Mixed(sw_avg$FEC),
+                                              Exp_Single(sw_avg$FEC))
+
+### FITNESS
+sw_avg$Exp_Fit_Per_Plant <- ifelse(sw_avg$Condition == 'mixed',
+                                              Exp_Fit_Mixed(sw_avg$FITNESS),
+                                              Exp_Single(sw_avg$FITNESS))
+
+### Total Weight
+sw_avg$Exp_TW_Per_Plant <- ifelse(sw_avg$Condition == 'mixed',
+                                             Exp_TW_mix(sw_avg$TOTAL_MASS),
+                                             Exp_Single(sw_avg$TOTAL_MASS))
+
+
+
+
+
+
+
+
+
 ### 5a_Comparing_TW_Between_Haplotypes.R
 
 Single_2021_2022 <- Single_2021_2022 %>% filter(Haplotype != "NA")
