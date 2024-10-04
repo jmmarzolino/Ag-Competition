@@ -27,37 +27,96 @@ tmp[which(tmp$Replicate=="rep 4"),4] <- "rep 2"
 tmp2 <- tmp %>% group_by(Genotype, Condition, Replicate) %>% summarise('FT'=mean(FT, na.rm=T), 'TOTAL_MASS'=mean(TOTAL_MASS, na.rm=T), 'SEED_WEIGHT_100'=mean(SEED_WEIGHT_100, na.rm=T))
 
 sw2 <- sw %>% filter(!(Genotype %in% c("1_6", "7_69")))
-rbind(sw2, tmp)
+sw2 <- rbind(sw2, tmp)
+
+
+# add year col
+sw2$Exp_year <- 2022
+
+
+
+
+
+
+
+
+
+#### Data from 2022-2023
+## combine flowering time, seed weights, line IDs and plant experiment info
+sw3 <- read_delim("SEED_WEIGHTS_2022_2023.tsv")
+ft <- read_delim("FT_2022_2023.tsv")
+geno_list <- read_delim("Genotype_List_2023_2023.tsv")
+
+
+# join data sets
+ft <- full_join(ft, geno_list, by=c('PLOT_ID', 'ROW', 'PLANT_ID'))
+sw4 <- full_join(sw3, ft, by=c('PLOT_ID'))
+
+
+
+
+
+
+
+### Subtract the Average weight of a brown bag and the average weight of an envelope to get the true weights
+sw$TOTAL_MASS <- sw$TOTAL_MASS - 11.24
+sw$SEED_WEIGHT_100 <- sw$SEED_WEIGHT_100 - 1.61
+
+
+
+
+# add year col
+sw4$Exp_year <- 2023
+
+
+sw4 <- full_join(sw2, sw4, by = c('Genotype', 'Plants', 'Condition', 'Replicate', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Exp_year', 'BED_2021'='BED_2022', 'ROW_2021'='ROW_2022')
+
+which(sw4$Genotype != sw4$PLANT_ID)
+
+
+
+ %>% select(- 'PLOT_ID', 'Generation')
+
+
+
+
+
+
 
 
 
 # one plot with germination of 0 has a seed weight, so replace the 0 with 1
-PHENO2022[which(PHENO2022$Genotype=="2_156" & PHENO2022$Plants==0), 6] <- 1
+sw4[which(sw$Plants==0 & !is.na(sw$TOTAL_MASS)), ]
+
+
+ <- 1
+
+
 
 # Calculating some of the phenotypes for 2022
 
-PHENO2022$FEC <- PHENO2022$TOTAL_MASS / PHENO2022$Plants
-PHENO2022$SURVIVAL <- PHENO2022$Plants / 10
+sw$FEC <- sw$TOTAL_MASS / sw$Plants
+sw$SURVIVAL <- sw$Plants / 10
 
 ### We have 5 genotypes where we accidentally planted 12 seeds instead of 10. For those individuals, it makes sense to adjust their survival rate relative to the 12 seeds planted
 
 # Isolating those individuals and adjusting their survival rates
 
-hmp <- PHENO2022 %>% filter(Plants > 10)
+hmp <- sw %>% filter(Plants > 10)
 hmp$SURVIVAL <- hmp$Plants / 12
 
 # Adding back into original dataframe
 
-PHENO2022 <- PHENO2022 %>% filter(Plants <= 10)
-PHENO2022 <- rbind(PHENO2022, hmp)
+sw <- sw %>% filter(Plants <= 10)
+sw <- rbind(sw, hmp)
 
-PHENO2022$ABS_FITNESS <- PHENO2022$SURVIVAL * PHENO2022$FEC
-PHENO2022$REL_FITNESS <- PHENO2022$ABS_FITNESS / max(PHENO2022$ABS_FITNESS, na.rm=T)
+sw$ABS_FITNESS <- sw$SURVIVAL * sw$FEC
+sw$REL_FITNESS <- sw$ABS_FITNESS / max(sw$ABS_FITNESS, na.rm=T)
 
 # Adding Centered data for the phenos of 2022
 
-PHENO2022$FEC <- as.vector(scale(PHENO2022$FEC, center = TRUE, scale =T))
-PHENO2022$ABS_FITNESS <- as.vector(scale(PHENO2022$ABS_FITNESS, center = TRUE, scale = T))
+sw$FEC <- as.vector(scale(sw$FEC, center = TRUE, scale =T))
+sw$ABS_FITNESS <- as.vector(scale(sw$ABS_FITNESS, center = TRUE, scale = T))
 
 # Removing one of the duplicated PLOT_ID 839 entries and replacing the existing values with updated TW and 100 SW
 
@@ -69,8 +128,8 @@ Seed_weights_2022_2023$`100 seed weight` <- replace(Seed_weights_2022_2023$`100 
 
 
 ### Subtract the Average weight of a brown bag and the average weight of an envelope to get the true weights
-PHENO2023$TOTAL_MASS <- PHENO2023$TOTAL_MASS - 11.24
-PHENO2023$SEED_WEIGHT_100 <- PHENO2023$SEED_WEIGHT_100 - 1.61
+sw$TOTAL_MASS <- sw$TOTAL_MASS - 11.24
+sw$SEED_WEIGHT_100 <- sw$SEED_WEIGHT_100 - 1.61
 
 # Subtracting envelope weight from these values to get true weight
 Seed_tmp$seed_subset_mass <- Seed_tmp$seed_subset_mass - 1.61
@@ -80,8 +139,8 @@ Seed_tmp$seed_subset_mass <- Seed_tmp$seed_subset_mass - 1.61
 
 
 
-which(PHENO2023$Plants < 0)
-which(PHENO2022$TOTAL_MASS < 0)
+which(sw$Plants < 0)
+which(sw$TOTAL_MASS < 0)
 # remove a few empty rows
 PHENO_FULL <- PHENO_FULL %>% filter(!is.na(Genotype))
 PHENO_FULL <- PHENO_FULL %>% filter(Replicate<3)
@@ -125,43 +184,18 @@ ggplot(FT_FITNESS, aes(x = FECUNDITY)) +
 
 
 
-#### Data from 2022-2023
-
-### combine flowering time, seed weights, line IDs and plant experiment info
-Seed_weights_2022_2023 <- read_delim("SEED_WEIGHTS_2022_2023.csv")
-FT_2022_2023 <- read_delim("FT_2022_2023.csv")
-Genotype_List_2022_2023 <- read_delim("Genotype_List_2023_2023.csv")
-
-### Subtract the Average weight of a brown bag and the average weight of an envelope to get the true weights
-PHENO2023$TOTAL_MASS <- PHENO2023$TOTAL_MASS - 11.24
-PHENO2023$SEED_WEIGHT_100 <- PHENO2023$SEED_WEIGHT_100 - 1.61
-
-
-
-
-# add year col
-PHENO2022$Exp_year <- 2022
-PHENO2023$Exp_year <- 2023
-PHENO2022 <- full_join(FT_2022, Seed_weights_2021_2022, by=c('Genotype', 'Plants'='germinated', 'Condition', 'Replicate', 'BED_2021', 'ROW_2021', 'FT'))
-PHENO_FULL <- full_join(PHENO2023, PHENO2022, by=c('Genotype', 'Plants', 'Condition', 'Replicate', 'FT'='FT', 'Generation', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Exp_year')) %>% select(- 'PLOT_ID', 'Generation')
 
 
 
 
 
-
-range(PHENO2023$TOTAL_MASS, na.rm=T)
-range(PHENO2023$SEED_WEIGHT_100, na.rm=T)
+range(sw$TOTAL_MASS, na.rm=T)
+range(sw$SEED_WEIGHT_100, na.rm=T)
 
 # remove a few empty rows
 PHENO_FULL <- PHENO_FULL %>% filter(!is.na(Genotype))
 
 
-
-
-
-
-write_delim(PHENO_FT, "PHENOS_per_year.tsv", "\t")
 
 
 # seed count based on seed weight and seed weight per 100 seeds
