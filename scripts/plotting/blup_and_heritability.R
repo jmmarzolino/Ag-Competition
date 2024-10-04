@@ -169,7 +169,7 @@ Breeders_funct_58 <- function(x) {
 
 ### SINGLE
 
-PHENO_SINGLE <- tmp %>% filter(Condition == 'single')
+PHENO_SINGLE <- tmp %>% filter(Condition == "single")
 
 # Creating BLUP dataframe
 
@@ -388,12 +388,12 @@ a4 <- ggplot(selection_intensity_single, aes(response_years, si_fec)) +
   labs(y = "Fecundity") +
   ylim(-.04,.3)
 
-y <- arrangeGrob(a, a1, a2, a3, a4, top = 'Selection Intensity (Single)', nrow = 1, ncol =5)
+y <- arrangeGrob(a, a1, a2, a3, a4, top = "Selection Intensity (Single)", nrow = 1, ncol =5)
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection_intensity_single.png", y, width = 24, height = 12)
 
 ### MIXED
 
-PHENO_MIXED <- tmp %>% filter(Condition == 'mixed')
+PHENO_MIXED <- tmp %>% filter(Condition == "mixed")
 
 for (i in 6:ncol(PHENO_MIXED)){
   model <- lmer(as.numeric(unlist(PHENO_MIXED[,i])) ~ Exp_year + (1|Genotype), data = PHENO_MIXED)
@@ -471,7 +471,7 @@ ggplot(heritability_data_mixed, aes(Generation, H2, color = trait)) +
   geom_smooth() +
   labs(y = "Broad Sense Heritability",
        title = "Generational Change in Broad Sense Heritability (Mixed)")
-ggsave('/bigdata/koeniglab/jmarz001/Ag-Competition/results/broad_sense_mixed.png', width = 14, height = 10)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/broad_sense_mixed.png", width = 14, height = 10)
 
 # Genetic Variance Over Time (Mixed)
 
@@ -487,7 +487,7 @@ a <- ggplot(heritability_data_mixed, aes(Generation, genetic_var, color = trait)
 a1 <- ggplot(heritability_data_mixed, aes(Generation, total_var, color = trait)) +
   geom_point() +
   geom_smooth() +
-  labs(y = 'Phenotypic Variance',
+  labs(y = "Phenotypic Variance",
        title = "Generational Change in Phenotypic Variance (Mixed)") +
   ylim(0, 1.2)
 
@@ -508,7 +508,7 @@ P_F58 <- P_F58 %>% mutate(SEED_WEIGHT_100 = SEED_WEIGHT_100/58,
                           ABS_FITNESS = ABS_FITNESS/58,
                           FT = FT/58,
                           TOTAL_MASS = TOTAL_MASS/58,
-                          response_years = 'P_F58')
+                          response_years = "P_F58")
 # P to F18
 
 preserved <- PHENO_MIXED %>% filter(Generation == 0 | Generation == 18)
@@ -519,7 +519,7 @@ P_F18 <- P_F18 %>% mutate(SEED_WEIGHT_100 = SEED_WEIGHT_100/18,
                           ABS_FITNESS = ABS_FITNESS/18,
                           FT = FT/18,
                           TOTAL_MASS = TOTAL_MASS/18,
-                          response_years = 'P_F18')
+                          response_years = "P_F18")
 
 # F18 to F58
 
@@ -531,7 +531,7 @@ F18_F58 <- F18_F58 %>% mutate(SEED_WEIGHT_100 = SEED_WEIGHT_100/40,
                               ABS_FITNESS = ABS_FITNESS/40,
                               FT = FT/40,
                               TOTAL_MASS = TOTAL_MASS/40,
-                              response_years = 'F18_F58')
+                              response_years = "F18_F58")
 
 # Response to Selection (Mixed)
 
@@ -612,5 +612,5 @@ a4 <- ggplot(selection_intensity_mix, aes(response_years, si_fec)) +
   labs(y = "Fecundity") +
   ylim(0,2.8)
 
-y <- arrangeGrob(a, a1, a2, a3, a4, top = 'Selection Intensity (Mixed)', nrow = 1, ncol =5)
+y <- arrangeGrob(a, a1, a2, a3, a4, top = "Selection Intensity (Mixed)", nrow = 1, ncol =5)
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection_intensity_mix.png", y, width = 24, height = 12)

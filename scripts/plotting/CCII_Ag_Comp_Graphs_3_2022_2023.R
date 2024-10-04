@@ -16,7 +16,7 @@ test$new <- ifelse(test$`Brown Bag Weight_single` > test$`Brown Bag Weight_singl
 ### 3a_Bar_Graph_Avg_Yield_Between_Genotype.R
 
 ggplot(Average_Haplo_rep, aes(Genotype, `Brown Bag Weight`, color = Condition, fill = Condition)) +
-  geom_bar(stat = 'identity', position = position_dodge(), alpha = .5, width = .5) +
+  geom_bar(stat = "identity", position = position_dodge(), alpha = .5, width = .5) +
   labs(y = "Average Total Seed Weight (grams)",
        title = "Comparing Average Total Seed Weight Between Individual Genotype") +
   facet_wrap(~Generation, scales = "free_x") +
@@ -28,7 +28,7 @@ ggsave("scripts/plotting/03a_Bar_Graph_TW_Between_Conditions_2022_2023.png", wid
 ### 3ai_Bar_Graph_Avg_FT_Between_Genotype.R
 
 ggplot(Average_Haplo_rep, aes(Genotype, FT, color = Condition, fill = Condition)) +
-  geom_bar(stat = 'identity', position = position_dodge(), alpha = .3, width = .5) +
+  geom_bar(stat = "identity", position = position_dodge(), alpha = .3, width = .5) +
   labs(y = "Flowering Time (Days)",
        title = "Comparing Flowering Time Between Individual Genotype") +
   facet_wrap(~Generation, scales = "free_x") +
@@ -39,7 +39,7 @@ ggsave("scripts/plotting/03ai_Bar_Graph_FT_Between_Conditions_2022_2023.png", wi
 ### 3aii_Bar_Graph_Avg_Fec_Between_Genotype.R
 
 ggplot(Average_Haplo_rep, aes(Genotype, Fecundity, color = Condition, fill = Condition)) +
-  geom_bar(stat = 'identity', position = position_dodge(), alpha = .3, width = .5) +
+  geom_bar(stat = "identity", position = position_dodge(), alpha = .3, width = .5) +
   labs(y = "Fecundity",
        title = "Comparing Fecundity Between Individual Genotype") +
   facet_wrap(~Generation, scales = "free_x") +
@@ -50,7 +50,7 @@ ggsave("scripts/plotting/03aii_Bar_Graph_Fec_Between_Conditions_2022_2023.png", 
 ### 3aiii_Bar_Graph_Avg_Fit_Between_Genotype.R
 
 ggplot(Average_Haplo_rep, aes(Genotype, Fitness, color = Condition, fill = Condition)) +
-  geom_bar(stat = 'identity', position = position_dodge(), alpha = .3, width = .5) +
+  geom_bar(stat = "identity", position = position_dodge(), alpha = .3, width = .5) +
   labs(y = "Fitness",
        title = "Comparing Fitness Between Individual Genotype") +
   facet_wrap(~Generation, scales = "free_x") +
@@ -93,7 +93,7 @@ ggsave("scripts/plotting/03bii_Exp_Per_Plant_Fit_by_Condition.png")
 fa <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_TW, color = Condition, add = "reg.line")) +
   geom_jitter() +
   geom_smooth(method = lm) +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   stat_regline_equation() +
   labs(x = "Generation",
        y = "Average Total Seed Weight (grams)")
@@ -104,7 +104,7 @@ ggsave("scripts/plotting/03c_Scatterplot_Avg_TW_by_Condition.png")
 fb <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_FT, color = Condition, add = "reg.line")) +
   geom_jitter() +
   geom_smooth(method = lm) +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   stat_regline_equation() +
   labs(x = "Generation",
        y = "Average Flowering Time (Days After Sowing)") +
@@ -116,7 +116,7 @@ ggsave("scripts/plotting/03ci_Scatterplot_Avg_FT_by_Condition.png")
 fc <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_Fec, color = Condition, add = "reg.line")) +
   geom_jitter() +
   geom_smooth(method = lm) +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   stat_regline_equation() +
   labs(x = "Generation",
        y = "Average Fecundity")
@@ -127,7 +127,7 @@ ggsave("scripts/plotting/03cii_Scatterplot_Avg_Fec_by_Condition.png")
 fd <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_Fit, color = Condition, add = "reg.line")) +
   geom_jitter() +
   geom_smooth(method = lm) +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   stat_regline_equation() +
   labs(x = "Generation",
        y = "Average Fitness")
@@ -153,7 +153,7 @@ t.test(Fecundity ~ Condition, Average_Haplo_rep)
 ### 3d_Seed_TW_Per_Genotype
 
 ggplot(Average_Haplo_rep, aes(x = reorder(Genotype, +`Brown Bag Weight`), `Brown Bag Weight`, fill = Condition, group = Generation)) +
-  geom_bar(stat = 'identity', position = position_dodge()) +
+  geom_bar(stat = "identity", position = position_dodge()) +
   labs(y = "Average Total Seed Weight",
        title = "Average Total Weight of Genotype Across Generations") +
   facet_wrap(~Generation, scales = "free_x") +

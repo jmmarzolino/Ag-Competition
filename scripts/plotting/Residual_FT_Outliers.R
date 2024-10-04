@@ -19,16 +19,16 @@ library(dunn.test)
 
 
 FT_2022_ranking_mixed$Genotype <- as.factor(FT_2022_ranking_mixed$Genotype)
-FT_2022_ranking_mixed <- FT_2022_ranking_mixed %>% filter(Genotype != "51_5_3" & Genotype != '2_17' & Genotype != '2_202' & Genotype != '53_5' & Genotype != '2_148')
+FT_2022_ranking_mixed <- FT_2022_ranking_mixed %>% filter(Genotype != "51_5_3" & Genotype != "2_17" & Genotype != "2_202" & Genotype != "53_5" & Genotype != "2_148")
 
 a <- ggplot(FT_2022_ranking_mixed, aes(x= Genotype, y= FT)) +
   geom_point() +
   scale_y_continuous(breaks = seq(85, 135, 5)) +
   labs(y = "Flowering Time",
-      title = 'Residual Outliers Mixed 2022')
+      title = "Residual Outliers Mixed 2022")
 
 FT_2022_ranking_single$Genotype <- as.factor(FT_2022_ranking_single$Genotype)
-FT_2022_ranking_single <- FT_2022_ranking_single %>% filter(Genotype != "1_61" & Genotype != '2_74' & Genotype != '3_4' & Genotype != "1_165_3" & Genotype != "1_191" & Genotype != '7_11')
+FT_2022_ranking_single <- FT_2022_ranking_single %>% filter(Genotype != "1_61" & Genotype != "2_74" & Genotype != "3_4" & Genotype != "1_165_3" & Genotype != "1_191" & Genotype != "7_11")
 
 b <- ggplot(FT_2022_ranking_single, aes(Genotype, FT)) +
   geom_point() +
@@ -37,7 +37,7 @@ b <- ggplot(FT_2022_ranking_single, aes(Genotype, FT)) +
        title = "Residual Outliers Single 2022")
 
 FT_2023_ranking_mixed$Genotype <- as.factor(FT_2023_ranking_mixed$Genotype)
-FT_2023_ranking_mixed <- FT_2023_ranking_mixed %>% filter(Genotype != '2_142')
+FT_2023_ranking_mixed <- FT_2023_ranking_mixed %>% filter(Genotype != "2_142")
 
 c <- ggplot(FT_2023_ranking_mixed, aes(Genotype, FT)) +
   geom_point() +
@@ -46,7 +46,7 @@ c <- ggplot(FT_2023_ranking_mixed, aes(Genotype, FT)) +
        title = "Residual Outliers Mixed 2023")
 
 FT_2023_ranking_single$Genotype <- as.factor(FT_2023_ranking_single$Genotype)
-FT_2023_ranking_single <- FT_2023_ranking_single %>% filter(Genotype != '7_211' & Genotype != '7_74' & Genotype != '72_7_1')
+FT_2023_ranking_single <- FT_2023_ranking_single %>% filter(Genotype != "7_211" & Genotype != "7_74" & Genotype != "72_7_1")
 
 d <- ggplot(FT_2023_ranking_single, aes(Genotype, FT)) +
   geom_point() +

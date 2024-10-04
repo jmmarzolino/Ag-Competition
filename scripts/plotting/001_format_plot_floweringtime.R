@@ -62,7 +62,7 @@ df3 %>% group_by(Replicate) %>% summarise(mean = mean(FT, na.rm=T), variance = v
 
 
 #### parent genotypes avg flowering date
-report <- df3 %>% filter(Generation == 0) %>% filter(Condition=='single') %>% group_by(Genotype) %>% summarise(mean = mean(FT, na.rm=T), variance = var(FT, na.rm=T), n=n())
+report <- df3 %>% filter(Generation == 0) %>% filter(Condition=="single") %>% group_by(Genotype) %>% summarise(mean = mean(FT, na.rm=T), variance = var(FT, na.rm=T), n=n())
 write_delim(report, "avg_FT_parents.tsv", "\t")
 
 

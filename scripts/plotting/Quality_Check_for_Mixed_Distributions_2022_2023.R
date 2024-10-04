@@ -60,7 +60,7 @@ dunn.test(Rep_Mixed$FT, g = Rep_Mixed$Generation)
 ### Overlapping Histograms for Flowering Time
 
 ggplot(Rep_Mixed, aes(x = FT, fill = Generation, group = Generation)) +
-  geom_histogram(alpha = .5, position = 'identity') +
+  geom_histogram(alpha = .5, position = "identity") +
   labs(x = "Average Flowering Time (Days after sowing)",
        y = "Frequency",
        title = "Average Flowering Time Over Generations")

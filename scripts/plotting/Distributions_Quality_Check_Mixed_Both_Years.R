@@ -27,14 +27,14 @@ Mixed_2021_2022 <- PHENO_FULL_AVERAGE %>% filter(Condition == "mixed" & Exp_year
 ### Average Total Weight Distributions
 graph_tmp <- Mixed_2021_2022 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_TW = mean(TOTAL_MASS)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_TW, na.rm = T))
-graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
+graph_tmp <- full_join(graph_tmp, tmp, by = "Generation")
 
 ggplot(graph_tmp, aes(x = Avg_TW)) +
   geom_histogram(binwidth = 4) +
-  geom_vline(aes(xintercept = graph_tmp$Generation_Avg), color = 'red') +
+  geom_vline(aes(xintercept = graph_tmp$Generation_Avg), color = "red") +
   facet_grid(~Generation) +
   scale_x_continuous(breaks = seq(0, 150, 25)) +
-  labs(x = 'Average Total Weight (grams)')
+  labs(x = "Average Total Weight (grams)")
 
 # Levene Test (checking for homogeneity of variance, assumption of ANOVA) - insignificant means we can assume homogeneity of variance
 
@@ -70,13 +70,13 @@ dunn.test(Mixed_2021_2022$TOTAL_MASS, Mixed_2021_2022$Generation)
 
 graph_tmp <- Mixed_2021_2022 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_FT = mean(FT)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_FT, na.rm = T))
-graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
+graph_tmp <- full_join(graph_tmp, tmp, by = "Generation")
 
 ggplot(graph_tmp, aes(x = Avg_FT)) +
   geom_histogram(binwidth = 1.1) +
-  geom_vline(aes(xintercept = Generation_Avg, color = 'red')) +
+  geom_vline(aes(xintercept = Generation_Avg, color = "red")) +
   facet_grid(~Generation) +
-  labs(x = 'Average Flowering Time (Days After Sowing)')
+  labs(x = "Average Flowering Time (Days After Sowing)")
 
 # Levene test - unequal variances between groups
 
@@ -111,11 +111,11 @@ dunn.test(Mixed_2021_2022$FT, Mixed_2021_2022$Generation)
 
 graph_tmp <- Mixed_2021_2022 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_Fec = mean(FECUNDITY)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_Fec, na.rm = T))
-graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
+graph_tmp <- full_join(graph_tmp, tmp, by = "Generation")
 
 ggplot(graph_tmp, aes(x = Avg_Fec)) +
   geom_histogram(binwidth = .09) +
-  geom_vline(aes(xintercept = Generation_Avg, color = 'red')) +
+  geom_vline(aes(xintercept = Generation_Avg, color = "red")) +
   facet_grid(~Generation) +
   scale_y_continuous(breaks = seq(0, 15, 1)) +
   labs(x = "Centered Fecundity")
@@ -154,13 +154,13 @@ dunn.test(Mixed_2021_2022$FEC, Mixed_2021_2022$Generation)
 
 graph_tmp <- Mixed_2021_2022 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_Fit = mean(ABS_FITNESS, na.rm = T)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_Fit, na.rm = T))
-graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
+graph_tmp <- full_join(graph_tmp, tmp, by = "Generation")
 
 ggplot(graph_tmp, aes(x = Avg_Fit)) +
   geom_histogram(binwidth = .08) +
-  geom_vline(aes(xintercept = Generation_Avg, color = 'red')) +
+  geom_vline(aes(xintercept = Generation_Avg, color = "red")) +
   facet_grid(~Generation) +
-  labs(x = 'Centered Fitness')
+  labs(x = "Centered Fitness")
 
 # Levene Test (EQUAL VARIANCE)
 
@@ -195,15 +195,15 @@ dunn.test(Mixed_2021_2022$ABS_FITNESS, Mixed_2021_2022$Generation)
 
 graph_tmp <- Mixed_2021_2022 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_100_SW = mean(SEED_WEIGHT_100)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_100_SW, na.rm = T))
-graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
+graph_tmp <- full_join(graph_tmp, tmp, by = "Generation")
 
 ggplot(graph_tmp, aes(x = Avg_100_SW)) +
   geom_histogram(binwidth = .07) +
-  geom_vline(aes(xintercept = Generation_Avg, color = 'red')) +
+  geom_vline(aes(xintercept = Generation_Avg, color = "red")) +
   facet_grid(~Generation) +
   scale_x_continuous(breaks = seq(0, 60000, 10000)) +
   theme(axis.text.x = element_text(angle = 45)) +
-  labs(x = 'Average 100 Seed Weight (grams)')
+  labs(x = "Average 100 Seed Weight (grams)")
 
 # Levene Test (EQUAL VARIANCE)
 
@@ -251,14 +251,14 @@ Mixed_2022_2023 <- PHENO_FULL_AVERAGE %>% filter(Condition == "mixed" & Exp_year
 ### Average Total Weight Distributions
 graph_tmp <- Mixed_2022_2023 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_TW = mean(TOTAL_MASS)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_TW, na.rm = T))
-graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
+graph_tmp <- full_join(graph_tmp, tmp, by = "Generation")
 
 ggplot(graph_tmp, aes(x = Avg_TW)) +
   geom_histogram(binwidth = 3.5) +
-  geom_vline(aes(xintercept = Generation_Avg), color = 'red') +
+  geom_vline(aes(xintercept = Generation_Avg), color = "red") +
   facet_grid(~Generation) +
   scale_x_continuous(breaks = seq(0, 150, 25)) +
-  labs(x = 'Average Total Weight (grams)')
+  labs(x = "Average Total Weight (grams)")
 
 # Levene Test (EQUAL VARIANCE)
 
@@ -294,13 +294,13 @@ TukeyHSD(ANOVA_TW)
 
 graph_tmp <- Mixed_2022_2023 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_FT = mean(FT)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_FT, na.rm = T))
-graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
+graph_tmp <- full_join(graph_tmp, tmp, by = "Generation")
 
 ggplot(graph_tmp, aes(x = Avg_FT)) +
   geom_histogram(binwidth = 1.1) +
-  geom_vline(aes(xintercept = Generation_Avg, color = 'red')) +
+  geom_vline(aes(xintercept = Generation_Avg, color = "red")) +
   facet_grid(~Generation) +
-  labs(x = 'Average Flowering Time (Days After Sowing)')
+  labs(x = "Average Flowering Time (Days After Sowing)")
 
 # Levene test - unequal variances between groups
 
@@ -336,11 +336,11 @@ dunn.test(Mixed_2022_2023$FT, Mixed_2022_2023$Generation)
 
 graph_tmp <- Mixed_2022_2023 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_Fec = mean(FECUNDITY)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_Fec, na.rm = T))
-graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
+graph_tmp <- full_join(graph_tmp, tmp, by = "Generation")
 
 ggplot(graph_tmp, aes(x = Avg_Fec)) +
   geom_histogram(binwidth = .09) +
-  geom_vline(aes(xintercept = Generation_Avg, color = 'red')) +
+  geom_vline(aes(xintercept = Generation_Avg, color = "red")) +
   facet_grid(~Generation) +
   scale_y_continuous(breaks = seq(0, 15, 1)) +
   labs(x = "Centered Fecundity")
@@ -378,13 +378,13 @@ dunn.test(Mixed_2022_2023$FEC, Mixed_2022_2023$Generation)
 
 graph_tmp <- Mixed_2022_2023 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_Fit = mean(ABS_FITNESS, na.rm = T)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_Fit, na.rm = T))
-graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
+graph_tmp <- full_join(graph_tmp, tmp, by = "Generation")
 
 ggplot(graph_tmp, aes(x = Avg_Fit)) +
   geom_histogram(binwidth = .08) +
-  geom_vline(aes(xintercept = Generation_Avg, color = 'red')) +
+  geom_vline(aes(xintercept = Generation_Avg, color = "red")) +
   facet_grid(~Generation) +
-  labs(x = 'Centered Fitness')
+  labs(x = "Centered Fitness")
 
 # Levene Test (EQUAL VAR)
 
@@ -421,15 +421,15 @@ TukeyHSD(ANOVA_Fit)
 
 graph_tmp <- Mixed_2022_2023 %>% group_by(Generation, Genotype, Exp_year) %>% summarise(Avg_100_SW = mean(SEED_WEIGHT_100)) %>% ungroup()
 tmp <- graph_tmp %>% group_by(Generation) %>% summarise(Generation_Avg = mean(Avg_100_SW, na.rm = T))
-graph_tmp <- full_join(graph_tmp, tmp, by = 'Generation')
+graph_tmp <- full_join(graph_tmp, tmp, by = "Generation")
 
 ggplot(graph_tmp, aes(x = Avg_100_SW)) +
   geom_histogram(binwidth = .07) +
-  geom_vline(aes(xintercept = Generation_Avg, color = 'red')) +
+  geom_vline(aes(xintercept = Generation_Avg, color = "red")) +
   facet_grid(~Generation) +
   scale_x_continuous(breaks = seq(0, 60000, 10000)) +
   theme(axis.text.x = element_text(angle = 45)) +
-  labs(x = 'Average 100 Seed Weight (grams)')
+  labs(x = "Average 100 Seed Weight (grams)")
 
 # Levene Test (EQUAL VARIANCE) - 100 SW
 

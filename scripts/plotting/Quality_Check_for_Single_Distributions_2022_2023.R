@@ -58,7 +58,7 @@ table(T$Generation)
 ### Bar Graphs Single For Each Generation (FT)
 
 for (i in unique(T$Generation)){
-  tmp <- ggplot(subset(T, Generation == i), aes(Genotype, FT)) + geom_bar(stat = 'identity') + 
+  tmp <- ggplot(subset(T, Generation == i), aes(Genotype, FT)) + geom_bar(stat = "identity") + 
     labs(y = "Flowering Time (Days After Sowing)") +
     coord_flip() +
     ggtitle(paste0("Generation ", i)) 
@@ -73,7 +73,7 @@ dunn.test(Rep_Single$FT, g = Rep_Single$Generation)
 ### Overlapping Histograms for Flowering Time
 
 ggplot(Rep_Single, aes(x = FT, fill = Generation, group = Generation)) +
-  geom_histogram(alpha = .5, position = 'identity') +
+  geom_histogram(alpha = .5, position = "identity") +
   labs(x = "Average Flowering Time (Days)",
        y = "Frequency",
        title = "Average Flowering Time Over Generations")
@@ -91,7 +91,7 @@ ggplot(Rep_Single, aes(x = `Brown Bag Weight`)) +
   labs(x = "Average Total Weight (g)",
        y = "Frequency",
        title = "Average Total Weight Over Generations")+
-  geom_vline(aes(xintercept = GenAvg), color = 'red') 
+  geom_vline(aes(xintercept = GenAvg), color = "red") 
 
 ### Testing for Homogenity of Variance and ANOVA for Average Total Weight
 
@@ -123,7 +123,7 @@ for(i in unique(T$Generation)){
 ### Bar Graphs Single For Each Generation (Total Weight)
 
 for (i in unique(T$Generation)){
-  tmp <- ggplot(subset(T, Generation == i), aes(Genotype, TW)) + geom_bar(stat = 'identity') + 
+  tmp <- ggplot(subset(T, Generation == i), aes(Genotype, TW)) + geom_bar(stat = "identity") + 
     labs(y = "Total Weight (g)") +
     coord_flip() +
     ggtitle(paste0("Generation ", i)) 
@@ -143,7 +143,7 @@ ggplot(Rep_Single, aes(x = Fecundity)) +
   labs(x = "Average Fecundity",
        y = "Frequency",
        title = "Average Fecundity Over Generations") +
-  geom_vline(aes(xintercept = GenAvg), color = 'red') 
+  geom_vline(aes(xintercept = GenAvg), color = "red") 
 
 ### Testing for Homogenity of Variance and ANOVA for Average Fecundity
 
@@ -175,7 +175,7 @@ for(i in unique(T$Generation)){
 ### Bar Graphs Single For Each Generation (Fecundity)
 
 for (i in unique(T$Generation)){
-  tmp <- ggplot(subset(T, Generation == i), aes(Genotype, fec)) + geom_bar(stat = 'identity') + 
+  tmp <- ggplot(subset(T, Generation == i), aes(Genotype, fec)) + geom_bar(stat = "identity") + 
     labs(y = "Fecundity") +
     coord_flip() +
     ggtitle(paste0("Generation ", i)) 
@@ -194,7 +194,7 @@ ggplot(Rep_Single, aes(x = Fitness)) +
   labs(x = "Average Fitness",
        y = "Frequency",
        title = "Average Fitness Over Generations") +
-  geom_vline(aes(xintercept = GenAvg), color = 'red')
+  geom_vline(aes(xintercept = GenAvg), color = "red")
 
 ### Testing for Homogenity of Variance and ANOVA for Average Fitness
 
@@ -226,7 +226,7 @@ for(i in unique(T$Generation)){
 ### Bar Graphs Single For Each Generation (Fitness)
 
 for (i in unique(T$Generation)){
-  tmp <- ggplot(subset(T, Generation == i), aes(Genotype, fit)) + geom_bar(stat = 'identity') + 
+  tmp <- ggplot(subset(T, Generation == i), aes(Genotype, fit)) + geom_bar(stat = "identity") + 
     labs(y = "Fitness") +
     coord_flip() +
     ggtitle(paste0("Generation ", i)) 

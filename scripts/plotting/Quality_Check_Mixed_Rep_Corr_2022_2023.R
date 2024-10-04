@@ -30,7 +30,7 @@ Replicate_corr_tbl$Residuals <- res$residuals
 
 g4 <- ggplot(Replicate_corr_tbl_Mixed, aes(FT, FT_2)) +
   geom_jitter(alpha = .5) +
-  geom_smooth(method = 'lm') +
+  geom_smooth(method = "lm") +
   stat_cor(label.x = 100, label.y = 135) +
   geom_abline(slope = 1, intercept = 0, col = "red") +
   labs(x = "Rep 1",
@@ -57,7 +57,7 @@ Replicate_corr_tbl$Residuals <- res$residuals
 
 g8 <- ggplot(Replicate_corr_tbl_Mixed, aes(Fitness, Fitness_2)) +
   geom_jitter(alpha = .5) +
-  geom_smooth(method = 'lm') +
+  geom_smooth(method = "lm") +
   stat_cor(label.x = 100, label.y = 40000) +
   geom_abline(slope = 1, intercept = 0, col = "red") +
   labs(x = "Rep 1",

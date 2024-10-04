@@ -25,8 +25,8 @@ FT_2022_2023 <- read_delim("FT_DAYS_2022-2023.xlsx - FT_DAYS.csv")
 =======
 Seed_weights_2022_2023 <- read_delim("SEED_WEIGHTS_2022_2023.csv") %>% select(-c(Date, Notes))
 FT_2022_2023 <- read_delim("FT_DAYS_2022_2023.csv")
-FT_2023 <- read_delim('FT_2023.tsv')
-FT_2022 <- read_delim('FT_2021_2022.tsv')
+FT_2023 <- read_delim("FT_2023.tsv")
+FT_2022 <- read_delim("FT_2021_2022.tsv")
 Genotype_List_2022_2023 <- read_delim("Genotype_List_2023_2023.csv")
 Haplo_raw <- read_delim("Competition_Lines_Haplotypes.csv")
 Seed_weights_2021_2022 <- read_delim("SEED_WEIGHTS_2021_2022.csv") %>% select(c(Genotypes, germinated, Condition, replicate,  `2021BED`, `2021ROW`, Flowering_Date, total_seed_mass_g, subset_seed_count, seed_subset_mass, per_seed_weight_g, `100_seed_weight`))
@@ -37,7 +37,7 @@ Seed_weights_2021_2022$replicate <- as.numeric(gsub("rep (\\d)", "\\1", Seed_wei
 Seed_weights_2021_2022$Flowering_Date <- as.numeric(Seed_weights_2021_2022$FT)
 
 ### Creating 2022 Dataframe, Adding in the Exp_Year, and removing "2021BED" and "2021ROW" columns
-PHENO2022 <- full_join(FT_2022, Seed_weights_2021_2022, by=c('Genotype', 'Condition', 'Replicate')) 
+PHENO2022 <- full_join(FT_2022, Seed_weights_2021_2022, by=c("Genotype", "Condition", "Replicate")) 
 
 %>% mutate(Exp_year = 2022) %>% select(c("Genotype", "Plants","Condition","Replicate","FT","Generation", "total_seed_mass_g", "100_seed_weight","Exp_year"))
 
@@ -50,7 +50,7 @@ Seed_weights_2022_2023$PLOT_ID <- as.numeric(Seed_weights_2022_2023$PLOT_ID)
 FT_2023$replicate <- as.numeric(gsub("rep (\\d)", "\\1", FT_2023$replicate))
 
 # Creating Dataframe for the 2022-2023 Year
-PHENO2023 <- full_join(FT_2023, Seed_weights_2022_2023, by='PLOT_ID') %>% select(-c('Bed_2022', 'Row_2022', 'ROW'))
+PHENO2023 <- full_join(FT_2023, Seed_weights_2022_2023, by="PLOT_ID") %>% select(-c("Bed_2022", "Row_2022", "ROW"))
 PHENO2023 <- filter(PHENO2023, PLOT_ID <= 1036) %>% mutate(Exp_year = 2023)
 
 # standardize colnames
@@ -70,7 +70,7 @@ PHENO2023$`100_seed_weight` <- PHENO2023$`100_seed_weight` - 1.61
 which(PHENO2023$number_of_plants < 0)
 which(PHENO2022$total_seed_mass_g < 0)
 
-PHENO_FULL <- full_join(PHENO2023, PHENO2022, by=c('Genotypes', 'number_of_plants', 'Condition', 'replicate', 'FT_DAYS'='Flowering_Date', 'Generation', 'total_seed_mass_g', '100_seed_weight', 'Exp_year')) %>% select(- 'PLOT_ID', 'Generation')
+PHENO_FULL <- full_join(PHENO2023, PHENO2022, by=c("Genotypes", "number_of_plants", "Condition", "replicate", "FT_DAYS"="Flowering_Date", "Generation", "total_seed_mass_g", "100_seed_weight", "Exp_year")) %>% select(- "PLOT_ID", "Generation")
 #range(PHENO2023$total_seed_mass_g, na.rm=T)
 #range(PHENO2023$`100_seed_weight`, na.rm=T)
 

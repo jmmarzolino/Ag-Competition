@@ -16,7 +16,7 @@ library(tidyr)
 
 # 2021-2022
 
-Single_2021_2022 <- PHENO_FULL_AVERAGE %>% filter(Condition == 'single' & Exp_year == 2022)
+Single_2021_2022 <- PHENO_FULL_AVERAGE %>% filter(Condition == "single" & Exp_year == 2022)
 
 
 
@@ -52,12 +52,12 @@ sw_avg$Exp_Fec_Per_Plant <- ifelse(sw_avg$Condition == "mixed",
                                               Exp_Single(sw_avg$FEC))
 
 ### FITNESS
-sw_avg$Exp_Fit_Per_Plant <- ifelse(sw_avg$Condition == 'mixed',
+sw_avg$Exp_Fit_Per_Plant <- ifelse(sw_avg$Condition == "mixed",
                                               Exp_Fit_Mixed(sw_avg$FITNESS),
                                               Exp_Single(sw_avg$FITNESS))
 
 ### Total Weight
-sw_avg$Exp_TW_Per_Plant <- ifelse(sw_avg$Condition == 'mixed',
+sw_avg$Exp_TW_Per_Plant <- ifelse(sw_avg$Condition == "mixed",
                                              Exp_TW_mix(sw_avg$TOTAL_MASS),
                                              Exp_Single(sw_avg$TOTAL_MASS))
 
@@ -79,9 +79,9 @@ Haplo_graph$`Avg Yield > Pop & Gen Avg Yield` <- ifelse(Haplo_graph$Avg_TW > Hap
 f_AY <- Haplo_graph %>% filter(`Avg Yield > Pop & Gen Avg Yield` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
 
 ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_TW, fill = `Avg Yield > Pop & Gen Avg Yield`)) +
-  geom_bar(stat = 'identity') +
+  geom_bar(stat = "identity") +
   geom_hline(yintercept = mean(Haplo_graph$Avg_TW, na.rm = T), color = "green") +
-  geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
+  geom_hline(aes(yintercept = GenAvg), color = "blue", linetype = 2) +
   labs(y = "Average Total Seed Weight",
        title = "Average Total Seed Weight between Haplotypes 2021-2022") +
   scale_y_continuous(breaks = seq(0, 200, 25)) +
@@ -98,9 +98,9 @@ Haplo_graph$`Avg FT > Pop & Gen Avg FT` <- ifelse(Haplo_graph$Avg_FT > Haplo_gra
 f_FT <- Haplo_graph %>% filter(`Avg FT > Pop & Gen Avg FT` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
 
 ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_FT, fill = `Avg FT > Pop & Gen Avg FT`)) +
-  geom_bar(stat = 'identity') +
+  geom_bar(stat = "identity") +
   geom_hline(yintercept = mean(Haplo_graph$Avg_FT, na.rm = T), color = "green") +
-  geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
+  geom_hline(aes(yintercept = GenAvg), color = "blue", linetype = 2) +
   labs(y = "Average Flowering Time (Days)",
        title = "Average Flowering Time between Haplotypes 2021-2022") +
   facet_wrap(~Generation, scales = "free_x") +
@@ -117,9 +117,9 @@ Haplo_graph$`Avg Fec > Pop & Gen Avg Fec` <- ifelse(Haplo_graph$Avg_Fec > Haplo_
 f_Fe <- Haplo_graph %>% filter(`Avg Fec > Pop & Gen Avg Fec` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
 
 ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fec, fill = `Avg Fec > Pop & Gen Avg Fec`)) +
-  geom_bar(stat = 'identity') +
+  geom_bar(stat = "identity") +
   geom_hline(yintercept = mean(Haplo_graph$Avg_Fec, na.rm = T), color = "green") +
-  geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
+  geom_hline(aes(yintercept = GenAvg), color = "blue", linetype = 2) +
   labs(y = "Average Centered Fecundity",
        title = "Average Fecundity between Haplotypes 2021-2022") +
   facet_wrap(~Generation, scales = "free_x") +
@@ -137,9 +137,9 @@ f_Fi <- Haplo_graph %>% filter(`Avg Fit > Pop & Gen Avg Fit` == TRUE) %>% filter
 ui <- Reduce(intersect, list(f_AY, f_Fe, f_Fi))
 
 ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fit, fill = `Avg Fit > Pop & Gen Avg Fit`)) +
-  geom_bar(stat = 'identity') +
+  geom_bar(stat = "identity") +
   geom_hline(yintercept = mean(Haplo_graph$Avg_Fit, na.rm = TRUE), color = "green") +
-  geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
+  geom_hline(aes(yintercept = GenAvg), color = "blue", linetype = 2) +
   labs(y = "Average Fitness",
        title = "Average Absolute Fitness between Haplotypes 2021-2022") +
   facet_wrap(~Generation, scales = "free_x") +
@@ -157,9 +157,9 @@ f_Fd <- Haplo_graph %>% filter(`Avg Fit > Pop & Gen Avg Fit` == TRUE) %>% filter
 ui <- Reduce(intersect, list(f_AY, f_Fe, f_Fi, f_Fd))
 
 ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_100SW, fill = `Avg Fit > Pop & Gen Avg Fit`)) +
-  geom_bar(stat = 'identity') +
+  geom_bar(stat = "identity") +
   geom_hline(yintercept = mean(Haplo_graph$Avg_100SW, na.rm = TRUE), color = "green") +
-  geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
+  geom_hline(aes(yintercept = GenAvg), color = "blue", linetype = 2) +
   labs(y = "Average 100 Seed Weight (grams)",
        title = "Average 100 Seed Weigh between Haplotypes 2021-2022") +
   facet_wrap(~Generation, scales = "free_x") +
@@ -172,7 +172,7 @@ ggsave("scripts/plotting/05aiii_Average_Fit_Haplotypes_2021_2022.png", width = 1
 
 # 2022-2023
 
-Single_2022_2023 <- PHENO_FULL_AVERAGE %>% filter(Condition == 'single' & Exp_year == 2023)
+Single_2022_2023 <- PHENO_FULL_AVERAGE %>% filter(Condition == "single" & Exp_year == 2023)
 
 ### 5a_Comparing_TW_Between_Haplotypes.R
 
@@ -184,9 +184,9 @@ Haplo_graph$`Avg Yield > Pop & Gen Avg Yield` <- ifelse(Haplo_graph$Avg_TW > Hap
 f_AY <- Haplo_graph %>% filter(`Avg Yield > Pop & Gen Avg Yield` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
 
 ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_TW, fill = `Avg Yield > Pop & Gen Avg Yield`)) +
-  geom_bar(stat = 'identity') +
+  geom_bar(stat = "identity") +
   geom_hline(yintercept = mean(Haplo_graph$Avg_TW, na.rm = T), color = "green") +
-  geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
+  geom_hline(aes(yintercept = GenAvg), color = "blue", linetype = 2) +
   labs(y = "Average Total Seed Weight",
        title = "Average Total Seed Weight between Haplotypes 2022-2023") +
   scale_y_continuous(breaks = seq(0, 200, 25)) +
@@ -203,9 +203,9 @@ Haplo_graph$`Avg FT > Pop & Gen Avg FT` <- ifelse(Haplo_graph$Avg_FT > Haplo_gra
 f_FT <- Haplo_graph %>% filter(`Avg FT > Pop & Gen Avg FT` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
 
 ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_FT, fill = `Avg FT > Pop & Gen Avg FT`)) +
-  geom_bar(stat = 'identity') +
+  geom_bar(stat = "identity") +
   geom_hline(yintercept = mean(Haplo_graph$Avg_FT, na.rm = T), color = "green") +
-  geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
+  geom_hline(aes(yintercept = GenAvg), color = "blue", linetype = 2) +
   labs(y = "Average Flowering Time (Days)",
        title = "Average Flowering Time between Haplotypes 2022-2023") +
   facet_wrap(~Generation, scales = "free_x") +
@@ -222,9 +222,9 @@ Haplo_graph$`Avg Fec > Pop & Gen Avg Fec` <- ifelse(Haplo_graph$Avg_Fec > Haplo_
 f_Fe <- Haplo_graph %>% filter(`Avg Fec > Pop & Gen Avg Fec` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
 
 ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fec, fill = `Avg Fec > Pop & Gen Avg Fec`)) +
-  geom_bar(stat = 'identity') +
+  geom_bar(stat = "identity") +
   geom_hline(yintercept = mean(Haplo_graph$Avg_Fec, na.rm = T), color = "green") +
-  geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
+  geom_hline(aes(yintercept = GenAvg), color = "blue", linetype = 2) +
   labs(y = "Average Centered Fecundity",
        title = "Average Fecundity between Haplotypes 2022-2023") +
   facet_wrap(~Generation, scales = "free_x") +
@@ -242,9 +242,9 @@ f_Fi <- Haplo_graph %>% filter(`Avg Fit > Pop & Gen Avg Fit` == TRUE) %>% filter
 ui <- Reduce(intersect, list(f_AY, f_Fe, f_Fi))
 
 ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_Fit, fill = `Avg Fit > Pop & Gen Avg Fit`)) +
-  geom_bar(stat = 'identity') +
+  geom_bar(stat = "identity") +
   geom_hline(yintercept = mean(Haplo_graph$Avg_Fit, na.rm = TRUE), color = "green") +
-  geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
+  geom_hline(aes(yintercept = GenAvg), color = "blue", linetype = 2) +
   labs(y = "Average Fitness",
        title = "Average Absolute Fitness between Haplotypes 2022-2023") +
   facet_wrap(~Generation, scales = "free_x") +
@@ -262,9 +262,9 @@ f_Fd <- Haplo_graph %>% filter(`Avg Fit > Pop & Gen Avg Fit` == TRUE) %>% filter
 ui <- Reduce(intersect, list(f_AY, f_Fe, f_Fi, f_Fd))
 
 ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_100SW, fill = `Avg Fit > Pop & Gen Avg Fit`)) +
-  geom_bar(stat = 'identity') +
+  geom_bar(stat = "identity") +
   geom_hline(yintercept = mean(Haplo_graph$Avg_100SW, na.rm = TRUE), color = "green") +
-  geom_hline(aes(yintercept = GenAvg), color = 'blue', linetype = 2) +
+  geom_hline(aes(yintercept = GenAvg), color = "blue", linetype = 2) +
   labs(y = "Average 100 Seed Weight (grams)",
        title = "Average 100 Seed Weigh between Haplotypes 2022-2023") +
   facet_wrap(~Generation, scales = "free_x") +

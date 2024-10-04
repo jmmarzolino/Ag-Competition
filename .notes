@@ -18,7 +18,7 @@ FT_FITNESS$Generation <- gsub("^*.*_.*", 0, FT_FITNESS$Generation)
 outlier_cutoff = quantile(test$FECUNDITY,0.75, na.rm = TRUE) + (1.5 * IQR(test$FECUNDITY, na.rm = TRUE))
 ggplot(FT_FITNESS, aes(x = FECUNDITY)) +
   geom_histogram(bins = 50) +
-  geom_vline(xintercept = outlier_cutoff, color = 'red')
+  geom_vline(xintercept = outlier_cutoff, color = "red")
 
 
 

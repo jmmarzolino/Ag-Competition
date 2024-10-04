@@ -18,7 +18,7 @@ library(gridExtra)
 
 # Mixed Scatterplots 2021-2022
 
-Mixed_2021_2022 <- PHENO_FULL_AVERAGE %>% filter(Condition == 'mixed' & Exp_year == 2022)
+Mixed_2021_2022 <- PHENO_FULL_AVERAGE %>% filter(Condition == "mixed" & Exp_year == 2022)
 
 #fitness = (Plot Germination * Fecundity)
 ### 02a_Mixed_Fitness_over_Generation.R
@@ -26,8 +26,8 @@ Mixed_2021_2022 <- PHENO_FULL_AVERAGE %>% filter(Condition == 'mixed' & Exp_year
 Mixed_2021_2022$Generation <- as.numeric(Mixed_2021_2022$Generation)
 a <- ggplot(Mixed_2021_2022, aes(x= Generation, y = ABS_FITNESS)) +
   geom_jitter(alpha = .5) +
-  geom_smooth(method = 'lm') +
-  geom_hline(aes(yintercept = 0), color = 'red') +
+  geom_smooth(method = "lm") +
+  geom_hline(aes(yintercept = 0), color = "red") +
   geom_boxplot(aes(Generation, ABS_FITNESS, group = Generation), width = 1.5, alpha = .5) +
   stat_regline_equation(label.y = 2) +
   labs(x = "Generation",
@@ -40,7 +40,7 @@ ggsave("scripts/plotting/02a_Generational_Change_in_Mixed_Fitness_2021_2022.png"
 b <- ggplot(Mixed_2021_2022, aes(Generation, FECUNDITY, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
-  geom_hline(aes(yintercept = 0), color = 'red') +
+  geom_hline(aes(yintercept = 0), color = "red") +
   geom_boxplot(aes(Generation, FECUNDITY, group = Generation), width = 1.5, alpha = .5) +
   stat_regline_equation(label.y = 3) +
   labs(x = "Generation",
@@ -76,7 +76,7 @@ ggsave("scripts/plotting/02aiii_Generational_Change_in_Mixed_TW_2021_2022.png")
 
 e <- ggplot(Single_2021_2022, aes(Generation, SEED_WEIGHT_100, add = "reg.line")) +
   geom_jitter(alpha = .5) +
-  geom_smooth(method = 'lm') +
+  geom_smooth(method = "lm") +
   geom_boxplot(aes(Generation, SEED_WEIGHT_100, group = Generation), width = 1.5, alpha = .5) +
   stat_regline_equation(label.x = 5) +
   labs(y = "Average 100 Seed Weight (grams)",
@@ -87,7 +87,7 @@ ggsave("scripts/plotting/02aiiii_Generational_Change_in_Mixed_100SW_2021_2022.pn
 
 # Mixed Scatterplots 2022-2023
 
-Mixed_2022_2023 <- PHENO_FULL_AVERAGE %>% filter(Condition == 'mixed' & Exp_year == 2023)
+Mixed_2022_2023 <- PHENO_FULL_AVERAGE %>% filter(Condition == "mixed" & Exp_year == 2023)
 
 #fitness = (Plot Germination * Fecundity)
 ### 02b_Mixed_Fitness_over_Generation.R
@@ -95,8 +95,8 @@ Mixed_2022_2023 <- PHENO_FULL_AVERAGE %>% filter(Condition == 'mixed' & Exp_year
 Mixed_2022_2023$Generation <- as.numeric(Mixed_2022_2023$Generation)
 f <- ggplot(Mixed_2022_2023, aes(x= Generation, y = ABS_FITNESS)) +
   geom_jitter(alpha = .5) +
-  geom_smooth(method = 'lm') +
-  geom_hline(aes(yintercept = 0), color = 'red') +
+  geom_smooth(method = "lm") +
+  geom_hline(aes(yintercept = 0), color = "red") +
   geom_boxplot(aes(Generation, ABS_FITNESS, group = Generation), width = 1.5, alpha = .5) +
   stat_regline_equation(label.y = 2.1) +
   labs(x = "Generation",
@@ -109,7 +109,7 @@ ggsave("scripts/plotting/02b_Generational_Change_in_Mixed_Fitness_2022_2023.png"
 g <- ggplot(Mixed_2022_2023, aes(Generation, FECUNDITY, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
-  geom_hline(aes(yintercept = 0), color = 'red') +
+  geom_hline(aes(yintercept = 0), color = "red") +
   geom_boxplot(aes(Generation, FECUNDITY, group = Generation), width = 1.5, alpha = .5) +
   stat_regline_equation(label.y = 4) +
   labs(x = "Generation",
@@ -145,7 +145,7 @@ ggsave("scripts/plotting/02biii_Generational_Change_in_Mixed_TW_2022_2023.png")
 
 j <- ggplot(Mixed_2022_2023, aes(Generation, SEED_WEIGHT_100, add = "reg.line")) +
   geom_jitter(alpha = .5) +
-  geom_smooth(method = 'lm') +
+  geom_smooth(method = "lm") +
   geom_boxplot(aes(Generation, SEED_WEIGHT_100, group = Generation), width = 1.5, alpha = .5) +
   stat_regline_equation(label.y = 6.1) +
   labs(y = "Average 100 Seed Weight (grams)",
@@ -175,14 +175,14 @@ mf <- ggplot(Mixed_2021_2022, aes(Generation, Fitness, add = "reg.line")) +
   ylim(0, 40000) +
   stat_regline_equation() +
   geom_hline(yintercept = 21347.22, color = "red") +
-  geom_smooth(method = 'lm') +
+  geom_smooth(method = "lm") +
   labs(title = "Relative Fitness of Atlas Compared to Mixed Condition")
 ggsave("scripts/plotting/02ci_Mixed_Relative_Fitness_to_Atlas_2021_2022.png")
 
 jf <- ggplot(Averaged_Full_2021_2022, aes(Generation, Fitness, add = "reg.line", color = Condition)) +
   geom_jitter(alpha = .6) +
   stat_regline_equation() +
-  geom_smooth(method = 'lm' ) +
+  geom_smooth(method = "lm" ) +
   geom_hline(yintercept = 21347.22, color = "red") +
   labs(title = "Relative Fitness of Atlas Compared to Both Conditions")
 ggsave("scripts/plotting/02cii_Relative_Fitness_to_Atlas_Combined_2021_2022.png", width = 12, height = 7)

@@ -15,7 +15,7 @@ graph_tmp <- full_join(Mixed_2021_2022, tmp, by = "Generation")
 
 ggplot(graph_tmp, aes(x = TOTAL_MASS)) +
   geom_histogram(binwidth = 4) +
-  geom_vline(aes(xintercept = Avg_TW, color = 'red')) +
+  geom_vline(aes(xintercept = Avg_TW, color = "red")) +
   facet_grid(~Generation) +
   scale_x_continuous(breaks = seq(0, 150, 25))
 
@@ -62,7 +62,7 @@ graph_tmp <- full_join(Mixed_2021_2022, tmp, by = "Generation")
 
 ggplot(graph_tmp, aes(x = FT)) +
   geom_histogram(binwidth = 1.1) +
-  geom_vline(aes(xintercept = Avg_FT, color = 'red')) +
+  geom_vline(aes(xintercept = Avg_FT, color = "red")) +
   facet_grid(~Generation) 
 
 ### Homogeneity of Variance and AVOVA/Tukey Post-hoc | (No Homoggeneity of Variance)
@@ -107,7 +107,7 @@ graph_tmp <- full_join(Mixed_2021_2022, tmp, by = "Generation")
 
 ggplot(graph_tmp, aes(x = Fecundity)) +
   geom_histogram() +
-  geom_vline(aes(xintercept = Avg_Fec, color = 'red')) +
+  geom_vline(aes(xintercept = Avg_Fec, color = "red")) +
   facet_grid(~Generation) +
   scale_y_continuous(breaks = seq(0, 15, 1))
 
@@ -155,7 +155,7 @@ graph_tmp <- full_join(Mixed_2021_2022, tmp, by = "Generation")
 
 ggplot(graph_tmp, aes(x = Fitness)) +
   geom_histogram() +
-  geom_vline(aes(xintercept = Avg_Fit, color = 'red')) +
+  geom_vline(aes(xintercept = Avg_Fit, color = "red")) +
   facet_grid(~Generation) +
   scale_x_continuous(breaks = seq(0, 60000, 10000)) +
   theme(axis.text.x = element_text(angle = 45))

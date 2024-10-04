@@ -14,7 +14,7 @@ library(tidyverse)
 # load phenotyping data
 df <- read_delim("Ag-Comp Seed Weights - Sheet3.csv")
 
-# find average seed weight and flowering time per genotype-condition-Replicate ## wait that shouldn't average anything then, get rid of Replicate grouping?
+# find average seed weight and flowering time per genotype-condition-Replicate ## wait that shouldn"t average anything then, get rid of Replicate grouping?
 df_mean <- df %>% group_by(Genotype, Condition, Replicate) %>% summarise(a100seed = mean(SEED_WEIGHT_100, na.rm=T), ft= mean(as.numeric(FT), na.rm=T))
 
 # filter data to only single-genotype plots (control condition)
@@ -47,10 +47,10 @@ cor(df_mixed$`ft_rep 1`, df_mixed$`ft_rep 2`)
 
 ## Add a Generation Col
 df$Generation <- 0
-df[grep("^1$", df$FAM_ID), which(colnames(df)=='Generation')] <- 18
-df[grep("^2$", df$FAM_ID), which(colnames(df)=='Generation')] <- 28
-df[grep("^3$", df$FAM_ID), which(colnames(df)=='Generation')] <- 50
-df[grep("^7$", df$FAM_ID), which(colnames(df)=='Generation')] <- 58
+df[grep("^1$", df$FAM_ID), which(colnames(df)=="Generation")] <- 18
+df[grep("^2$", df$FAM_ID), which(colnames(df)=="Generation")] <- 28
+df[grep("^3$", df$FAM_ID), which(colnames(df)=="Generation")] <- 50
+df[grep("^7$", df$FAM_ID), which(colnames(df)=="Generation")] <- 58
 
 #### generation means and vars
 df %>% select(c(Generation, Condition, SEED_WEIGHT_100)) %>% group_by(Generation, Condition) %>% summarise(avg_seed_weight = mean(SEED_WEIGHT_100, na.rm=T), seed_weight_var = var(SEED_WEIGHT_100, na.rm=T)) %>% pivot_wider(names_from=Condition, values_from=c(avg_seed_weight, seed_weight_var))
@@ -61,7 +61,7 @@ df %>% select(c(Generation, Condition, FT)) %>% group_by(Generation, Condition) 
 
 
 #### parent genotypes avg flowering date
-report <- df %>% filter(Generation == 0) %>% filter(Condition=='single') %>% group_by(Genotype) %>% summarise(mean = mean(SEED_WEIGHT_100, na.rm=T), variance = var(SEED_WEIGHT_100, na.rm=T), n=n())
+report <- df %>% filter(Generation == 0) %>% filter(Condition=="single") %>% group_by(Genotype) %>% summarise(mean = mean(SEED_WEIGHT_100, na.rm=T), variance = var(SEED_WEIGHT_100, na.rm=T), n=n())
 write_delim(report, "avg_100seed_weight_parents.tsv", "\t")
 
 
@@ -106,8 +106,8 @@ PHENO_FULL <- read_delim("FT_FITNESS.tsv")
 Graphing_Corr <- function(x, y, z){
   ggplot(x, aes(`1`, `2`), add = "reg.line") +
     geom_jitter(alpha = .5) +
-    geom_abline(slope = 1, intercept = 0, color = 'red') +
-    geom_smooth(method = 'lm') +
+    geom_abline(slope = 1, intercept = 0, color = "red") +
+    geom_smooth(method = "lm") +
     labs(x = "Rep 1",
          y = "Rep 2",
          title = paste("Correlation of", sep = " ", y, "Replicates", z))
@@ -139,14 +139,14 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 a <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 30) +
-  labs(x = 'Total Weight (grams)',
+  labs(x = "Total Weight (grams)",
        title = "Residual Plot Mixed Total Weight 2022")
 
 
@@ -171,14 +171,14 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 b <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 30) +
-  labs(x = 'Centered Fecundity',
+  labs(x = "Centered Fecundity",
        title = "Residual Plot Mixed Centered Fecundity 2022")
 
 # Mixed Correlation 2021-2022 Fitness
@@ -199,14 +199,14 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 c <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 30) +
-  labs(x = 'Centered Fitness',
+  labs(x = "Centered Fitness",
        title = "Residual Plot Mixed Centered Fitness 2022")
 
 # Mixed Correlation 2021-2022 Flowering Time
@@ -231,14 +231,14 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 d <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 30) +
-  labs(x = 'Flowering Time',
+  labs(x = "Flowering Time",
        title = "Residual Plot Mixed Flowering Time 2022")
 
 
@@ -265,14 +265,14 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 e <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 35) +
-  labs(x = '100 Seed Weight (grams)',
+  labs(x = "100 Seed Weight (grams)",
        title = "Residual Plot Mixed 100 Seed Weight (grams) 2022")
 
 # Creating a dataframe that filters by mixed condition in the 2022-2023 season
@@ -303,14 +303,14 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 f <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 35) +
-  labs(x = 'Total Weight (grams)',
+  labs(x = "Total Weight (grams)",
        title = "Residual Plot Mixed Total Weight (grams) 2023")
 
 
@@ -337,14 +337,14 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 g <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 35) +
-  labs(x = 'Centered Fecundity',
+  labs(x = "Centered Fecundity",
        title = "Residual Plot Mixed Centered Fecundity 2023")
 
 # Mixed Correlation 2022-2023 Fitness
@@ -366,14 +366,14 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 h <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 35) +
-  labs(x = 'Centered Absolute Fitness',
+  labs(x = "Centered Absolute Fitness",
        title = "Residual Plot Mixed Centered Absolute Fitness 2023")
 
 # Mixed Correlation 2022-2023 Flowering Time
@@ -401,14 +401,14 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 i <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 35) +
-  labs(x = 'Flowering Time',
+  labs(x = "Flowering Time",
        title = "Residual Plot Mixed Flowering Time 2023")
 
 # Mixed Correlation 2022-2023 100 SW
@@ -434,14 +434,14 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 j <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 35) +
-  labs(x = '100 Seed Weight (grams)',
+  labs(x = "100 Seed Weight (grams)",
        title = "Residual Plot Mixed 100 Seed Weight (grams) 2023")
 
 y <- arrangeGrob(a,b,c,d,e,f,g,h,i,j, nrow = 2, ncol = 5)
@@ -466,8 +466,8 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Correlation_plots_Mix
 Graphing_Corr <- function(x, y, z){
   ggplot(x, aes(`1`, `2`), add = "reg.line") +
     geom_jitter(alpha = .5) +
-    geom_abline(slope = 1, intercept = 0, color = 'red') +
-    geom_smooth(method = 'lm') +
+    geom_abline(slope = 1, intercept = 0, color = "red") +
+    geom_smooth(method = "lm") +
     labs(x = "Rep 1",
          y = "Rep 2",
          title = paste("Correlation of", sep = " ", y, "Replicates", z))
@@ -503,14 +503,14 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 a <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
                                  ""), size = 3, hjust = 1, max.overlaps = 30) +
-  labs(x = 'Total Weight (grams)',
+  labs(x = "Total Weight (grams)",
        title = "Residual Plot Single Total Weight 2022")
 
 # Single Correlation 2021-2022 Fecundity
@@ -534,9 +534,9 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 b <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
@@ -562,9 +562,9 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 c <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
@@ -599,9 +599,9 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 d <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
@@ -635,9 +635,9 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 e <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
@@ -669,7 +669,7 @@ outlier_data <- PHENO_tmp %>% filter(TOTAL_MASS > outlier_upper | TOTAL_MASS < o
 ggplot(PHENO_SINGLE_2023, aes(x = TOTAL_MASS)) +
   geom_histogram(bins = 100) +
   geom_vline(xintercept = outlier_upper, color = "red") +
-  geom_vline(xintercept = outlier_lower, color = 'blue')
+  geom_vline(xintercept = outlier_lower, color = "blue")
 
 # Residual Plotting
 cmp <- na.omit(cmp)
@@ -681,9 +681,9 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 f <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
@@ -712,9 +712,9 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 g <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
@@ -740,9 +740,9 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 h <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
@@ -768,9 +768,9 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 i <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
@@ -808,9 +808,9 @@ tmp_outlier <- cmp %>% filter(Residuals > 2 | Residuals < -2)
 
 j <- ggplot(cmp, aes(x = `1`, y = Residuals)) +
   geom_jitter() +
-  geom_hline(yintercept = 0, color = 'red') +
+  geom_hline(yintercept = 0, color = "red") +
   geom_hline(yintercept = 2, color = "blue") +
-  geom_hline(yintercept = -2, color = 'blue') +
+  geom_hline(yintercept = -2, color = "blue") +
   scale_y_continuous(breaks = seq(-4, 4, 1)) +
   geom_text_repel(label = ifelse(cmp$Residuals > 2 | cmp$Residuals < -2,
                                  cmp$Genotype,
@@ -835,8 +835,8 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Correlation_Plot_Sing
 new_graph <- function(x, y){
   ggplot(x, aes(`1`, `2`), add = "reg.line") +
     geom_jitter(alpha = .5) +
-    geom_abline(slope = 1, intercept = 0, color = 'red') +
-    geom_smooth(method = 'lm') +
+    geom_abline(slope = 1, intercept = 0, color = "red") +
+    geom_smooth(method = "lm") +
     labs(x = "Rep 1",
          y = "Rep 2",
          title = paste("Correlation of", sep = " ", y, "Single Replicates"))}
@@ -847,7 +847,7 @@ tmp <- PHENO_FULL %>% group_by(Genotype, Replicate, Generation, Condition) %>% s
 
 ### SINGLE
 
-smp <- tmp %>% filter(Condition == 'single')
+smp <- tmp %>% filter(Condition == "single")
 
 # TOTAL WEIGHT
 
@@ -899,15 +899,15 @@ a5 <- new_graph(mp, "100 Seed Weight") +
 new_graph <- function(x, y){
   ggplot(x, aes(`1`, `2`), add = "reg.line") +
     geom_jitter(alpha = .5) +
-    geom_abline(slope = 1, intercept = 0, color = 'red') +
-    geom_smooth(method = 'lm') +
+    geom_abline(slope = 1, intercept = 0, color = "red") +
+    geom_smooth(method = "lm") +
     labs(x = "Rep 1",
          y = "Rep 2",
          title = paste("Correlation of", sep = " ", y, "Mixed Replicates"))}
 
 ### MIXED
 
-smp <- tmp %>% filter(Condition == 'mixed')
+smp <- tmp %>% filter(Condition == "mixed")
 
 # TOTAL WEIGHT
 mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(TOTAL_MASS) %>% spread(key = Replicate, value = TOTAL_MASS) %>% ungroup()
@@ -967,12 +967,12 @@ median_val <- median(tok$Plants)
 
 ggplot() +
   geom_histogram(aes(k), alpha = .5) +
-  geom_histogram(aes(l), fill = 'red', alpha = .3) +
+  geom_histogram(aes(l), fill = "red", alpha = .3) +
   scale_y_continuous(breaks = seq(0, 1000, 50)) +
   scale_x_continuous(breaks = seq(0, 12, 1)) +
-  geom_vline(aes(xintercept = mean_val, color = 'mean')) +
-  geom_vline(aes(xintercept = median_val, color = 'median')) +
+  geom_vline(aes(xintercept = mean_val, color = "mean")) +
+  geom_vline(aes(xintercept = median_val, color = "median")) +
   labs(colour = "Mean and Median",
        x = "number of plants",
        title = "Distribution of number of plants")
-ggsave('/bigdata/koeniglab/jmarz001/Ag-Competition/data/Distribution_Plants.pdf', width = 12, height = 10)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/Distribution_Plants.pdf", width = 12, height = 10)

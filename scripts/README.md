@@ -13,7 +13,7 @@ Dist...Quality Check
 
 
 # 000_row_and_col_boxplots.R
-Experimental replicates were not correctly randomized, so this script attempts to check for a pattern of differences between field 'replicates' based on planting location. It plots boxplots for both rows (field short rows) and columns (field beds) per experimental year (2022 or 2023) for measured phenotypes (100 seed weight, Flowering time).
+Experimental replicates were not correctly randomized, so this script attempts to check for a pattern of differences between field "replicates" based on planting location. It plots boxplots for both rows (field short rows) and columns (field beds) per experimental year (2022 or 2023) for measured phenotypes (100 seed weight, Flowering time).
 
 #000_single_v_mixed_PerSeedWeight_correlation.R
 Measures correlation of plot replicates for 2 phenotypes for both mixed- and single-genotype conditions.

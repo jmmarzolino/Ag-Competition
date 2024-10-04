@@ -13,16 +13,16 @@ library(tidyverse)
 
 # load and format data files
 ft22 <- read_delim("FT_2021_2022.tsv", "\t")
-ft22 <- ft22 %>% select(-c('BED_2021', 'ROW_2021'))
+ft22 <- ft22 %>% select(-c("BED_2021", "ROW_2021"))
 ft22$Plants <- as.numeric(ft22$Plants)
 ft22$Exp_year <- 2022
 
 ft23 <- read_delim("FT_2023.tsv", "\t")
-ft23 <- ft23 %>% select(-c('BED_2022', 'ROW_2022', 'PLOT_ID'))
+ft23 <- ft23 %>% select(-c("BED_2022", "ROW_2022", "PLOT_ID"))
 ft23$Exp_year <- 2023
 
 # join data for experiment years
-joined_ft <- full_join(ft22, ft23, by=c('Genotype', 'Condition', 'Replicate', 'FT'='FT', 'Generation', 'Plants'='Plot_Survival', 'Exp_year')) #%>% select(-'Plants')
+joined_ft <- full_join(ft22, ft23, by=c("Genotype", "Condition", "Replicate", "FT"="FT", "Generation", "Plants"="Plot_Survival", "Exp_year")) #%>% select(-"Plants")
 # write out a copy of joined data for ease
 write_delim(joined_ft, "FT_BOTH_YEARS.tsv", "\t")
 

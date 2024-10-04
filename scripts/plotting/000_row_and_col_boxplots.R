@@ -38,9 +38,9 @@ stat_box_data <- function(y, upper_limit = max(tmp$FT) * 1.1) {
   return(
     data.frame(
       y = 0.95 * upper_limit,
-      label = paste('n =', length(y), '\n',
-                    'avg =', round(mean(y)), '\n',
-                    'med =', round(median(y)), '\n')
+      label = paste("n =", length(y), "\n",
+                    "avg =", round(mean(y)), "\n",
+                    "med =", round(median(y)), "\n")
     )
   )
 }
@@ -118,9 +118,9 @@ wt <- read_delim("Ag-Comp Seed Weights - Sheet3.csv")
     return(
       data.frame(
         y = 0.95 * upper_limit,
-        label = paste('n =', length(y), '\n',
-                      'avg =', round(mean(y)), '\n',
-                      'med =', round(median(y)), '\n')
+        label = paste("n =", length(y), "\n",
+                      "avg =", round(mean(y)), "\n",
+                      "med =", round(median(y)), "\n")
       )
     )
   }

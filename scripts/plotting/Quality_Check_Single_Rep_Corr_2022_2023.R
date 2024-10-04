@@ -30,7 +30,7 @@ Replicate_corr_tbl$Residuals <- res$residuals
 
 g4 <- ggplot(Replicate_corr_tbl_Single, aes(FT, FT_2)) +
   geom_jitter(alpha = .5) +
-  geom_smooth(method = 'lm') +
+  geom_smooth(method = "lm") +
   stat_cor(label.x = 100, label.y = 135) +
   geom_abline(slope = 1, intercept = 0, col = "red") +
   labs(x = "Rep 1",
@@ -57,7 +57,7 @@ Replicate_corr_tbl$Residuals <- res$residuals
 
 g8 <- ggplot(Replicate_corr_tbl_Single, aes(Fitness, Fitness_2)) +
   geom_jitter(alpha = .5) +
-  geom_smooth(method = 'lm') +
+  geom_smooth(method = "lm") +
   stat_cor(label.x = 100, label.y = 40000) +
   geom_abline(slope = 1, intercept = 0, col = "red") +
   labs(x = "Rep 1",
@@ -73,7 +73,7 @@ Replicate_corr_tbl$Residuals <- res$residuals
 
 r1_100SW <- subset(Full_Data, Replicate == "rep 1" & Condition == "single")
 r2_100SW <- subset(Full_Data, Replicate == "rep 2" & Condition == "single")
-colnames(r2_100SW)[1:13] <- paste(colnames(r2_100SW)[c(1:13)], '_2', sep = '_')
+colnames(r2_100SW)[1:13] <- paste(colnames(r2_100SW)[c(1:13)], "_2", sep = "_")
 SW100 <- inner_join(r1_100SW, r2_100SW, by = c("Genotype" = "Genotype__2","Condition" = "Condition__2"))
 
 ggplot(SW100, aes(x=`Brown Bag Weight`, y=`Brown Bag Weight__2`)) +
@@ -94,7 +94,7 @@ SW100$Residuals <- res$residuals
 
 r1_100SW_mixed<- subset(Full_Data, Replicate == "rep 1" & Condition == "mixed")
 r2_100SW_mixed <- subset(Full_Data, Replicate == "rep 2" & Condition == "mixed")
-colnames(r2_100SW_mixed)[1:13] <- paste(colnames(r2_100SW_mixed)[c(1:13)], '_2', sep = '_')
+colnames(r2_100SW_mixed)[1:13] <- paste(colnames(r2_100SW_mixed)[c(1:13)], "_2", sep = "_")
 SW100 <- inner_join(r1_100SW_mixed, r2_100SW_mixed, by = c("Genotype" = "Genotype__2","Condition" = "Condition__2"))
 
 y <- ggplot(SW100, aes(x=`Brown Bag Weight`, y=`Brown Bag Weight__2`)) +
@@ -189,7 +189,7 @@ ggsave("scripts/plotting/Histograms_Average_SW_100_Over_Generations.png")
 
 Full_Data$Generation <- as.factor(Full_Data$Generation)
 ggplot(Full_Data, aes(x = `100 seed weight`, group = Generation, fill = Generation)) +
-  geom_histogram(alpha = .5, position = 'identity') +
+  geom_histogram(alpha = .5, position = "identity") +
   scale_fill_brewer(palette = "Greens") +
   labs(x = "100 Seed Weight (grams)",
        y = "frequency",

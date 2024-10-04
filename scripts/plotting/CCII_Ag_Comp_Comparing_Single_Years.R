@@ -35,7 +35,7 @@ Combined_Single_Years_Distribution <- Combined_Single_Years_Distribution %>% mut
 ggplot(Combined_Single_Years, aes(TOTAL_MASS_2021_2022, `Brown Bag Weight`), add = "reg.line") +
   geom_point() +
   stat_cor(label.y = 170) +
-  geom_smooth(method = 'lm') +
+  geom_smooth(method = "lm") +
   geom_abline(slope =1, intercept= 0, color = "red") +
   labs(x = "Year 1 Total Seed Weight (g)",
        y = "Year 2 Total Seed Weight (g)")
@@ -44,8 +44,8 @@ ggplot(Combined_Single_Years, aes(TOTAL_MASS_2021_2022, `Brown Bag Weight`), add
 ggplot(Combined_Single_Years, aes(FT_2021_2022, FT), add = "reg.line") +
   geom_point() +
   stat_cor(label.y = 120) +
-  geom_smooth(method = 'lm') +
-  geom_abline(slope = 1, intercept = 0, color = 'red') +
+  geom_smooth(method = "lm") +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
   labs(x = "Year 1 Days to Flower",
        y = "Year 2 Days to Flower")
 
@@ -53,8 +53,8 @@ ggplot(Combined_Single_Years, aes(FT_2021_2022, FT), add = "reg.line") +
 ggplot(Combined_Single_Years, aes(Fecundity_2021_2022, Fecundity), add = "reg.line") +
   geom_point() +
   stat_cor(label.y = 500, label.x = 3000) +
-  geom_smooth(method = 'lm') +
-  geom_abline(slope = 1, intercept = 0, color = 'red') +
+  geom_smooth(method = "lm") +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
   labs(x = "Year 1 Fecundity",
        y = "Year 2 Fecundity")
   
@@ -63,8 +63,8 @@ ggplot(Combined_Single_Years, aes(Fecundity_2021_2022, Fecundity), add = "reg.li
 ggplot(Combined_Single_Years, aes(Fitness_2021_2022, Fitness), add = "reg.line") +
   geom_point() +
   stat_cor(label.y = 10000, label.x = 30000) +
-  geom_smooth(method = 'lm') +
-  geom_abline(slope = 1, intercept = 0, color = 'red') +
+  geom_smooth(method = "lm") +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
   labs(x = "Year 1 Fitness",
        y = "Year 2 Fitness")
 
@@ -75,26 +75,26 @@ ggplot(Combined_Single_Years, aes(Fitness_2021_2022, Fitness), add = "reg.line")
 ggplot(Combined_Single_Years_Distribution, aes(x = `Brown Bag Weight`, fill = Year)) +
   geom_density(alpha = .5) +
   labs(x = "Average Total Seed Weight") +
-  geom_vline(xintercept = Combined_Single_Years_Distribution$Average_TW, color = 'red')
+  geom_vline(xintercept = Combined_Single_Years_Distribution$Average_TW, color = "red")
 
 ### FT Distribution
 
 ggplot(Combined_Single_Years_Distribution, aes(x = FT, fill = Year)) +
   geom_density(alpha = .5) +
   labs(x = "Average Days To Flower") +
-  geom_vline(xintercept = Combined_Single_Years_Distribution$Average_FT, color = 'red')
+  geom_vline(xintercept = Combined_Single_Years_Distribution$Average_FT, color = "red")
 
 ### Fec Distribution
 
 ggplot(Combined_Single_Years_Distribution, aes(x = Fecundity, fill = Year)) +
   geom_density(alpha = .5) +
   labs(x = "Average Fecundity") +
-  geom_vline(xintercept = Combined_Single_Years_Distribution$Average_Fec, color = 'red')
+  geom_vline(xintercept = Combined_Single_Years_Distribution$Average_Fec, color = "red")
 
 ### Fit Distributions 
 
 ggplot(Combined_Single_Years_Distribution, aes(x = Fitness, fill = Year)) +
   geom_density(alpha = .5) +
   labs(x = "Average Fitness") +
-  geom_vline(xintercept = Combined_Single_Years_Distribution$Average_Fit, color = 'red')
+  geom_vline(xintercept = Combined_Single_Years_Distribution$Average_Fit, color = "red")
 
