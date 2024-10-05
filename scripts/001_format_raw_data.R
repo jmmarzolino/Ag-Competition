@@ -18,16 +18,26 @@ sw <- read_delim("SEED_WEIGHTS_2021_2022.tsv")
 
 # average extra replicates for genotypes 1_6 and 7_69
 tmp <- sw %>% filter(Genotype %in% c("1_6", "7_69"))
+sw2 <- sw %>% filter(!(Genotype %in% c("1_6", "7_69")))
+
 tmp[which(tmp$Replicate == "rep 3"), 4] <- "rep 1"
 tmp[which(tmp$Replicate == "rep 4"), 4] <- "rep 2"
+#tmp2 <- tmp %>%
+ #       group_by(Genotype, Condition, Replicate) %>%
+  #      summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE)))
+
+
+
 tmp2 <- tmp %>%
         group_by(Genotype, Condition, Replicate) %>%
-        summarise("FT" = mean(FT, na.rm = TRUE),
-          "TOTAL_MASS" = mean(TOTAL_MASS, na.rm = TRUE),
-          "SEED_WEIGHT_100" = mean(SEED_WEIGHT_100, na.rm = TRUE))
+        summarise("Plants" = mean(Plants), "TOTAL_MASS" = mean(TOTAL_MASS, na.rm = TRUE), "SEED_WEIGHT_100" = mean(SEED_WEIGHT_100, na.rm = TRUE), "FT" = mean(FT, na.rm=TRUE))
 
-sw2 <- sw %>% filter(!(Genotype %in% c("1_6", "7_69")))
+ord <- tmp %>% select(c(Genotype, Condition, Replicate,  BED_2021, ROW_2021)) 
+ord2 <- ord[order(ord$Genotype, ord$Condition, ord$Replicate),][c(1,3,5,7,9,11,13,15),]
+
 sw2 <- full_join(sw2, tmp2)
+avgd <- full_join(tmp2, ord2, by = c("Genotype", "Condition", "Replicate"))
+sw6 <- full_join(sw5, avgd, by = c("PLOT_ID", "TOTAL_MASS", "SEED_WEIGHT_100", "FT", "ROW", "Genotype", "Condition", "Replicate", "BED_2022", "ROW_2022", "Plants"))
 
 # add year col
 sw2$Exp_year <- 2022
@@ -51,14 +61,41 @@ sw4 <- full_join(sw3, ft, by = c("PLOT_ID")) %>% select(-"PLANT_ID")
 sw4$TOTAL_MASS <- sw4$TOTAL_MASS - 11.24
 sw4$SEED_WEIGHT_100 <- sw4$SEED_WEIGHT_100 - 1.61
 
+# average extra replicates for genotypes 1_6 and 7_69
+tmp <- sw4 %>% filter(Genotype %in% c("1_6", "7_69"))
+sw5 <- sw4 %>% filter(!(Genotype %in% c("1_6", "7_69")))
+
+tmp2 <- tmp %>%
+        group_by(Genotype, Condition, Replicate) %>%
+        summarise("Plants" = mean(Plants), "TOTAL_MASS" = mean(TOTAL_MASS, na.rm = TRUE), "SEED_WEIGHT_100" = mean(SEED_WEIGHT_100, na.rm = TRUE), "FT" = mean(FT, na.rm=TRUE))
+
+ord <- tmp %>% select(c(Genotype, PLOT_ID, Condition, Replicate, ROW, BED_2022, ROW_2022)) 
+ord2 <- ord[order(ord$Genotype, ord$Condition, ord$Replicate),][c(1,3,5,7,9,11,13,15),]
+
+
+avgd <- full_join(tmp2, ord2, by = c("Genotype", "Condition", "Replicate"))
+sw6 <- full_join(sw5, avgd, by = c("PLOT_ID", "TOTAL_MASS", "SEED_WEIGHT_100", "FT", "ROW", "Genotype", "Condition", "Replicate", "BED_2022", "ROW_2022", "Plants"))
+
+#sw4 <- sw4 %>%
+ #       group_by(Genotype, Condition, Replicate) %>%
+  #      summarise(across(where(is.numeric), \(x) mean(x, na.rm = TRUE)))
+
 # add year col
-sw4$Exp_year <- 2023
+sw6$Exp_year <- 2023
 
 
 
 ### Join years of data
-sw5 <- full_join(sw2, sw4, by = c("Genotype", "Plants", "Condition", "Replicate", "FT", "TOTAL_MASS", "SEED_WEIGHT_100", "Exp_year", "BED_2021" = "BED_2022", "ROW_2021" = "ROW_2022"))
+sw5 <- full_join(sw2, sw4, by = c("Genotype", "Plants", "Condition", "Replicate", "FT", "TOTAL_MASS", "SEED_WEIGHT_100", "Exp_year", "BED_2021" = "BED_2022", "ROW_2021" = "ROW_2022")) 
 
+
+
+### QC checks
+# check for duplicated lines
+which(table(sw5$PLOT_ID)>1)
+which(table(sw5$Genotype)>16)
+sw5 <- sw5 %>% select(-c("PLOT_ID", "ROW"))
+colnames(sw5) <- c("Genotype", "Plants", "Condition", "Replicate", "BED", "ROW", "FT", "TOTAL_MASS", "SEED_WEIGHT_100", "Exp_year")
 
 # verify phenotype measurements
 # are there any phenotyped lines with plant count of 0?
@@ -68,40 +105,49 @@ sw5[which(sw5$Plants==0 & !is.na(sw5$FT)), ]
 
 
 
+# how many empty rows are there?
+# empty genotypes?
+sw5[which(is.na(sw5$Genotype)),]
+# 4 empty rows in 2022 data
+# remove those empty rows
+sw5 <- sw5 %>% filter(!is.na(Genotype))
+
+# check out plots w 0 plants
+(x <- sw5[which(sw5$Plants == 0),])
+table(x$Genotype)
+# all Genotype 2_168 plots have 0 plants
+# line 2_168 were all albino, though this doesn't explain the observation in 'mixed' plots
+# filter all empty plot rows
+sw5 <- sw5 %>% filter(Plants != 0)
 
 
+# empty conditions, replicates, etc
+sw5[which(is.na(sw5$Condition)),]
+sw5[which(is.na(sw5$Replicate)),]
+sw5[which(is.na(sw5$Exp_year)),]
+sw5[which(is.na(sw5$BED_2021)),]
+sw5[which(is.na(sw5$ROW_2021)),]
 
 
+# any other missing phenotypes?
+sw5[which(is.na(sw5$FT)),] # missing FT is fine
+sw5[which(is.na(sw5$TOTAL_MASS)),]
+sw5[which(is.na(sw5$SEED_WEIGHT_100)),]
+sw5[which(!is.na(sw5$TOTAL_MASS) & is.na(sw5$SEED_WEIGHT_100)),] 
+# plots with harvested seed but no 100-seed-weight
+
+sw5[which(is.na(sw5$TOTAL_MASS) & is.na(sw5$SEED_WEIGHT_100)),] 
+# rows missing both total mass and 100-seed-weight still have FT records
+# keeping all records in basic joined data, filter subsequently as needed
 
 
-### QC checks
-# Removing one of the duplicated PLOT_ID 839 entries and replacing the existing values with updated TW and 100 SW
+# check range of all columns
+sw5 %>% reframe(across(where(is.numeric), \(x) range(x, na.rm=TRUE)))
 
-
-
-# remove a few empty rows
-PHENO_FULL <- PHENO_FULL %>% filter(!is.na(Genotype))
-
-sw <- sw %>% filter(!is.na(TOTAL_MASS))
-
-
-
-### negative TW values?
-FT_FITNESS[which(FT_FITNESS$TOTAL_MASS < 0), (7:ncol(FT_FITNESS))]
-
-
-  ##########
-  # 1) There are some impossible negative numbers.
-  # no negative numbers now
-  PHENO_FULL %>% reframe(across(where(is.numeric), \(x) range(x, na.rm=TRUE)))
-
-  # 3) No data for 2_168
-  PHENO_FULL[which(PHENO_FULL$Genotype == "2_168"),]
-  # I think 2_168 are all albino and w low germination, so they are included in this full data set but it"s not a mistake and can be filtered
-  PHENO_FULL <- PHENO_FULL %>% filter(Genotype=="2_168")
+sw5 %>% group_by(Exp_year, Condition) %>% reframe(across(where(is.numeric), \(x) range(x, na.rm=TRUE)))
 
   # 4) More than 8 lines for 7_5    63_4     1_6    7_69 , not always clear what happened.
-  # 1_6, and 7_69 had extra Replicates in 2021-2022 by accident & was continued on purpose the next year. the extra lines are accurate and can be treated as extra Replicates and averaged w the others
+
 
   # 7_5 has one extra line from 2023, not sure why ...
 
@@ -112,9 +158,6 @@ FT_FITNESS[which(FT_FITNESS$TOTAL_MASS < 0), (7:ncol(FT_FITNESS))]
   ggplot(PHENO_FULL, aes(SEED_WEIGHT_100)) + geom_histogram()
    PHENO_FULL[which(PHENO_FULL$SEED_WEIGHT_100 > 30),]
 
-
-range(sw$TOTAL_MASS, na.rm=TRUE)
-range(sw$SEED_WEIGHT_100, na.rm=TRUE)
 
 
   FT_2023$Replicate <- as.numeric(gsub("rep (\\d)", "\\1", FT_2023$Replicate))
