@@ -19,6 +19,28 @@ df2 <- read_delim("PHENOS_2022_2023.tsv")
 
 
 
+## Add a Generation Col
+df$Generation <- 0
+df[grep("^1$", df$FAM_ID), which(colnames(df)=="Generation")] <- 18
+df[grep("^2$", df$FAM_ID), which(colnames(df)=="Generation")] <- 28
+df[grep("^3$", df$FAM_ID), which(colnames(df)=="Generation")] <- 50
+df[grep("^7$", df$FAM_ID), which(colnames(df)=="Generation")] <- 58
+
+#### generation means and vars
+df %>% select(c(Generation, Condition, SEED_WEIGHT_100)) %>% group_by(Generation, Condition) %>% summarise(avg_seed_weight = mean(SEED_WEIGHT_100, na.rm=T), seed_weight_var = var(SEED_WEIGHT_100, na.rm=T)) %>% pivot_wider(names_from=Condition, values_from=c(avg_seed_weight, seed_weight_var))
+
+df$FT <- as.numeric(df$FT)
+df %>% select(c(Generation, Condition, FT)) %>% group_by(Generation, Condition) %>% summarise(avg_ft = mean(FT, na.rm=T), ft_var = var(FT, na.rm=T)) %>% pivot_wider(names_from=Condition, values_from=c(avg_ft, ft_var))
+
+
+
+#### parent genotypes avg flowering date
+report <- df %>% filter(Generation == 0) %>% filter(Condition=="single") %>% group_by(Genotype) %>% summarise(mean = mean(SEED_WEIGHT_100, na.rm=T), variance = var(SEED_WEIGHT_100, na.rm=T), n=n())
+write_delim(report, "avg_100seed_weight_parents.tsv", "\t")
+
+
+
+
 #### generation means and vars
 df4 %>% group_by(Generation) %>% summarise(mean = mean(FT, na.rm=T), variance = var(FT, na.rm=T), n=n())
 ### conditions means and vars
