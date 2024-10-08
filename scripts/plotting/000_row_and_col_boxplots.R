@@ -2,7 +2,7 @@
 #SBATCH --mem=50G
 #SBATCH --time=02:00:00
 #SBATCH --job-name="Ag-Competition"
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/000_row_and_col_boxplots.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/000_row_and_col_boxplots.stdout
 #SBATCH -p short
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")

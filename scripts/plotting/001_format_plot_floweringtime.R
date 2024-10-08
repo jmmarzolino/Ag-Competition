@@ -4,7 +4,7 @@
 #SBATCH --mem=50G
 #SBATCH --time=02:00:00
 #SBATCH --job-name="Plot FT"
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/001_format_plot_floweringtime.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/001_format_plot_floweringtime.stdout
 #SBATCH -p short
 
 
