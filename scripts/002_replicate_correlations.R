@@ -11,10 +11,6 @@ library(ggpubr)
 library(data.table)
 library(ggrepel)
 
-library(gridExtra)
-library(car)
-
-
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 # load data
@@ -42,7 +38,6 @@ mix1 <- df1 %>%
 mix2 <- df2 %>%
   filter(Condition=="mixed") %>%
   pivot_wider(id_cols=Genotype, names_from=Replicate, values_from=c(TOTAL_MASS, SEED_WEIGHT_100, FT)) 
-
 
 
 
@@ -88,13 +83,12 @@ replicate_df %>% group_by(Exp_year, Condition, PHENOTYPE) %>% summarise('correla
 # Creating a function to graph correlations between replicates
 # x = dataframe
 # y = phenotype, string
-# z = year, string
 
-graph_correlation <- function(x=df, y='TOTAL_MASS', z=""){
+graph_correlation <- function(x=df, y='TOTAL_MASS'){
  x %>%
   filter(Plants>0 & !is.na(TOTAL_MASS) & !is.na(SEED_WEIGHT_100)) %>% 
   select(-c(Plants, BED, ROW)) %>%
-  select(c('Genotype', 'Condition', 'Replicate', 'Exp_year', all_of(y))) %>% 
+  select(all_of(c('Genotype', 'Condition', 'Replicate', 'Exp_year', y))) %>% 
   pivot_wider(names_from=Replicate, names_prefix="REP_", values_from=y) %>%
   ggplot(aes(REP_1, REP_2), add = "reg.line") +
     geom_jitter() +
@@ -102,7 +96,7 @@ graph_correlation <- function(x=df, y='TOTAL_MASS', z=""){
     geom_smooth(method = "lm") +
     labs(x = "Replicate 1",
          y = "Replicate 2",
-         title = paste("Correlation of", sep = " ", y, "Replicates", z)) +
+         title = paste("Correlation of", sep = " ", y, "Replicates")) +
     theme_bw() +
     facet_wrap(vars(Condition, Exp_year))
 }
