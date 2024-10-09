@@ -23,7 +23,7 @@ library(ggExtra)
 #TW
 
 tmp <- PHENO_FULL %>% filter(Condition == "single" & Replicate == 1)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(TOTAL_MASS) %>% spread(key = Exp_year, value = TOTAL_MASS)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(TOTAL_MASS) %>% pivot_wider(names_from = Exp_year, values_from = TOTAL_MASS)
 
 a1 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -38,7 +38,7 @@ a1 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # FEC
 
 tmp <- PHENO_FULL %>% filter(Condition == "single" & Replicate == 1)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FECUNDITY) %>% spread(key = Exp_year, value = FECUNDITY)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FECUNDITY) %>% pivot_wider(names_from = Exp_year, values_from = FECUNDITY)
 
 a2 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -53,7 +53,7 @@ a2 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # Flower
 
 tmp <- PHENO_FULL %>% filter(Condition == "single" & Replicate == 1)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FT) %>% spread(key = Exp_year, value = FT)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FT) %>% pivot_wider(names_from = Exp_year, values_from = FT)
 
 a3 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -68,7 +68,7 @@ a3 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # FIT
 
 tmp <- PHENO_FULL %>% filter(Condition == "single" & Replicate == 1)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(ABS_FITNESS) %>% spread(key = Exp_year, value = ABS_FITNESS)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(ABS_FITNESS) %>% pivot_wider(names_from = Exp_year, values_from = ABS_FITNESS)
 
 a4 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -83,7 +83,7 @@ a4 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # 100 SW
 
 tmp <- PHENO_FULL %>% filter(Condition == "single" & Replicate == 1)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(SEED_WEIGHT_100) %>% spread(key = Exp_year, value = SEED_WEIGHT_100)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(SEED_WEIGHT_100) %>% pivot_wider(names_from = Exp_year, values_from = SEED_WEIGHT_100)
 
 a5 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -101,7 +101,7 @@ a5 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # TW
 
 tmp <- PHENO_FULL %>% filter(Condition == "single" & Replicate == 2)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(TOTAL_MASS) %>% spread(key = Exp_year, value = TOTAL_MASS)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(TOTAL_MASS) %>% pivot_wider(names_from = Exp_year, values_from = TOTAL_MASS)
 
 a6 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -114,7 +114,7 @@ a6 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # FEC
 
 tmp <- PHENO_FULL %>% filter(Condition == "single" & Replicate == 2)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FECUNDITY) %>% spread(key = Exp_year, value = FECUNDITY)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FECUNDITY) %>% pivot_wider(names_from = Exp_year, values_from = FECUNDITY)
 
 a7 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -127,7 +127,7 @@ a7 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # FLOWER
 
 tmp <- PHENO_FULL %>% filter(Condition == "single" & Replicate == 2)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FT) %>% spread(key = Exp_year, value = FT)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FT) %>% pivot_wider(names_from = Exp_year, values_from = FT)
 
 a8 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -140,7 +140,7 @@ a8 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # FITNESS
 
 tmp <- PHENO_FULL %>% filter(Condition == "single" & Replicate == 2)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(ABS_FITNESS) %>% spread(key = Exp_year, value = ABS_FITNESS)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(ABS_FITNESS) %>% pivot_wider(names_from = Exp_year, values_from = ABS_FITNESS)
 
 a9 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -153,7 +153,7 @@ a9 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # 100 SW
 
 tmp <- PHENO_FULL %>% filter(Condition == "single" & Replicate == 2)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(SEED_WEIGHT_100) %>% spread(key = Exp_year, value = SEED_WEIGHT_100)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(SEED_WEIGHT_100) %>% pivot_wider(names_from = Exp_year, values_from = SEED_WEIGHT_100)
 
 a10 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -352,7 +352,7 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/data/Single_Corr_All_Combos.p
 #TW
 
 tmp <- PHENO_FULL %>% filter(Condition == "mixed" & Replicate == 1)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(TOTAL_MASS) %>% spread(key = Exp_year, value = TOTAL_MASS)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(TOTAL_MASS) %>% pivot_wider(names_from = Exp_year, values_from = TOTAL_MASS)
 
 a1 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -367,7 +367,7 @@ a1 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # FEC
 
 tmp <- PHENO_FULL %>% filter(Condition == "mixed" & Replicate == 1)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FECUNDITY) %>% spread(key = Exp_year, value = FECUNDITY)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FECUNDITY) %>% pivot_wider(names_from = Exp_year, values_from = FECUNDITY)
 
 a2 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -382,7 +382,7 @@ a2 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # Flower
 
 tmp <- PHENO_FULL %>% filter(Condition == "mixed" & Replicate == 1)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FT) %>% spread(key = Exp_year, value = FT)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FT) %>% pivot_wider(names_from = Exp_year, values_from = FT)
 
 a3 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -397,7 +397,7 @@ a3 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # FIT
 
 tmp <- PHENO_FULL %>% filter(Condition == "mixed" & Replicate == 1)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(ABS_FITNESS) %>% spread(key = Exp_year, value = ABS_FITNESS)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(ABS_FITNESS) %>% pivot_wider(names_from = Exp_year, values_from = ABS_FITNESS)
 
 a4 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -412,7 +412,7 @@ a4 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # 100 SW
 
 tmp <- PHENO_FULL %>% filter(Condition == "mixed" & Replicate == 1)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(SEED_WEIGHT_100) %>% spread(key = Exp_year, value = SEED_WEIGHT_100)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(SEED_WEIGHT_100) %>% pivot_wider(names_from = Exp_year, values_from = SEED_WEIGHT_100)
 
 a5 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -430,7 +430,7 @@ a5 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # TW
 
 tmp <- PHENO_FULL %>% filter(Condition == "mixed" & Replicate == 2)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(TOTAL_MASS) %>% spread(key = Exp_year, value = TOTAL_MASS)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(TOTAL_MASS) %>% pivot_wider(names_from = Exp_year, values_from = TOTAL_MASS)
 
 a6 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -443,7 +443,7 @@ a6 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # FEC
 
 tmp <- PHENO_FULL %>% filter(Condition == "mixed" & Replicate == 2)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FECUNDITY) %>% spread(key = Exp_year, value = FECUNDITY)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FECUNDITY) %>% pivot_wider(names_from = Exp_year, values_from = FECUNDITY)
 
 a7 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -456,7 +456,7 @@ a7 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # FLOWER
 
 tmp <- PHENO_FULL %>% filter(Condition == "mixed" & Replicate == 2)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FT) %>% spread(key = Exp_year, value = FT)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(FT) %>% pivot_wider(names_from = Exp_year, values_from = FT)
 
 a8 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -469,7 +469,7 @@ a8 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # FITNESS
 
 tmp <- PHENO_FULL %>% filter(Condition == "mixed" & Replicate == 2)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(ABS_FITNESS) %>% spread(key = Exp_year, value = ABS_FITNESS)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(ABS_FITNESS) %>% pivot_wider(names_from = Exp_year, values_from = ABS_FITNESS)
 
 a9 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +
@@ -482,7 +482,7 @@ a9 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
 # 100 SW
 
 tmp <- PHENO_FULL %>% filter(Condition == "mixed" & Replicate == 2)
-tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(SEED_WEIGHT_100) %>% spread(key = Exp_year, value = SEED_WEIGHT_100)
+tmp <- tmp %>% group_by(Genotype, Replicate, Exp_year) %>% summarise(SEED_WEIGHT_100) %>% pivot_wider(names_from = Exp_year, values_from = SEED_WEIGHT_100)
 
 a10 <- ggplot(tmp, aes(`2022`, `2023`), add = "reg.line") +
   geom_jitter() +

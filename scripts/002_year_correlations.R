@@ -50,7 +50,7 @@ smp <- tmp %>% filter(Condition == "single")
 
 # TOTAL WEIGHT
 
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(TOTAL_MASS) %>% spread(key = Replicate, value = TOTAL_MASS) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(TOTAL_MASS) %>% pivot_wider(names_from = Replicate, values_from = TOTAL_MASS) %>% ungroup()
 
 a1 <- new_graph(mp, "Total Weight (grams)") +
   stat_cor(label.y = 170) +
@@ -59,7 +59,7 @@ a1 <- new_graph(mp, "Total Weight (grams)") +
 
 # CENTERED FECUNDITY
 
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FECUNDITY) %>% spread(key = Replicate, value = FECUNDITY) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FECUNDITY) %>% pivot_wider(names_from = Replicate, values_from = FECUNDITY) %>% ungroup()
 
 a2 <- new_graph(mp, "Centered Fecundity") +
   stat_cor(label.y = 5, label.x = 1.5) +
@@ -68,7 +68,7 @@ a2 <- new_graph(mp, "Centered Fecundity") +
 
 # ABSOLUTE FITNESS
 
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(ABS_FITNESS) %>% spread(key = Replicate, value = ABS_FITNESS) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(ABS_FITNESS) %>% pivot_wider(names_from = Replicate, values_from = ABS_FITNESS) %>% ungroup()
 
 a3 <- new_graph(mp, "Centered Absolute Fitness") +
   stat_cor() +
@@ -77,7 +77,7 @@ a3 <- new_graph(mp, "Centered Absolute Fitness") +
 
 # FLOWERING TIME
 
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FT) %>% spread(key = Replicate, value = FT) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FT) %>% pivot_wider(names_from = Replicate, values_from = FT) %>% ungroup()
 
 a4 <- new_graph(mp, "Flowering Time") +
   stat_cor() +
@@ -86,7 +86,7 @@ a4 <- new_graph(mp, "Flowering Time") +
 
 # 100 SEED WEIGHT
 
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(SEED_WEIGHT_100) %>% spread(key = Replicate, value = SEED_WEIGHT_100) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(SEED_WEIGHT_100) %>% pivot_wider(names_from = Replicate, values_from = SEED_WEIGHT_100) %>% ungroup()
 
 a5 <- new_graph(mp, "100 Seed Weight") +
   stat_cor() +
@@ -116,7 +116,7 @@ new_graph <- function(x, y){
 smp <- tmp %>% filter(Condition == "mixed")
 
 # TOTAL WEIGHT
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(TOTAL_MASS) %>% spread(key = Replicate, value = TOTAL_MASS) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(TOTAL_MASS) %>% pivot_wider(names_from = Replicate, values_from = TOTAL_MASS) %>% ungroup()
 
 a6 <- new_graph(mp, "Total Weight (grams)") +
   stat_cor(label.y = 170) +
@@ -125,7 +125,7 @@ a6 <- new_graph(mp, "Total Weight (grams)") +
 
 # CENTERED FECUNDITY
 
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FECUNDITY) %>% spread(key = Replicate, value = FECUNDITY) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FECUNDITY) %>% pivot_wider(names_from = Replicate, values_from = FECUNDITY) %>% ungroup()
 
 a7 <- new_graph(mp, "Centered Fecundity") +
   stat_cor(label.y = 5, label.x = 1.5) +
@@ -134,7 +134,7 @@ a7 <- new_graph(mp, "Centered Fecundity") +
 
 # ABSOLUTE FITNESS
 
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(ABS_FITNESS) %>% spread(key = Replicate, value = ABS_FITNESS) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(ABS_FITNESS) %>% pivot_wider(names_from = Replicate, values_from = ABS_FITNESS) %>% ungroup()
 
 a8 <- new_graph(mp, "Centered Absolute Fitness") +
   stat_cor() +
@@ -143,7 +143,7 @@ a8 <- new_graph(mp, "Centered Absolute Fitness") +
 
 # FLOWERING TIME
 
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FT) %>% spread(key = Replicate, value = FT) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FT) %>% pivot_wider(names_from = Replicate, values_from = FT) %>% ungroup()
 
 a9 <- new_graph(mp, "Flowering Time") +
   stat_cor() +
@@ -152,7 +152,7 @@ a9 <- new_graph(mp, "Flowering Time") +
 
 # 100 SEED WEIGHT
 
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(SEED_WEIGHT_100) %>% spread(key = Replicate, value = SEED_WEIGHT_100) %>% ungroup()
+mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(SEED_WEIGHT_100) %>% pivot_wider(names_from = Replicate, values_from = SEED_WEIGHT_100) %>% ungroup()
 
 a10 <- new_graph(mp, "100 Seed Weight") +
   stat_cor() +
