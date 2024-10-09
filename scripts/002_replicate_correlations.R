@@ -76,8 +76,6 @@ replicate_df <- df %>%
 replicate_df %>% group_by(Exp_year, Condition, PHENOTYPE) %>% summarise('correlation'=cor(REP_1, REP_2, use="pairwise.complete.obs"))
 
 
-
-
 #tm <- df %>%
  # filter(Plants>0 & !is.na(TOTAL_MASS) & !is.na(SEED_WEIGHT_100)) %>% 
  # select(-c(Plants, BED, ROW)) %>%
@@ -121,14 +119,6 @@ ggsave("../results/replicate_correlations_FT.png", c3, width = 12, height = 12, 
 png("../results/replicate_correlations_all.png")
 ggarrange(c1, c2, c3)
 dev.off()
-
-
-
-
-
-
-
-
 
 
 
