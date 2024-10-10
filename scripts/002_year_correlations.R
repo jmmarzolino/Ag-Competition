@@ -6,159 +6,78 @@
 #SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/002_year_correlations.stdout
 #SBATCH -p short
 
-
 library(tidyverse)
-library(gridExtra)
-library(car)
-library(ggrepel)
+library(ggpubr)
 library(data.table)
+library(ggrepel)
+library(Cairo)
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 df <- fread("JOINED_PHENOTYPES.tsv")
 
-
-
-
-
-
 # average phenotypes across replicates 
-## wait that shouldn"t average anything then, get rid of Replicate grouping?
-df_mean <- df %>% group_by(Genotype, Condition, Exp_year) %>% summarise(across(where(is.numeric), \(x) mean(x, na.rm=T)))
+df_mean <- df %>% 
+    select(-c(Plants, BED, ROW, Replicate)) %>%
+    group_by(Genotype, Condition, Exp_year) %>% 
+    summarise(across(where(is.numeric), \(x) mean(x, na.rm=T))) %>%
+    ungroup()
+
+# scale data
+df_mean$FT <- scale(df_mean$FT)[,1]
+df_mean$TOTAL_MASS <- scale(df_mean$TOTAL_MASS)[,1]
+df_mean$SEED_WEIGHT_100 <- scale(df_mean$SEED_WEIGHT_100)[,1]
+
+# functions to print phenotypes yearly correlation
+# x = data frame
+# y = phenotype, string
+
+annual_correlation <- function(x, y){
+
+    # correlation between years
+    x2 <- x %>% 
+        select(c(Genotype, Condition, Exp_year, all_of(y))) %>% 
+        pivot_wider(names_from = Exp_year, names_prefix = "YEAR_", values_from = y) %>%
+        select(-Genotype) %>%
+        na.omit() 
+    
+    x2 %>%
+        group_by(Condition) %>%
+        summarise("COR" = cor(YEAR_2022, YEAR_2023, use="pairwise.complete.obs")) %>%
+        print
+
+    # plot correlation between years
+    g1 <- x2 %>%
+            ggplot(aes(YEAR_2022, YEAR_2023), add = "reg.line") +
+            geom_jitter() +
+            geom_abline(slope = 1, intercept = 0, color = "red") +
+            geom_smooth(method = "lm") +
+            #stat_cor() +
+            labs(x = "Year 2022",
+                y = "Year 2023",
+                title = paste("Correlation of", sep = " ", y)) +
+            theme_bw() +
+            facet_wrap(~Condition)
+
+    return(g1)
+}         
+
+
+# loop over each phenotype
+# calculate trait correlation btwn years & graph
+y=c('TOTAL_MASS', 'FT', 'SEED_WEIGHT_100')
+
+p1 <- annual_correlation(df_mean, y=y[1])
+p2 <- annual_correlation(df_mean, y=y[2])
+p3 <- annual_correlation(df_mean, y=y[3])
+
+ppp <- ggarrange(p1, p2, p3)
+ggsave("../results/annual_correlations.png", ppp) 
+#, width=20, height=20, dpi=300)
 
 
 
-#Creating a function to easily graph all phenos
-# x = dataframe
-# y = phenotype graphed in quotes (included in title)
-
-new_graph <- function(x, y){
-  ggplot(x, aes(`1`, `2`), add = "reg.line") +
-    geom_jitter(alpha = .5) +
-    geom_abline(slope = 1, intercept = 0, color = "red") +
-    geom_smooth(method = "lm") +
-    labs(x = "1",
-         y = "2",
-         title = paste("Correlation of", sep = " ", y, "Single Replicates"))}
-
-# Averaging the Replicates between the years
-
-tmp <- df %>% group_by(Genotype, Replicate, Generation, Condition) %>% summarise(across(.cols = where(is.numeric), .fns = mean, na.rm = T)) %>% ungroup
-
-### SINGLE
-
-smp <- tmp %>% filter(Condition == "single")
-
-# TOTAL WEIGHT
-
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(TOTAL_MASS) %>% pivot_wider(names_from = Replicate, values_from = TOTAL_MASS) %>% ungroup()
-
-a1 <- new_graph(mp, "Total Weight (grams)") +
-  stat_cor(label.y = 170) +
-  xlim(0, 210) +
-  ylim(0, 210)
-
-# CENTERED FECUNDITY
-
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FECUNDITY) %>% pivot_wider(names_from = Replicate, values_from = FECUNDITY) %>% ungroup()
-
-a2 <- new_graph(mp, "Centered Fecundity") +
-  stat_cor(label.y = 5, label.x = 1.5) +
-  xlim(-1, 8.5) +
-  ylim(-1, 8.5)
-
-# ABSOLUTE FITNESS
-
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(ABS_FITNESS) %>% pivot_wider(names_from = Replicate, values_from = ABS_FITNESS) %>% ungroup()
-
-a3 <- new_graph(mp, "Centered Absolute Fitness") +
-  stat_cor() +
-  xlim(-2.5, 3) +
-  ylim(-2.5, 3)
-
-# FLOWERING TIME
-
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FT) %>% pivot_wider(names_from = Replicate, values_from = FT) %>% ungroup()
-
-a4 <- new_graph(mp, "Flowering Time") +
-  stat_cor() +
-  xlim(92, 125) +
-  ylim(92, 125)
-
-# 100 SEED WEIGHT
-
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(SEED_WEIGHT_100) %>% pivot_wider(names_from = Replicate, values_from = SEED_WEIGHT_100) %>% ungroup()
-
-a5 <- new_graph(mp, "100 Seed Weight") +
-  stat_cor() +
-  xlim(2.9, 6.6) +
-  ylim(2.9, 6.6)
-
-
-new_graph <- function(x, y){
-  ggplot(x, aes(`1`, `2`), add = "reg.line") +
-    geom_jitter(alpha = .5) +
-    geom_abline(slope = 1, intercept = 0, color = "red") +
-    geom_smooth(method = "lm") +
-    labs(x = "1",
-         y = "2",
-         title = paste("Correlation of", sep = " ", y, "Mixed Replicates"))}
-
-
-
-
-
-
-
-
-
-### MIXED
-
-smp <- tmp %>% filter(Condition == "mixed")
-
-# TOTAL WEIGHT
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(TOTAL_MASS) %>% pivot_wider(names_from = Replicate, values_from = TOTAL_MASS) %>% ungroup()
-
-a6 <- new_graph(mp, "Total Weight (grams)") +
-  stat_cor(label.y = 170) +
-  xlim(0, 210) +
-  ylim(0, 210)
-
-# CENTERED FECUNDITY
-
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FECUNDITY) %>% pivot_wider(names_from = Replicate, values_from = FECUNDITY) %>% ungroup()
-
-a7 <- new_graph(mp, "Centered Fecundity") +
-  stat_cor(label.y = 5, label.x = 1.5) +
-  xlim(-1, 8.5) +
-  ylim(-1, 8.5)
-
-# ABSOLUTE FITNESS
-
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(ABS_FITNESS) %>% pivot_wider(names_from = Replicate, values_from = ABS_FITNESS) %>% ungroup()
-
-a8 <- new_graph(mp, "Centered Absolute Fitness") +
-  stat_cor() +
-  xlim(-2.5, 3) +
-  ylim(-2.5, 3)
-
-# FLOWERING TIME
-
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(FT) %>% pivot_wider(names_from = Replicate, values_from = FT) %>% ungroup()
-
-a9 <- new_graph(mp, "Flowering Time") +
-  stat_cor() +
-  xlim(92, 125) +
-  ylim(92, 125)
-
-# 100 SEED WEIGHT
-
-mp <- smp %>% group_by(Genotype, Generation, Replicate) %>% summarise(SEED_WEIGHT_100) %>% pivot_wider(names_from = Replicate, values_from = SEED_WEIGHT_100) %>% ungroup()
-
-a10 <- new_graph(mp, "100 Seed Weight") +
-  stat_cor() +
-  xlim(2.9, 6.6) +
-  ylim(2.9, 6.6)
-
-n <- arrangeGrob(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, top = "Correlation Between Years", nrow = 2, ncol = 5)
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Correlation_Between_Years.png", n, width =32, height = 16)
+# labelling genotype source of outlier points
+# geom_text_repel(label = ifelse(sc_22$RES > 2 | sc_22$RES < -2,
+#                                scaled$Genotype, ""), 
+#                                size = 3, hjust = 1, max.overlaps = 30) +
 
