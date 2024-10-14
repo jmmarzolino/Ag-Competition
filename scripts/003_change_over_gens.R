@@ -143,115 +143,18 @@ summary(aov(FT ~ Replicate + Generation + Condition + Plot_Survival + Generation
 
 ### Plotting
 ## boxplot of experimental conditions
-png("boxplot_condition.png")
-ggplot(df3, aes(y=FT, x=Condition, fill=Condition)) +
+df %>% ggplot( aes(y=FT, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
+df %>% filter(Condition == "single") %>% ggplot( aes(y=FT, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
+
+save_name <- paste0("boxplot", factor, ".png")
+png(save_name)
+
+
+ggplot(df, aes(y=FT, x=Condition, fill=Condition)) +
 geom_boxplot() +
 theme_minimal()
+
+ggplot(df, aes(y=FT, x=Replicate, group=Replicate, fill=Replicate)) +
+
+
 dev.off()
-
-## distribution of experimental conditions
-png("distribution_condition.png")
-ggplot(df3, aes(x=FT, group=Condition, color=Condition, fill=Condition)) +
-geom_density(alpha=0.5) +
-theme_minimal()
-dev.off()
-
-
-
-## boxplot of Generations
-png("boxplot_generation.png")
-df3 %>% ggplot( aes(y=FT, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
-geom_boxplot() +
-theme_minimal()
-dev.off()
-
-## distribution of Generations
-png("distribution_generation.png")
-ggplot(df3, aes(x=FT, group=as.factor(Generation), color=as.factor(Generation), fill=as.factor(Generation))) +
-geom_density(alpha=0.5) +
-theme_minimal()
-dev.off()
-
-## distribution of Generations - single (non-mixed) plots only
-png("distribution_generation_single_condition.png")
-df3 %>% filter(Condition == "single") %>% ggplot(aes(x=FT, group=as.factor(Generation), color=as.factor(Generation), fill=as.factor(Generation))) +
-geom_density(alpha=0.5) +
-theme_minimal()
-dev.off()
-
-## boxplot of Generations - single plots only
-png("boxplot_generation_single_condition.png")
-df3 %>% filter(Condition == "single") %>% ggplot( aes(y=FT, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
-geom_boxplot() +
-theme_minimal()
-dev.off()
-
-
-## boxplot of Replicates
-png("boxplot_Replicates.png")
-ggplot(df3, aes(y=FT, x=Replicate, group=Replicate, fill=Replicate)) +
-geom_boxplot() +
-theme_minimal()
-dev.off()
-
-## distribution of Replicates
-png("distribution_Replicates.png")
-ggplot(df3, aes(x=FT, group=Replicate, color=Replicate, fill=Replicate)) +
-geom_density(alpha=0.5) +
-theme_minimal()
-dev.off()
-
-
-### SIGNIFICANCE TESTS
-# test relationship between flowering date (days between planting and spike emergence) and...
-
-# Replicate
-x <-aov(FT ~ Replicate, df3)
-summary(x)
-
-# are Replicates strongly correlated?
-#rep1 <- df3 %>% select(Genotype, Replicate, FT) %>% filter(Replicate=="rep 1") #%>% filter(!is.na(FT))
-#rep2 <- df3 %>% select(Genotype, Replicate, FT) %>% filter(Replicate=="rep 2") #%>% filter(!is.na(FT))
-
-#cor(rep1$FT, rep2$FT)
-
-
-
-# experimental group
-x <-aov(FT ~ Condition, df3)
-summary(x)
-
-# Replicate and experimental group
-x <-aov(FT ~ Replicate + Condition, df3)
-summary(x)
-
-# generation - parents vs progeny
-#df3 %>% mutate(ParentOrProgeny = )
-
-# generation - F0, 18, 28, 58...
-x <-aov(FT ~ Generation, df3)
-summary(x)
-
-# combinations of above?
-x <-aov(FT ~ Condition + Replicate + Generation + Plants, df3)
-summary(x)
-
-x <-aov(FT ~ Condition*Generation, df3)
-summary(x)
-
-#library(lme4)
-#install_packages("lmeTest")
-#library(lmeTest)
-#x <-aov(lmer(FT ~ Condition + (1|Generation:Genotype) + (1|Replicate), df3))
-#x <-aov(lmer(FT ~ Condition + Generation + (1 + Generation|Genotype) + (1|Replicate)), df3) # try to plot this line!
-# Fixed: Condition, Generation
-# Random: Genotype, Replicate
-# relationship between Generation and genotype?
-# relationship between Generation and Condition...
-
-
-#summary(x)
-#anova(lmer()) # anova for fixed effects
-#summary(aov())
-#ranova(lmer()) # for random effects
-#t.test(extra ~ group, data = sleep)
