@@ -1,14 +1,14 @@
 #!/usr/bin/env Rscript
 
-#SBATCH --ntasks=1
+
 #SBATCH --mem=30G
 #SBATCH --time=02:00:00
 #SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/competition1.stdout
 #SBATCH -p koeniglab
 
 library(lme4)
-library(dplyr)
-library(ggplot2)
+
+
 library(methods)
 library(gridExtra)
 source("rhome/jmarz001/bigdata/Ag-Competition/scripts/CUSTOM_FNS.R")
