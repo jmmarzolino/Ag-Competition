@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-#SBATCH --ntasks=1
+
 #SBATCH --mem=30G
 #SBATCH --time=02:00:00
 #SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/001_format_raw_data.stdout

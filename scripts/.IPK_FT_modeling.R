@@ -1,9 +1,6 @@
 #!/usr/bin/env Rscript
-
-#SBATCH --ntasks=1
 #SBATCH --mem=10G
 #SBATCH --time=02:00:00
-#SBATCH --job-name="FT correlation"
 #SBATCH --output=/rhome/jmarz001/bigdata/IPK_Analysis/scripts/000_FT_trait_corr.stdout
 #SBATCH -p short
 

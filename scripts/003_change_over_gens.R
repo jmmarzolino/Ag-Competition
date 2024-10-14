@@ -1,14 +1,13 @@
 #!/usr/bin/env Rscript
-
-#SBATCH --ntasks=1
 #SBATCH --mem=50G
 #SBATCH --time=02:00:00
-#SBATCH --job-name="2023"
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/001_format_2023.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/003_change_over_gens.stdout
 #SBATCH -p short
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 library(tidyverse)
+
+source("../scripts/CUSTOM_FNS.R")
 
 ## Remove rows without genotype
 df4 <- df4 %>% filter(!is.na(Genotype))
