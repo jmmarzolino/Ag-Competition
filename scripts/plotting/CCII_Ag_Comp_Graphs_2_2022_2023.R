@@ -1,11 +1,5 @@
 library(tidyverse)
-library(readr)
-library(dplyr)
 library(ggpubr)
-library(ggplot2)
-library(tidyr)
-library(car)
-library(gridExtra)
 
 #fitness = (Plot Germination * Fecundity
 ### 02_Single_Fitness_over_Generation.R

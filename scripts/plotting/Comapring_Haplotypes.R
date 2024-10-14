@@ -1,18 +1,18 @@
 #!/usr/bin/env Rscript
 
-#SBATCH --ntasks=1
+
 #SBATCH --mem=30G
 #SBATCH --time=02:00:00
 #SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/Comparing_Haplotypes.stdout
 #SBATCH -p koeniglab
 
 library(tidyverse)
-library(readr)
-library(dplyr)
-library(ggpubr)
-library(ggplot2)
 
-library(tidyr)
+
+library(ggpubr)
+
+
+
 
 # 2021-2022
 

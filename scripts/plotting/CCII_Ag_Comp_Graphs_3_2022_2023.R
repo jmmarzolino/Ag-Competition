@@ -1,21 +1,21 @@
 library(tidyverse)
-library(readr)
-library(dplyr)
+
+
 library(ggpubr)
-library(ggplot2)
-library(tidyr)
+
+
 library(car)
 
-test <- Average_Haplo_rep %>% select(c("Genotype", "Generation", "Condition", "Brown Bag Weight", "Fitness", "Fecundity", "FT")) %>% group_by(Genotype) %>% 
-  pivot_wider(names_from = "Condition", values_from = c("Brown Bag Weight", "Fecundity", "Fitness"))
+test <- Average_Haplo_rep %>% select(c("Genotype", "Generation", "Condition", "TOTAL_WEIGHT", "Fitness", "Fecundity", "FT")) %>% group_by(Genotype) %>% 
+  pivot_wider(names_from = "Condition", values_from = c("TOTAL_WEIGHT", "Fecundity", "Fitness"))
 test <- ifelse(test$)
 
-test$new <- ifelse(test$`Brown Bag Weight_single` > test$`Brown Bag Weight_single`, 1,0)
+test$new <- ifelse(test$TOTAL_WEIGHT_single > test$TOTAL_WEIGHT_single, 1,0)
 
 
 ### 3a_Bar_Graph_Avg_Yield_Between_Genotype.R
 
-ggplot(Average_Haplo_rep, aes(Genotype, `Brown Bag Weight`, color = Condition, fill = Condition)) +
+ggplot(Average_Haplo_rep, aes(Genotype, TOTAL_WEIGHT, color = Condition, fill = Condition)) +
   geom_bar(stat = "identity", position = position_dodge(), alpha = .5, width = .5) +
   labs(y = "Average Total Seed Weight (grams)",
        title = "Comparing Average Total Seed Weight Between Individual Genotype") +
@@ -140,7 +140,7 @@ ggsave("scripts/plotting/03ciiii_Combined_Mixed_v_Single_Scatterplots.png", g, w
 
 ### 3cc_T_test_Mixed_vs_Single_Yield
 
-t.test(`Brown Bag Weight` ~ Condition, Average_Haplo_rep)
+t.test(TOTAL_WEIGHT ~ Condition, Average_Haplo_rep)
 
 ### 3cci_T_test_Mixed_vs_Single_Fitness
 
@@ -152,7 +152,7 @@ t.test(Fecundity ~ Condition, Average_Haplo_rep)
 
 ### 3d_Seed_TW_Per_Genotype
 
-ggplot(Average_Haplo_rep, aes(x = reorder(Genotype, +`Brown Bag Weight`), `Brown Bag Weight`, fill = Condition, group = Generation)) +
+ggplot(Average_Haplo_rep, aes(x = reorder(Genotype, +TOTAL_WEIGHT), TOTAL_WEIGHT, fill = Condition, group = Generation)) +
   geom_bar(stat = "identity", position = position_dodge()) +
   labs(y = "Average Total Seed Weight",
        title = "Average Total Weight of Genotype Across Generations") +
@@ -176,7 +176,7 @@ ggplot(Rep_Single, aes(FT, Fecundity)) +
 ggsave("scripts/plotting/03e_Int_FT_vs_fec.png")
 
 # FT vs. TW
-ggplot(Rep_Single, aes(FT, `Brown Bag Weight`)) +
+ggplot(Rep_Single, aes(FT, TOTAL_WEIGHT)) +
   geom_point()+
   geom_smooth() +
   labs(y = "Total Seed Weight (g)") +
@@ -192,7 +192,7 @@ ggsave("scripts/plotting/03e_Int_FT_vs_TW.png")
 
 ### Avg_Total_Seed_Weight_Over_Time
 
-fe <- ggplot(Average_Haplo_rep, aes(Generation, `Brown Bag Weight`, add = "reg.line")) +
+fe <- ggplot(Average_Haplo_rep, aes(Generation, TOTAL_WEIGHT, add = "reg.line")) +
   geom_jitter(alpha = .3) +
   geom_smooth(method = lm) +
   stat_regline_equation(label.y = 200) +
@@ -200,7 +200,7 @@ fe <- ggplot(Average_Haplo_rep, aes(Generation, `Brown Bag Weight`, add = "reg.l
        y = "Average Total Seed Weight (grams)") +
   facet_wrap(~Condition)
 
-ff <- ggplot(Average_Haplo_rep, aes(Generation, `Brown Bag Weight`, col = Condition)) +
+ff <- ggplot(Average_Haplo_rep, aes(Generation, TOTAL_WEIGHT, col = Condition)) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   labs(x = "Generation",

@@ -1,10 +1,10 @@
 library(tidyverse)
-library(readr)
-library(dplyr)
-library(ggpubr)
-library(ggplot2)
 
-library(tidyr)
+
+library(ggpubr)
+
+
+
 library(car)
 library(gridExtra)
 library(dunn.test)
@@ -13,7 +13,7 @@ Replicate_corr_tbl_Mixed <- Replicate_corr_tbl %>% filter(Condition == "mixed")
 
 ### Correlation of Replicates (Total Seed Weight) 
 
-g2 <- ggplot(Replicate_corr_tbl_Mixed, aes(x=`Brown Bag Weight`, y=`Brown Bag Weight_2`, add = "reg.line")) +
+g2 <- ggplot(Replicate_corr_tbl_Mixed, aes(x=TOTAL_WEIGHT, y=`TOTAL_WEIGHT_2`, add = "reg.line")) +
   geom_point(alpha = .5) +
   geom_abline(slope =1, intercept= 0, color = "red") +
   stat_cor(label.y = 235, label.x = 20) +
@@ -23,7 +23,7 @@ g2 <- ggplot(Replicate_corr_tbl_Mixed, aes(x=`Brown Bag Weight`, y=`Brown Bag We
        title = "Total Weight 2022-20223") 
 ggsave("scripts/plotting/Correlation_of_Mixed_Rep_2022_2023_TW.png")
 
-res <- Replicate_corr_tbl %>% summarise(residuals = resid(lm(`Brown Bag Weight_2` ~ `Brown Bag Weight`)))
+res <- Replicate_corr_tbl %>% summarise(residuals = resid(lm(`TOTAL_WEIGHT_2` ~ TOTAL_WEIGHT)))
 Replicate_corr_tbl$Residuals <- res$residuals
 
 ### Correlation of Replicates (Flowering Time)

@@ -1,10 +1,10 @@
 library(tidyverse)
-library(readr)
-library(dplyr)
-library(ggpubr)
-library(ggplot2)
 
-library(tidyr)
+
+library(ggpubr)
+
+
+
 library(car)
 library(gridExtra)
 library(dunn.test)
@@ -13,7 +13,7 @@ Replicate_corr_tbl_Single <- Replicate_corr_tbl %>% filter(Condition == "single"
 
 ### Correlation of Replicates (Total Seed Weight) 
 
-g2 <- ggplot(Replicate_corr_tbl_Single, aes(x=`Brown Bag Weight`, y=`Brown Bag Weight_2`, add = "reg.line")) +
+g2 <- ggplot(Replicate_corr_tbl_Single, aes(x=TOTAL_WEIGHT, y=`TOTAL_WEIGHT_2`, add = "reg.line")) +
   geom_point(alpha = .5) +
   geom_abline(slope =1, intercept= 0, color = "red") +
   stat_cor(label.y = 235, label.x = 20) +
@@ -23,7 +23,7 @@ g2 <- ggplot(Replicate_corr_tbl_Single, aes(x=`Brown Bag Weight`, y=`Brown Bag W
        title = "Total Weight 2022-2023") 
 ggsave("scripts/plotting/Correlation_of_Single_Rep_2022_2023_TW.png")
 
-res <- Replicate_corr_tbl %>% summarise(residuals = resid(lm(`Brown Bag Weight_2` ~ `Brown Bag Weight`)))
+res <- Replicate_corr_tbl %>% summarise(residuals = resid(lm(`TOTAL_WEIGHT_2` ~ TOTAL_WEIGHT)))
 Replicate_corr_tbl$Residuals <- res$residuals
 
 ### Correlation of Replicates (Flowering Time)
@@ -76,7 +76,7 @@ r2_100SW <- subset(Full_Data, Replicate == "rep 2" & Condition == "single")
 colnames(r2_100SW)[1:13] <- paste(colnames(r2_100SW)[c(1:13)], "_2", sep = "_")
 SW100 <- inner_join(r1_100SW, r2_100SW, by = c("Genotype" = "Genotype__2","Condition" = "Condition__2"))
 
-ggplot(SW100, aes(x=`Brown Bag Weight`, y=`Brown Bag Weight__2`)) +
+ggplot(SW100, aes(x=TOTAL_WEIGHT, y=`TOTAL_WEIGHT__2`)) +
   geom_jitter(alpha = .5) +
   stat_cor(label.y = 235, label.x = 20) +
   geom_abline(slope =1, intercept= 0, color = "darkgreen") +
@@ -87,7 +87,7 @@ ggplot(SW100, aes(x=`Brown Bag Weight`, y=`Brown Bag Weight__2`)) +
 
 ggsave("scripts/plotting/Correlation_100_SW_Single.png")
 
-res <- SW100 %>% summarise(residuals = resid(lm(`Brown Bag Weight__2` ~ `Brown Bag Weight`)))
+res <- SW100 %>% summarise(residuals = resid(lm(`TOTAL_WEIGHT__2` ~ TOTAL_WEIGHT)))
 SW100$Residuals <- res$residuals
 
 ### Correlation of 100 Seed Weight by Replicates (Mixed)
@@ -97,7 +97,7 @@ r2_100SW_mixed <- subset(Full_Data, Replicate == "rep 2" & Condition == "mixed")
 colnames(r2_100SW_mixed)[1:13] <- paste(colnames(r2_100SW_mixed)[c(1:13)], "_2", sep = "_")
 SW100 <- inner_join(r1_100SW_mixed, r2_100SW_mixed, by = c("Genotype" = "Genotype__2","Condition" = "Condition__2"))
 
-y <- ggplot(SW100, aes(x=`Brown Bag Weight`, y=`Brown Bag Weight__2`)) +
+y <- ggplot(SW100, aes(x=TOTAL_WEIGHT, y=`TOTAL_WEIGHT__2`)) +
   geom_jitter(alpha = .5) +
   stat_cor(label.y = 235, label.x = 20) +
   geom_abline(slope =1, intercept= 0, color = "darkgreen") +
@@ -108,7 +108,7 @@ y <- ggplot(SW100, aes(x=`Brown Bag Weight`, y=`Brown Bag Weight__2`)) +
 
 ggsave("scripts/plotting/Correlation_100_SW_Mixed.png")
 
-res <- SW100 %>% summarise(residuals = resid(lm(`Brown Bag Weight__2` ~ `Brown Bag Weight`)))
+res <- SW100 %>% summarise(residuals = resid(lm(`TOTAL_WEIGHT__2` ~ TOTAL_WEIGHT)))
 SW100$Residuals <- res$residuals
 
 l <- ggplot(SW100, aes(`100 seed weight`, Residuals)) +
@@ -122,7 +122,7 @@ ggsave("scripts/plotting/Correlation_100_SW_By_Replicates_Mixed.png")
 
 ### Histograms For Total Weight by Generation
 
-ggplot(Full_Data, aes(x= `Brown Bag Weight`)) +
+ggplot(Full_Data, aes(x= TOTAL_WEIGHT)) +
   geom_histogram(binwidth = 1) +
   stat_bin(bins = 50) +
   labs(x= "Total Weight (grams)",
@@ -130,17 +130,17 @@ ggplot(Full_Data, aes(x= `Brown Bag Weight`)) +
        title = "Total Weight over Generations") +
   facet_grid(~Generation)
 
-ANOVA_Total_weight_over_Generations <- aov(`Brown Bag Weight` ~ as.factor(Generation), Full_Data)
+ANOVA_Total_weight_over_Generations <- aov(TOTAL_WEIGHT ~ as.factor(Generation), Full_Data)
 summary(ANOVA_Total_weight_over_Generations)
 TukeyHSD(ANOVA_Total_weight_over_Generations)
-leveneTest(`Brown Bag Weight` ~ as.factor(Generation), Full_Data)
+leveneTest(TOTAL_WEIGHT ~ as.factor(Generation), Full_Data)
 
 ggsave("Histograms_Total_Weight_Over_Generations.png")
 
 ### Q-Q Plot For Total Weight ~ Generation
 
-T <- Full_Data %>% select(`Brown Bag Weight`, Generation, Genotype) %>%  arrange(Generation)
-T <- T %>% mutate(Total_Weight = `Brown Bag Weight`)
+T <- Full_Data %>% select(TOTAL_WEIGHT, Generation, Genotype) %>%  arrange(Generation)
+T <- T %>% mutate(Total_Weight = TOTAL_WEIGHT)
 T <- T %>% select(c("Generation", "Genotype", "Total_Weight"))
 
 par(mfrow = c(2, 3))
@@ -159,7 +159,7 @@ for(i in unique(T$Generation)){
 ### Overlapping Histograms For Total Weight by Generation
 
 Average_Haplo_rep$Generation <- as.factor(Average_Haplo_rep$Generation)
-ggplot(Average_Haplo_rep, aes(x = `Brown Bag Weight`, group = Generation, fill = Generation)) +
+ggplot(Average_Haplo_rep, aes(x = TOTAL_WEIGHT, group = Generation, fill = Generation)) +
   geom_histogram(alpha = .5, binwidth = .5) +
   stat_bin(bins = 50) +
   scale_fill_brewer(palette = "Blues")

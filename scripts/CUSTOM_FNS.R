@@ -6,6 +6,7 @@ add_generation <- function(x){
   x$Generation <- gsub("^3_.*", 50, x$Generation)
   x$Generation <- gsub("^7_.*", 58, x$Generation)
   x$Generation <- gsub("^*.*_.*", 0, x$Generation)
+  x$Generation <- as.numeric(x$Generation)
   return(x)
 }
 

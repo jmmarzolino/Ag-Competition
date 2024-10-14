@@ -7,19 +7,11 @@
 #SBATCH -p koeniglab
 
 library(tidyverse)
-library(readr)
-library(dplyr)
 library(ggpubr)
-library(ggplot2)
+library(data.table)
 
-library(tidyr)
-
-# 2021-2022
-
-Single_2021_2022 <- PHENO_FULL_AVERAGE %>% filter(Condition == "single" & Exp_year == 2022)
-
-
-
+hap <- fread("Competition_Lines_Haplotypes.csv")
+df <- fread("JOINED_PHENOTYPES.tsv")
 
 ### Cleaning the Haplotype Dataframe and adding it onto sw_avg
 Haplotype_df <- Haplotype_data_raw %>% select(c("Family", "Haplotype", "Generation"))

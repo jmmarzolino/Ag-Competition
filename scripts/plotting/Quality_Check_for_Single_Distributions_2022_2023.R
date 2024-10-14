@@ -1,10 +1,10 @@
 library(tidyverse)
-library(readr)
-library(dplyr)
-library(ggpubr)
-library(ggplot2)
 
-library(tidyr)
+
+library(ggpubr)
+
+
+
 library(car)
 library(gridExtra)
 library(dunn.test)
@@ -83,8 +83,8 @@ ggplot(Rep_Single, aes(x = FT, fill = Generation, group = Generation)) +
 
 ### Histograms for Average Total Weight Over Generations (Single) - Normal
 
-Rep_Single <- Rep_Single %>% group_by(Generation) %>% mutate(GenAvg = mean(`Brown Bag Weight`)) %>% ungroup()
-ggplot(Rep_Single, aes(x = `Brown Bag Weight`)) +
+Rep_Single <- Rep_Single %>% group_by(Generation) %>% mutate(GenAvg = mean(TOTAL_WEIGHT)) %>% ungroup()
+ggplot(Rep_Single, aes(x = TOTAL_WEIGHT)) +
   geom_histogram(binwidth = 1) +
   facet_grid(~Generation) +
   stat_bin(bins = 60) +
@@ -95,15 +95,15 @@ ggplot(Rep_Single, aes(x = `Brown Bag Weight`)) +
 
 ### Testing for Homogenity of Variance and ANOVA for Average Total Weight
 
-ANOVA_Total_Weight <- aov(`Brown Bag Weight` ~ as.factor(Generation), Rep_Single)
+ANOVA_Total_Weight <- aov(TOTAL_WEIGHT ~ as.factor(Generation), Rep_Single)
 summary(ANOVA_Total_Weight)
 TukeyHSD(ANOVA_Total_Weight)
-leveneTest(`Brown Bag Weight` ~ as.factor(Generation), Rep_Single)
+leveneTest(TOTAL_WEIGHT ~ as.factor(Generation), Rep_Single)
 
 ### QQ plot for Total Weight (Single)
 
-T <- Rep_Single %>% select(`Brown Bag Weight`, Generation, Genotype) %>%  arrange(Generation)
-T <- T %>% mutate(TW  = `Brown Bag Weight`)
+T <- Rep_Single %>% select(TOTAL_WEIGHT, Generation, Genotype) %>%  arrange(Generation)
+T <- T %>% mutate(TW  = TOTAL_WEIGHT)
 T <- T %>% select(c("Generation", "Genotype", "TW")) 
 T$Genotype <- factor(T$Genotype, levels = T$Genotype[order(T$TW)])
 

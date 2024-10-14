@@ -1,18 +1,12 @@
 library(tidyverse)
-library(readr)
-library(dplyr)
 library(ggpubr)
-library(ggplot2)
-library(tidyr)
-library(car)
-library(gridExtra)
 
 test <- Average_Haplo_rep %>% select(c("Genotype", "Generation", "Condition", "Brown Bag Weight", "Fitness", "Fecundity", "FT")) %>% group_by(Genotype) %>% 
   pivot_wider(names_from = "Condition", values_from = c("Brown Bag Weight", "Fecundity", "Fitness"))
 test <- ifelse(test$)
 
 
-test$new <- ifelse(test$`Brown Bag Weight_single` > test$`Brown Bag Weight_single`, 1,0)
+test$new <- ifelse(test$TOTAL_WEIGHT_single > test$TOTAL_WEIGHT_single, 1,0)
 
 
 ### 3a_Bar_Graph_Avg_TW_Between_Genotype.R
@@ -193,7 +187,7 @@ ggsave("scripts/plotting/03e_Int_FT_vs_Yield_2021_2022.png")
 
 ### Avg_Total_Seed_Weight_Over_Time
 
-fe <- ggplot(Average_Haplo_rep, aes(Generation, `Brown Bag Weight`, add = "reg.line")) +
+fe <- ggplot(Average_Haplo_rep, aes(Generation, TOTAL_WEIGHT, add = "reg.line")) +
   geom_jitter(alpha = .3) +
   geom_smooth(method = lm) +
   stat_regline_equation(label.y = 200) +
@@ -201,7 +195,7 @@ fe <- ggplot(Average_Haplo_rep, aes(Generation, `Brown Bag Weight`, add = "reg.l
        y = "Average Total Seed Weight (grams)") +
   facet_wrap(~Condition)
 
-ff <- ggplot(Average_Haplo_rep, aes(Generation, `Brown Bag Weight`, col = Condition)) +
+ff <- ggplot(Average_Haplo_rep, aes(Generation, TOTAL_WEIGHT, col = Condition)) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   labs(x = "Generation",

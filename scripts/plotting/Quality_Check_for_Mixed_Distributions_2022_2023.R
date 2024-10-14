@@ -1,10 +1,10 @@
 library(tidyverse)
-library(readr)
-library(dplyr)
-library(ggpubr)
-library(ggplot2)
 
-library(tidyr)
+
+library(ggpubr)
+
+
+
 library(car)
 library(gridExtra)
 library(dunn.test)
@@ -71,7 +71,7 @@ ggplot(Rep_Mixed, aes(x = FT, fill = Generation, group = Generation)) +
 
 ### Histograms for TW (Mixed)
 
-ggplot(Rep_Mixed, aes(x = `Brown Bag Weight`)) +
+ggplot(Rep_Mixed, aes(x = TOTAL_WEIGHT)) +
   geom_histogram(binwidth = 2) +
   facet_wrap(~Generation, scales = "free_x") +
   labs(x = "Total Seed Weight (g)",
@@ -81,15 +81,15 @@ ggplot(Rep_Mixed, aes(x = `Brown Bag Weight`)) +
 
 ### ANOVA and Homogeneity of Variance for Total Weight
 
-ANOVA_TW <- aov(`Brown Bag Weight` ~ as.factor(Generation), Rep_Mixed)
+ANOVA_TW <- aov(TOTAL_WEIGHT ~ as.factor(Generation), Rep_Mixed)
 summary(ANOVA_TW)
 TukeyHSD(ANOVA_TW)
-leveneTest(`Brown Bag Weight` ~ as.factor(Generation), Rep_Mixed)
+leveneTest(TOTAL_WEIGHT ~ as.factor(Generation), Rep_Mixed)
 
 ### QQ-Plot for Total Weight & Shaprio Normality (Mixed)
 
-T <- Rep_Mixed %>% select(`Brown Bag Weight`, Generation, Genotype) %>%  arrange(Generation)
-T <- T %>% mutate(TW  = `Brown Bag Weight`)
+T <- Rep_Mixed %>% select(TOTAL_WEIGHT, Generation, Genotype) %>%  arrange(Generation)
+T <- T %>% mutate(TW  = TOTAL_WEIGHT)
 T <- T %>% select(c("Generation", "Genotype", "TW"))
 
 par(mfrow = c(2, 3))

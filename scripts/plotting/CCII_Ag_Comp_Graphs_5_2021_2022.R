@@ -1,10 +1,10 @@
 library(tidyverse)
-library(readr)
-library(dplyr)
-library(ggpubr)
-library(ggplot2)
 
-library(tidyr)
+
+library(ggpubr)
+
+
+
 
 ### 5a_Comparing_TW_Between_Haplotypes.R
 

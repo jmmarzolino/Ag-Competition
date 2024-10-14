@@ -1,13 +1,7 @@
 library(tidyverse)
-library(readr)
-library(dplyr)
 library(ggpubr)
-library(ggplot2)
-library(tidyr)
-library(car)
-library(gridExtra)
 
-#fitness = (Plot Germination * Fecundity)
+
 ### 02_Single_Fitness_over_Generation.R
 
 fa <- ggplot(Single_2021_2022, aes(Generation, Centered_Fit, add = "reg.line")) +

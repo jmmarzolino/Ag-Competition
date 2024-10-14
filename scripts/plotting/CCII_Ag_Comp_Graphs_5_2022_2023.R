@@ -1,16 +1,16 @@
 library(tidyverse)
-library(readr)
-library(dplyr)
-library(ggpubr)
-library(ggplot2)
 
-library(tidyr)
+
+library(ggpubr)
+
+
+
 
 ### 5a_Comparing_Yield_Between_Haplotypes.R
 
 Rep_Single <- Rep_Single %>% filter(Haplotype != "NA")
 Rep_Single$Haplotype <- as.factor(Rep_Single$Haplotype)
-Haplo_graph <- Rep_Single %>% group_by(Generation, Haplotype) %>% summarise(Avg_TW = mean(`Brown Bag Weight`)) %>% ungroup()
+Haplo_graph <- Rep_Single %>% group_by(Generation, Haplotype) %>% summarise(Avg_TW = mean(TOTAL_WEIGHT)) %>% ungroup()
 Haplo_graph <- Haplo_graph %>% group_by(Generation) %>% mutate(GenAvg = mean(Avg_TW)) %>% ungroup()
 Haplo_graph$`Avg Yield > Pop & Gen Avg Yield` <- ifelse(Haplo_graph$Avg_TW > Haplo_graph$GenAvg & Haplo_graph$Avg_TW > mean(Haplo_graph$Avg_TW), TRUE, FALSE)
 f_AY <- Haplo_graph %>% filter(`Avg Yield > Pop & Gen Avg Yield` == TRUE) %>% filter(!duplicated(Haplotype)) %>% select(Haplotype)
