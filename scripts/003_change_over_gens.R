@@ -5,138 +5,101 @@
 #SBATCH -p short
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
-library(tidyverse)
-
 source("../scripts/CUSTOM_FNS.R")
 
-## Remove rows without genotype
-df4 <- df4 %>% filter(!is.na(Genotype))
-df4 <- df4 %>% select(-PLANT_ID)
+library(tidyverse)
+#library(lme4)
+#install_packages("lmeTest")
+#library(lmeTest)
 
-df1 <- read_delim("PHENOS_2021_2022.tsv")
-df2 <- read_delim("PHENOS_2022_2023.tsv")
+# read in data
+df <- read_delim("JOINED_PHENOTYPES.tsv")
+# remove any rows without genotype
+df <- df %>% 
+    filter(!is.na(Genotype)) %>%
+    select(-c(BED, ROW, Replicate)) %>%
+    group_by(Genotype, Condition, Exp_year) %>%
+    summarise(across(where(is.numeric), \(x) mean(x, na.rm=T))) 
 
-
-
-## Add a Generation Col
-df$Generation <- 0
-df[grep("^1$", df$FAM_ID), which(colnames(df)=="Generation")] <- 18
-df[grep("^2$", df$FAM_ID), which(colnames(df)=="Generation")] <- 28
-df[grep("^3$", df$FAM_ID), which(colnames(df)=="Generation")] <- 50
-df[grep("^7$", df$FAM_ID), which(colnames(df)=="Generation")] <- 58
-
-#### generation means and vars
-df %>% select(c(Generation, Condition, SEED_WEIGHT_100)) %>% group_by(Generation, Condition) %>% summarise(avg_seed_weight = mean(SEED_WEIGHT_100, na.rm=T), seed_weight_var = var(SEED_WEIGHT_100, na.rm=T)) %>% pivot_wider(names_from=Condition, values_from=c(avg_seed_weight, seed_weight_var))
-
-df$FT <- as.numeric(df$FT)
-df %>% select(c(Generation, Condition, FT)) %>% group_by(Generation, Condition) %>% summarise(avg_ft = mean(FT, na.rm=T), ft_var = var(FT, na.rm=T)) %>% pivot_wider(names_from=Condition, values_from=c(avg_ft, ft_var))
+# fn adds generation col based on 'Genotype' col
+df <- add_generation(df)
 
 
+# calculate derived phenotypes
 
-#### parent genotypes avg flowering date
-report <- df %>% filter(Generation == 0) %>% filter(Condition=="single") %>% group_by(Genotype) %>% summarise(mean = mean(SEED_WEIGHT_100, na.rm=T), variance = var(SEED_WEIGHT_100, na.rm=T), n=n())
-write_delim(report, "avg_100seed_weight_parents.tsv", "\t")
+## survival = (plants/10) 
+over_sown <- df %>% filter(Plants > 10)
+# for plots have 11 or 12 seeds planted, 
+# assume max number planted is the same
+over_sown$SURVIVAL <- 1
+# plants / 11 or 12 will be 100% germination
 
+df2 <- df %>% filter(Plants <= 10)
+df2 <- df2 %>% mutate(SURVIVAL = Plants / 10)
 
-
-
-#### generation means and vars
-df4 %>% group_by(Generation) %>% summarise(mean = mean(FT, na.rm=T), variance = var(FT, na.rm=T), n=n())
-### conditions means and vars
-df4 %>% group_by(Condition) %>% summarise(mean = mean(FT, na.rm=T), variance = var(FT, na.rm=T), n=n())
-### Replicates means and vars
-df4 %>% group_by(Replicate) %>% summarise(mean = mean(FT, na.rm=T), variance = var(FT, na.rm=T), n=n())
-
-
-
-#### parent genotypes avg flowering date
-report <- df4 %>% filter(Generation == 0) %>% filter(Condition=="single") %>% group_by(Genotype) %>% summarise(mean = mean(FT, na.rm=T), variance = var(FT, na.rm=T), n=n())
-write_delim(report, "avg_FT_parents_2023.tsv", "\t")
+df3 <- full_join(df2, over_sown, by=c('Genotype', 'Condition', 'Exp_year', 'Plants', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Generation', 'SURVIVAL'))
+df3 <- df3 %>% group_by(Genotype, Condition) %>% summarise(across(where(is.numeric), mean)) %>% select(-Exp_year)
 
 
+# fecundity
+## fecundity = seed produced per plot
+## total seed weight / seed-weight-100/100
+df3 <- df3 %>% 
+    mutate(PER_SEED_WEIGHT = SEED_WEIGHT_100/100) %>%
+    mutate(SEED_COUNT = TOTAL_MASS / PER_SEED_WEIGHT) %>%
+    mutate(FECUNDITY = SEED_COUNT / Plants) %>% 
+    select(-c(PER_SEED_WEIGHT, Plants))
+
+## fitness = survival * fecundity
+df3 <- df3 %>% mutate(FITNESS = SURVIVAL * FECUNDITY) 
+df3$RELATIVE_FITNESS <- df3$FITNESS / max(df3$FITNESS)
 
 
+# fitness relative to Atlas
+AT <- df3 %>% filter(Genotype == "48_5") %>% summarise(across(where(is.numeric), mean))
+df4 <- df3 %>% filter(Genotype != "48_5")
+df4 <- full_join(df4, AT)
 
 
-### SIGNIFICANCE TESTS
-# test relationship between flowering date (days between planting and spike emergence) and...
-
-# Replicate
-x <-aov(FT ~ Replicate, df4)
-summary(x)
-
-# are Replicates strongly correlated?
-#rep1 <- df4 %>% select(Genotype, Replicate, FT) %>% filter(Replicate=="rep 1") #%>% filter(!is.na(FT))
-#rep2 <- df4 %>% select(Genotype, Replicate, FT) %>% filter(Replicate=="rep 2") #%>% filter(!is.na(FT))
-
-#cor(rep1$FT, rep2$FT)
+df4$AT_REL_FITNESS <- df4$FITNESS / AT$FITNESS
 
 
+# explore traits' mean and variance by different factors
+for(i in 5:ncol(df)){
+    y <- colnames(df[,i])
 
-# experimental group
-summary(aov(FT ~ Condition, df4))
+    df %>% 
+        group_by(Generation) %>% 
+        summarise(across(where(is.numeric), \(x) mean(x, na.rm=T), \(x) var(x, na.rm=T), n=n())) %>%
+        print()
 
-# Replicate and experimental group
-summary(aov(FT ~ Replicate + Condition, df4))
+    # parent genotypes avg flowering date
+    df %>% 
+        filter(Generation == 0) %>% 
+        filter(Condition == "single") %>% 
+        group_by(Genotype) %>% 
+        summarise(across(where(is.numeric), \(x) mean(x, na.rm=T), \(x) var(x, na.rm=T), n=n())) %>%
+        print()
 
-# generation - parents vs progeny
-#df4 %>% mutate(ParentOrProgeny = )
+}
 
-# generation - F0, 18, 28, 58...
-summary(aov(FT ~ Generation, df4))
-
-# combinations of above?
-summary(aov(FT ~ Condition + Replicate + Generation + Plot_Survival, df4))
-
-summary(aov(FT ~ Condition*Generation, df4))
-
-summary(aov(FT ~ Condition + Replicate + Generation + Plot_Survival, df4))
-
-summary(aov(FT ~ Replicate + Generation + Condition + Plot_Survival + Generation*Plot_Survival + Replicate*Plot_Survival + Generation*Plot_Survival + Condition*Generation, df4))
-
+### Atlas is parent 48
 
 
-#!/usr/bin/env Rscript
-
-#SBATCH --ntasks=1
-#SBATCH --mem=50G
-#SBATCH --time=02:00:00
-#SBATCH --job-name="2022"
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/001_format_2022_phenotypes.stdout
-#SBATCH -p short
+#    pivot_wider(names_from=Condition, values_from=c(average, variance))
 
 
-setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
-
-# load phenotyping data
-ft <- read_delim("FT_2021_2022.tsv")
-#Genotype        Plants  Condition       Replicate       BED_2021        ROW_2021        FT
-sw <- read_delim("SEED_WEIGHTS_2021_2022.csv")
-
-
-
-# remove rows without genotype
-#df <- df %>% filter(!is.na(Genotype))
-# keep na genotypes for now to keep field bed/row position filled
-
-
-
-
-
-
-
-#### generation means and vars
-df3 %>% group_by(Generation) %>% summarise(mean = mean(FT, na.rm=T), variance = var(FT, na.rm=T), n=n())
-### conditions means and vars
-df3 %>% group_by(Condition) %>% summarise(mean = mean(FT, na.rm=T), variance = var(FT, na.rm=T), n=n())
-### Replicates means and vars
-df3 %>% group_by(Replicate) %>% summarise(mean = mean(FT, na.rm=T), variance = var(FT, na.rm=T), n=n())
-
-
-
-#### parent genotypes avg flowering date
-report <- df3 %>% filter(Generation == 0) %>% filter(Condition=="single") %>% group_by(Genotype) %>% summarise(mean = mean(FT, na.rm=T), variance = var(FT, na.rm=T), n=n())
 write_delim(report, "avg_FT_parents.tsv", "\t")
+
+
+
+
+
+
+
+
+
+
 
 
 
