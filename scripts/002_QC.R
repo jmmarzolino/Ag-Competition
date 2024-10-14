@@ -1,5 +1,4 @@
 #!/usr/bin/env Rscript
-#SBATCH --ntasks=1
 #SBATCH --mem=30G
 #SBATCH --time=02:00:00
 #SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/002_QC.stdout
@@ -16,6 +15,7 @@ setwd("/bigdata/koeniglab/jmarz001/Ag-Competition")
 df <- fread("data/JOINED_PHENOTYPES.tsv")
 
 
+# filter any problematic outliers that remain
 df_long <- df %>% select(-c(BED, ROW)) %>% pivot_longer(cols=c(FT, TOTAL_MASS, SEED_WEIGHT_100), names_to='PHENOTYPE', values_to="VALUE")
 
 
@@ -35,6 +35,46 @@ df2 %>%
         x = "number of plants",
        title = "Distribution of number of plants")
 ggsave("results/plot_survival.png")#, width = 12, height = 10)
+
+
+
+
+## distribution of experimental conditions
+png("distribution_condition.png")
+ggplot(df3, aes(x=FT, group=Condition, color=Condition, fill=Condition)) +
+geom_density(alpha=0.5) +
+theme_minimal()
+dev.off()
+
+
+## distribution of Generations
+png("distribution_generation.png")
+ggplot(df3, aes(x=FT, group=as.factor(Generation), color=as.factor(Generation), fill=as.factor(Generation))) +
+geom_density(alpha=0.5) +
+theme_minimal()
+dev.off()
+
+## distribution of Generations - single (non-mixed) plots only
+png("distribution_generation_single_condition.png")
+df3 %>% filter(Condition == "single") %>% ggplot(aes(x=FT, group=as.factor(Generation), color=as.factor(Generation), fill=as.factor(Generation))) +
+geom_density(alpha=0.5) +
+theme_minimal()
+dev.off()
+
+
+
+## distribution of Replicates
+png("distribution_Replicates.png")
+ggplot(df3, aes(x=FT, group=Replicate, color=Replicate, fill=Replicate)) +
+geom_density(alpha=0.5) +
+theme_minimal()
+dev.off()
+
+
+
+
+
+
 
 
 
@@ -187,7 +227,7 @@ f18 <- df %>% filter(Generation==18)
 
 ## Atalas relative fitness
 
-  Full_Data$FEC <- Full_Data$`Brown Bag Weight`/(Full_Data$`100 seed weight`/100)
+  Full_Data$FEC <- Full_Data$TOTAL_WEIGHT/(Full_Data$`100 seed weight`/100)
   Full_Data$Fitness <- Full_Data$FEC * Full_Data$Plot_Germination
   Full_Data <- na.omit(Full_Data)
   Full_Data <- Full_Data %>% filter(Genotype != "7_5")
@@ -201,7 +241,7 @@ f18 <- df %>% filter(Generation==18)
   Atlas_tbl <- na.omit(Atlas_tbl)
   Atlas_tbl <- Atlas_tbl %>% mutate(Atlas_Avg_Fecundity = (sum(Atlas_tbl$FEC)/3),
                 Atlas_Avg_Fitness = (sum(Atlas_tbl$Fitness)/3),
-                Atlas_Avg_Total_Weight = (sum(Atlas_tbl$`Brown Bag Weight`)/3))
+                Atlas_Avg_Total_Weight = (sum(Atlas_tbl$TOTAL_WEIGHT)/3))
 
 
 
@@ -215,7 +255,7 @@ f18 <- df %>% filter(Generation==18)
   colnames(Haplo_raw)[which(names(Haplo_raw) == "Family")] <- "Genotype"
 
   Average_Haplo_rep <- full_join(Haplo_raw, Average_Haplo_rep, by = c("Genotype", "Generation"))
-  Average_Haplo_rep <- Average_Haplo_rep %>% filter(`Brown Bag Weight` != "NA")
+  Average_Haplo_rep <- Average_Haplo_rep %>% filter(TOTAL_WEIGHT != "NA")
   Average_Haplo_rep <- Average_Haplo_rep %>%  mutate(Atlas_Avg_Fec = 2363.51,
                     Atlas_Avg_Fitness = 21347.22,
                     Atlas_Avg_Total_Weight = 126.8267)
@@ -253,14 +293,14 @@ f18 <- df %>% filter(Generation==18)
   }
 
   Average_Haplo_rep$Exp_TW_Per_Plant <- ifelse(Average_Haplo_rep$Numbers == 1,
-          Exp_TW_mix(Average_Haplo_rep$`Brown Bag Weight`),
-          Exp_Single(Average_Haplo_rep$`Brown Bag Weight`))
+          Exp_TW_mix(Average_Haplo_rep$TOTAL_WEIGHT),
+          Exp_Single(Average_Haplo_rep$TOTAL_WEIGHT))
 
   ### Adding a column for centered data
   Average_Haplo_rep <- Average_Haplo_rep %>% mutate(Centered_Fit = Fitness - mean(Fitness),
           Centered_FT = FT - mean(FT),
           Centered_Fec = Fecundity - mean(Fecundity),
-          Centered_TW = `Brown Bag Weight` - mean(`Brown Bag Weight`, na.rm = TRUE))
+          Centered_TW = TOTAL_WEIGHT - mean(TOTAL_WEIGHT, na.rm = TRUE))
 
 
 
