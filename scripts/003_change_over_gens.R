@@ -105,37 +105,26 @@ write_delim(report, "avg_FT_parents.tsv", "\t")
 
 
 ### SIGNIFICANCE TESTS
-# test relationship between flowering date (days between planting and spike emergence) and...
+#anova(lmer()) # anova for fixed effects
+#summary(aov())
+#ranova(lmer()) # for random effects
+#t.test(extra ~ group, data = sleep)
 
-# Replicate
-summary(aov(FT ~ Replicate, df3))
+#x <-aov(lmer(FT ~ Condition + (1|Generation:Genotype) + (1|Replicate), df))
+#x <-aov(lmer(FT ~ Condition + Generation + (1 + Generation|Genotype) + (1|Replicate)), df) # try to plot this line!
+# Fixed: Condition, Generation
+# Random: Genotype, Replicate
 
-# are Replicates strongly correlated?
-#rep1 <- df3 %>% select(Genotype, Replicate, FT) %>% filter(Replicate=="rep 1") #%>% filter(!is.na(FT))
-#rep2 <- df3 %>% select(Genotype, Replicate, FT) %>% filter(Replicate=="rep 2") #%>% filter(!is.na(FT))
+summary(aov(FT ~ Replicate, df))
+summary(aov(FT ~ Condition, df))
+summary(aov(FT ~ Replicate + Condition, df))
+summary(aov(FT ~ Generation, df))
 
-#cor(rep1$FT, rep2$FT)
-
-
-
-# experimental group
-summary(aov(FT ~ Condition, df3))
-
-# Replicate and experimental group
-summary(aov(FT ~ Replicate + Condition, df3))
-
-# generation - parents vs progeny
-#df3 %>% mutate(ParentOrProgeny = )
-
-# generation - F0, 18, 28, 58...
-summary(aov(FT ~ Generation, df3))
-
-# combinations of above?
-summary(aov(FT ~ Condition + Replicate + Generation + Plants, df3))
-
-summary(aov(FT ~ Condition*Generation, df3))
-
-summary(aov(FT ~ Replicate + Generation + Condition + Plants + Generation*Plants + Replicate*Plants + Generation*Plants + Condition*Generation, df3))
+# combinations of factors
+summary(aov(FT ~ Condition + Replicate + Generation + Plot_Survival, df))
+summary(aov(FT ~ Condition*Generation, df))
+summary(aov(FT ~ Condition + Replicate + Generation + Plot_Survival, df))
+summary(aov(FT ~ Replicate + Generation + Condition + Plot_Survival + Generation*Plot_Survival + Replicate*Plot_Survival + Generation*Plot_Survival + Condition*Generation, df))
 
 
 
@@ -148,59 +137,7 @@ summary(aov(FT ~ Replicate + Generation + Condition + Plants + Generation*Plants
 
 
 
-setwd("/rhome/jmarz001/bigdata/Ag-Competition")
-library(tidyverse)
 
-# load phenotyping data
-df <- read_delim("Phenotypes.csv", ",")
-# remove comments and count columns
-df <- df[, -(17:19)]
-
-# separate duplicate cols into 2 data frames
-df1 <- df[, 1:8]
-df2 <- df[, 9:16]
-
-# copy correct col names onto second data frame
-colnames(df2) <- colnames(df1)
-df3 <- bind_rows(df1, df2)
-
-# remove non-numeric date entries
-#df3 <- df3[-which(df3$`Flowering Date` == "x"),]
-#df3 <- df3[-which(df3$`Flowering Date` == "X"),]
-df3$`Flowering Date` <- as.numeric(df3$`Flowering Date`)
-
-# replace colnames with code-friendly versions
-colnames(df3) <- c("Genotype", "Plants", "Condition", "Replicate", "BED_2021", "ROW_2021", "FT", "Notes")
-
-
-## Remove rows without genotype
-df3 <- df3 %>% filter(!is.na(Genotype))
-
-#### Add Generation
-df3$Genotype <- str_replace(df3$Genotype, "-", "_")
-df3$Genotype <- str_replace(df3$Genotype, "-", "_")
-
-df3$Generation <- str_replace(df3$Genotype, "(\\d)_\\d+", "\\1")
-df3$Generation <- str_replace(df3$Generation, "(\\d)_\\d+", "\\1")
-#str_split_fixed(df3$Genotype, "_", 3)
-
-df3$Generation <- as.numeric(df3$Generation)
-df3[which(df3$Generation > 8), which(colnames(df3) == "Generation")] <- 0
-
-
-
-#### generation means and vars
-df3 %>% group_by(Generation) %>% summarise(mean = mean(FT, na.rm=T), variance = var(FT, na.rm=T), n=n())
-### conditions means and vars
-df3 %>% group_by(Condition) %>% summarise(mean = mean(FT, na.rm=T), variance = var(FT, na.rm=T), n=n())
-### Replicates means and vars
-df3 %>% group_by(Replicate) %>% summarise(mean = mean(FT, na.rm=T), variance = var(FT, na.rm=T), n=n())
-
-
-
-#### parent genotypes avg flowering date
-report <- df3 %>% filter(Generation == 0) %>% filter(Condition=="single") %>% group_by(Genotype) %>% summarise(mean = mean(FT, na.rm=T), variance = var(FT, na.rm=T), n=n())
-write_delim(report, "avg_FT_parents.tsv", "\t")
 
 
 
