@@ -13,6 +13,27 @@ library(data.table)
 hap <- fread("Competition_Lines_Haplotypes.csv")
 df <- fread("JOINED_PHENOTYPES.tsv")
 
+
+
+  ### Importing Haplotype Data and cleaning the dataframe
+
+  Haplo_raw <- Haplo_raw %>% select(c("Pedigree", "Haplotype", "Generation", "Family"))
+  Haplo_raw$Family <- unlist(Haplo_raw$Family)
+  Haplo_raw$Haplotype <- unlist(Haplo_raw$Haplotype)
+  Haplo_raw <- Haplo_raw %>% mutate(Pedigree = paste0("UCRKL00000", Haplo_raw$Family))
+  colnames(Haplo_raw)[which(names(Haplo_raw) == "Family")] <- "Genotype"
+
+  Average_Haplo_rep <- full_join(Haplo_raw, Average_Haplo_rep, by = c("Genotype", "Generation"))
+  Average_Haplo_rep <- Average_Haplo_rep %>% filter(TOTAL_WEIGHT != "NA")
+  Average_Haplo_rep <- Average_Haplo_rep %>%  mutate(Atlas_Avg_Fec = 2363.51,
+                    Atlas_Avg_Fitness = 21347.22,
+                    Atlas_Avg_Total_Weight = 126.8267)
+  Average_Haplo_rep$Numbers <- ifelse(Average_Haplo_rep$Condition == "mixed", 1, 0)
+
+
+
+
+
 ### Cleaning the Haplotype Dataframe and adding it onto sw_avg
 Haplotype_df <- Haplotype_data_raw %>% select(c("Family", "Haplotype", "Generation"))
 Haplotype_df$Haplotype <- unlist(Haplotype_df$Haplotype) %>% as.character(Haplotype_df$Haplotype)

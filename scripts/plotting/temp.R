@@ -1,22 +1,75 @@
 #!/usr/bin/env Rscript
-
-
 #SBATCH --mem=30G
 #SBATCH --time=02:00:00
 #SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/competition1.stdout
 #SBATCH -p koeniglab
 
 library(tidyverse)
-
-
 library(ggpubr)
-
-
-
 library(gridExtra)
 library(car)
 library(ggrepel)
 library(ggExtra)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Adding a column for centered data
+Average_Haplo_rep <- Average_Haplo_rep %>% mutate(Centered_Fit = Fitness - mean(Fitness),
+        Centered_FT = FT - mean(FT),
+        Centered_Fec = Fecundity - mean(Fecundity),
+        Centered_TW = TOTAL_WEIGHT - mean(TOTAL_WEIGHT, na.rm = TRUE))
+
+
+
+
+
+
+
+
+###### Functions to get expected fitness, fecundity, and yield per plant for both conditions
+## Numbers col: 1 = mixed, 0 = single
+
+### Fecundity
+Average_Haplo_rep$Exp_Fec_Per_Plant <- ifelse(Average_Haplo_rep$Numbers == 1,
+        Exp_Fec_Mixed(Average_Haplo_rep$FEC),
+        Exp_Single(Average_Haplo_rep$FEC))
+
+### Fitness
+Average_Haplo_rep$Exp_Fit_Per_Plant <- ifelse(Average_Haplo_rep$Numbers == 1,
+              Exp_Fit_Mixed(Average_Haplo_rep$Fitness),
+              Exp_Single(Average_Haplo_rep$Fitness))
+
+### Total Weight
+Exp_TW_mix <- function(x){
+  TW_mix <- (x/2) + (Average_Haplo_rep$Atlas_Avg_Total_Weight/2)
+  Exp_TW <- TW_mix/10
+  return(Exp_TW)
+}
+
+Average_Haplo_rep$Exp_TW_Per_Plant <- ifelse(Average_Haplo_rep$Numbers == 1,
+        Exp_TW_mix(Average_Haplo_rep$TOTAL_WEIGHT),
+        Exp_Single(Average_Haplo_rep$TOTAL_WEIGHT))
+
+
+
+
+
+
+
+
+
 
 ### (2022 rep 1 vs. 2023 rep 1)
 
