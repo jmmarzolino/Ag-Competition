@@ -49,7 +49,16 @@ upper <- median(mix1$TOTAL_MASS, na.rm = T) + (2 * IQR(mix1$TOTAL_MASS, na.rm = 
 lower <- median(mix1$TOTAL_MASS, na.rm = T) - (2 * IQR(mix1$TOTAL_MASS, na.rm = T))
 
 ggplot(X, aes(SEED_WEIGHT_100)) + geom_histogram()
-  df[which(df$SEED_WEIGHT_100 > 30),]
+
+ggplot(sw, aes(TOTAL_MASS)) + geom_histogram() + 
+  geom_vline(aes(xintercept=high), color = "#F31919") + 
+  geom_vline(aes(xintercept=low), color = "#F31919") + 
+  geom_vline(aes(xintercept=median(sw$TOTAL_MASS, na.rm=TRUE), color = "#F31919"), linetype="dashed") + 
+  theme_bw()
+
+
+# filter outlier 100 seed weight
+df[which(df$SEED_WEIGHT_100 > 30),]
 
 
 
