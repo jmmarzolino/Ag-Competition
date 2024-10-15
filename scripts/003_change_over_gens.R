@@ -55,7 +55,7 @@ df3 <- df3 %>% mutate(FITNESS = SURVIVAL * FECUNDITY)
 df3$RELATIVE_FITNESS <- df3$FITNESS / max(df3$FITNESS)
 
 
-# fitness relative to Atlas
+# fitness relative to Atlas (parent #48)
 AT <- df3 %>% filter(Genotype == "48_5") %>% summarise(across(where(is.numeric), mean))
 df4 <- df3 %>% filter(Genotype != "48_5")
 df4 <- full_join(df4, AT)
