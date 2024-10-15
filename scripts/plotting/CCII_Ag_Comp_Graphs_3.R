@@ -3,7 +3,7 @@
 #SBATCH --ntasks=1
 #SBATCH --mem=30G
 #SBATCH --time=02:00:00
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/CCII_Ag_Comp_Graphs_3.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/CCII_Ag_Comp_Graphs_3.stdout
 #SBATCH -p koeniglab
 
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 #SBATCH --mem=50G
 #SBATCH --time=02:00:00
 #SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/000_row_and_col_boxplots.stdout

@@ -1,3 +1,9 @@
+#!/usr/bin/env Rscript
+#SBATCH --mem=30G
+#SBATCH --time=02:00:00
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/CCII_Ag_Comp_Comparing_Single_Years.stdout
+#SBATCH -p short
+
 library(tidyverse)
 library(ggpubr)
 

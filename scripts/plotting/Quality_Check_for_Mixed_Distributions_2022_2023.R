@@ -1,10 +1,11 @@
+#!/usr/bin/env Rscript
+#SBATCH --mem=30G
+#SBATCH --time=02:00:00
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/Quality_Check_for_Mixed_Distributions_2022_2023.stdout
+#SBATCH -p koeniglab
+
 library(tidyverse)
-
-
 library(ggpubr)
-
-
-
 library(car)
 library(gridExtra)
 library(dunn.test)
