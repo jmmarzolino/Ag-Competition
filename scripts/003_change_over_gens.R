@@ -57,45 +57,29 @@ df3$RELATIVE_FITNESS <- df3$FITNESS / max(df3$FITNESS)
 
 # fitness relative to Atlas (parent #48)
 AT <- df3 %>% filter(Genotype == "48_5") %>% summarise(across(where(is.numeric), mean))
+AT$Condition <- 'single'
+
 df4 <- df3 %>% filter(Genotype != "48_5")
 df4 <- full_join(df4, AT)
 
-
 df4$AT_REL_FITNESS <- df4$FITNESS / AT$FITNESS
+# write out data frame w derived phenotpyes
+write_delim(df4, "FITNESS.tsv")
 
 
-# explore traits' mean and variance by different factors
-for(i in 5:ncol(df)){
-    y <- colnames(df[,i])
+### BASE STATISTICS
+# parent genotype averages
+df4 %>% 
+    filter(Generation == 0) %>% 
+    filter(Condition == "single") 
 
-    df %>% 
-        group_by(Generation) %>% 
-        summarise(across(where(is.numeric), \(x) mean(x, na.rm=T), \(x) var(x, na.rm=T), n=n())) %>%
-        print()
-
-    # parent genotypes avg flowering date
-    df %>% 
-        filter(Generation == 0) %>% 
-        filter(Condition == "single") %>% 
-        group_by(Genotype) %>% 
-        summarise(across(where(is.numeric), \(x) mean(x, na.rm=T), \(x) var(x, na.rm=T), n=n())) %>%
-        print()
-
-}
-
-### Atlas is parent 48
-
-
-#    pivot_wider(names_from=Condition, values_from=c(average, variance))
-
-
-write_delim(report, "avg_FT_parents.tsv", "\t")
-
-
-
-
-
-
+# summarise mean & variance
+df4 %>% 
+    group_by(Generation, Condition) %>% 
+    summarise(across(where(is.numeric), mean))
+df4 %>% 
+    group_by(Generation, Condition) %>% 
+    summarise(across(where(is.numeric), var))
 
 
 
