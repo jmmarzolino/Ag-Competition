@@ -2,7 +2,7 @@
 #SBATCH --mem=30G
 #SBATCH --time=02:00:00
 #SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/002_QC.stdout
-#SBATCH -p koeniglab
+#SBATCH -p short
 
 library(tidyverse)
 library(ggpubr)
@@ -12,11 +12,16 @@ library(gridExtra)
 library(dunn.test)
 
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition")
-df <- fread("data/JOINED_PHENOTYPES.tsv")
+df <- fread("data/FITNESS.tsv")
 
+#  Centered data 
+#sw$FEC <- as.vector(scale(sw$FEC, center = TRUE, scale =TRUE))
 
-# filter any problematic outliers that remain
-df_long <- df %>% select(-c(BED, ROW)) %>% pivot_longer(cols=c(FT, TOTAL_MASS, SEED_WEIGHT_100), names_to='PHENOTYPE', values_to="VALUE")
+# arrange data for facet plotting
+df_long <- df %>%
+  pivot_longer(cols=-c(Genotype, Condition, Generation), names_to='PHENOTYPE', values_to="VALUE")
+
+#"#eca50b"
 
 
 # Plot trait distributions
