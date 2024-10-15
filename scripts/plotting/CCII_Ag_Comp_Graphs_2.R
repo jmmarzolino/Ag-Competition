@@ -1,6 +1,17 @@
+#!/usr/bin/env Rscript
+
+#SBATCH --ntasks=1
+#SBATCH --mem=30G
+#SBATCH --time=02:00:00
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/CCII_Ag_Comp_Graphs_2.stdout
+#SBATCH -p koeniglab
+
 library(tidyverse)
 library(ggpubr)
+library(ggplot2)
 
+setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
+fitness_df <- read_delim("FITNESS.tsv")
 
 ### 02_Single_Fitness_over_Generation.R
 
