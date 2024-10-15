@@ -150,9 +150,6 @@ save_name <- paste0("boxplot", factor, ".png")
 png(save_name)
 
 
-ggplot(df, aes(y=FT, x=Condition, fill=Condition)) +
-geom_boxplot() +
-theme_minimal()
 
 ggplot(df, aes(y=FT, x=Replicate, group=Replicate, fill=Replicate)) +
 
