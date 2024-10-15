@@ -1,18 +1,11 @@
 #!/usr/bin/env Rscript
-
-
 #SBATCH --mem=30G
 #SBATCH --time=02:00:00
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/competition1.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/Single_Scatterplots_of_Evolution_Both_Years.stdout
 #SBATCH -p koeniglab
 
 library(tidyverse)
-
-
 library(ggpubr)
-
-
-
 library(car)
 library(gridExtra)
 
