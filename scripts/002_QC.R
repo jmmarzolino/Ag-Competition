@@ -42,30 +42,11 @@ ggsave("results/trait_distributions.png")
 
 
 
-#p1 <- graph_correlation(cmp, "Total Weight (g)", "2021-2022") +
-#  stat_cor(label.y = 170)
-#p2 <- graph_correlation(cmp, "Relative Fecundity", "2021-2022") +
-#  stat_cor(label.y = 2.5, label.x = 6.5) +
-#  geom_text_repel(label = ifelse(cmp$REP_1 > 3 | cmp$REP_2 > 3,
- #                                cmp$Genotype,
-  #                               ""), size = 3, hjust =1, max.overlaps = 30)
-
-
+# filter for outlier values
+summary(sw$TOTAL_MASS)
 
 upper <- median(mix1$TOTAL_MASS, na.rm = T) + (2 * IQR(mix1$TOTAL_MASS, na.rm = T))
 lower <- median(mix1$TOTAL_MASS, na.rm = T) - (2 * IQR(mix1$TOTAL_MASS, na.rm = T))
-outlier_data <- mix1 %>% filter(TOTAL_MASS > upper | TOTAL_MASS < lower)
-
-
-
-
-
-
-
-
-### Extrememly high 100 seed weights
-
-
 
 ggplot(X, aes(SEED_WEIGHT_100)) + geom_histogram()
   df[which(df$SEED_WEIGHT_100 > 30),]
