@@ -29,7 +29,7 @@ s_fit <- s_fit %>% mutate(stand_fit = scale(FECUNDITY),
 
 ### 02_standard_fit_over_gen.R
 
-ggplot(s_fit, aes(Generation, stand_fit, add = "reg.line")) +
+a <- ggplot(s_fit, aes(Generation, stand_fit, add = "reg.line")) +
 geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   geom_hline(aes(yintercept = 0), color = "red") +
@@ -39,11 +39,10 @@ geom_jitter(alpha = .5) +
   labs(x = "Generation",
        y = "Average Fitness") +
   theme_bw()
-ggsave("scripts/plotting/02_Generational_Change_in_Single_Fitness_2022_2023.png")
 
 ### 02_standard_fec_over_gen.R
 
-ggplot(s_fit, aes(Generation, stand_fec, add = "reg.line")) +
+b <- ggplot(s_fit, aes(Generation, stand_fec, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   geom_hline(aes(yintercept = 0), color = "red") +
@@ -53,11 +52,10 @@ ggplot(s_fit, aes(Generation, stand_fec, add = "reg.line")) +
        y = "Average Fecundity") +
   scale_y_continuous(breaks = seq(-4, 4, 2), limits = c(-4,4)) +
   theme_bw()
-ggsave("scripts/plotting/02a_Generational_Change_in_Single_Fecundity_2022_2023.png")
 
 ### 02_standard_fit_over_gen.R
 
-ggplot(s_fit, aes(Generation, stand_ft, add = "reg.line")) +
+c <- ggplot(s_fit, aes(Generation, stand_ft, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   geom_hline(aes(yintercept = 0), color = "red") +
@@ -67,11 +65,10 @@ ggplot(s_fit, aes(Generation, stand_ft, add = "reg.line")) +
        y = "Average Flowering Time (Days)") +
   scale_y_continuous(breaks = seq(-4, 4,2), limits = c(-4,4)) +
   theme_bw()
-ggsave("scripts/plotting/02ai_Generational_Change_in_Single_FT_2022_2023.png")
 
 ### 02_standard_tw_over_gen.R
 
-ggplot(s_fit, aes(Generation, stand_tw, add = "reg.line")) +
+d <- ggplot(s_fit, aes(Generation, stand_tw, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   geom_hline(aes(yintercept = 0), color = "red") +
@@ -79,13 +76,12 @@ ggplot(s_fit, aes(Generation, stand_tw, add = "reg.line")) +
   stat_regline_equation() +
   labs(x = "Generation",
        y = "Average Total Seed Weight (g)") +
-  scale_y_continuous(breaks = seq(-4, 4,2), limits = c(-4,4))
+  scale_y_continuous(breaks = seq(-4, 4,2), limits = c(-4,4)) +
   theme_bw()
-ggsave("scripts/plotting/02aii_Generational_Change_in_Single_TW_2022_2023.png")
 
 ### 02_standard_100_over_gen.R
 
-ggplot(s_fit, aes(Generation, stand_100, add = "reg.line")) +
+e <- ggplot(s_fit, aes(Generation, stand_100, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   geom_hline(aes(yintercept = 0), color = "red") +
@@ -96,13 +92,88 @@ ggplot(s_fit, aes(Generation, stand_100, add = "reg.line")) +
        y = "Average 100 Seed Weight (g)") +
   theme_bw()
 
+### 02_combined_single_evolution_scatterplots.R
+
+y <- grid.arrange(a, b, c, d, e, top = "Evolution of Our Four Measured Phenotypes", nrow = 2, ncol = 3)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/combined_single_evolution_scatterplots.png",y, width = 14, height = 10)
 
 
 
-### 02aiii_Combined_Single_Evolution_Scatterplots.R
+### Unscaled scatterplots
 
-y <- grid.arrange(fd, fc, fb, fa, top = "Evolution of Our Four Measured Phenotypes", nrow = 1, ncol = 5)
-ggsave("scripts/plotting/02aiii_Combined_Single_Evolution_Scatterplots_2022_2023.png",y, width = 10, height = 8)
+s_fit <- fitness_df[fitness_df$Condition == "single", ]
+
+### 02a_fit_over_gen.R
+
+ggplot(s_fit, aes(Generation, FITNESS, add = "reg.line")) +
+  geom_jitter(alpha = .5) +
+  geom_smooth(method = lm) +
+  geom_hline(aes(yintercept = mean(FITNESS)), color = "red") +
+  geom_boxplot(aes(Generation, FITNESS, group = Generation), width = 1.5, alpha = .5) +
+  stat_regline_equation() +
+  labs(x = "Generation",
+       y = "Average Fitness") +
+  theme_bw()
+
+### 02_standard_fec_over_gen.R
+
+ggplot(s_fit, aes(Generation, FECUNDITY, add = "reg.line")) +
+  geom_jitter(alpha = .5) +
+  geom_smooth(method = lm) +
+  geom_hline(aes(yintercept = mean(FECUNDITY)), color = "red") +
+  geom_boxplot(aes(Generation, FECUNDITY, group = Generation), width = 1.5, alpha = .5) +
+  stat_regline_equation() +
+  labs(x = "Generation",
+       y = "Average Fecundity") +
+  theme_bw()
+
+### 02_standard_fit_over_gen.R
+
+ggplot(s_fit, aes(Generation, FT, add = "reg.line")) +
+  geom_jitter(alpha = .5) +
+  geom_smooth(method = lm) +
+  geom_hline(aes(yintercept = mean(FT)), color = "red") +
+  stat_regline_equation() +
+  geom_boxplot(aes(Generation, FT, group = Generation), width = 1.5, alpha = .5) +
+  labs(x = "Generation",
+       y = "Average Flowering Time (Days)") +
+  theme_bw()
+
+### 02_standard_tw_over_gen.R
+
+ggplot(s_fit, aes(Generation, TOTAL_MASS, add = "reg.line")) +
+  geom_jitter(alpha = .5) +
+  geom_smooth(method = lm) +
+  geom_hline(aes(yintercept = mean(TOTAL_MASS)), color = "red") +
+  geom_boxplot(aes(Generation, TOTAL_MASS, group = Generation), width = 1.5, alpha = .5)+
+  stat_regline_equation() +
+  labs(x = "Generation",
+       y = "Average Total Seed Weight (g)") +
+  theme_bw()
+
+### 02_standard_100_over_gen.R
+
+ggplot(s_fit, aes(Generation, SEED_WEIGHT_100, add = "reg.line")) +
+  geom_jitter(alpha = .5) +
+  geom_smooth(method = lm) +
+  geom_hline(aes(yintercept = mean(SEED_WEIGHT_100)), color = "red") +
+  geom_boxplot(aes(Generation, SEED_WEIGHT_100, group = Generation), width = 1.5, alpha = .5)+
+  stat_regline_equation() +
+  labs(x = "Generation",
+       y = "Average 100 Seed Weight (g)") +
+  theme_bw()
+
+### 02_combined_single_evolution_scatterplots.R
+
+y <- grid.arrange(a, b, c, d, e, top = "Evolution of Our Four Measured Phenotypes", nrow = 2, ncol = 3)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/combined_single_evolution_scatterplots.png",y, width = 14, height = 10)
+
+
+
+
+
+
+
 
 ### 02b_Fecundity_Distributions_Over_Generations.R
 
