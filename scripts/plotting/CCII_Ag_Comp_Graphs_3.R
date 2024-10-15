@@ -20,7 +20,7 @@ test <- ifelse(test$)
 
 test$new <- ifelse(test$TOTAL_WEIGHT_single > test$TOTAL_WEIGHT_single, 1,0)
 
-fitness_df <- fitness_df[]
+fitness_df <- fitness_df %>% mutate(stand_tw = ifelse(Condition == "sing;e"))
 
 
 ### 3a_Bar_Graph_Avg_Yield_Between_Genotype.R
