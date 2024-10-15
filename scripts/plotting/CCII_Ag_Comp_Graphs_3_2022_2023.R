@@ -1,10 +1,5 @@
 library(tidyverse)
-
-
 library(ggpubr)
-
-
-library(car)
 
 test <- Average_Haplo_rep %>% select(c("Genotype", "Generation", "Condition", "TOTAL_WEIGHT", "Fitness", "Fecundity", "FT")) %>% group_by(Genotype) %>% 
   pivot_wider(names_from = "Condition", values_from = c("TOTAL_WEIGHT", "Fecundity", "Fitness"))

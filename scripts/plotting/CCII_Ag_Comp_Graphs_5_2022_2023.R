@@ -1,9 +1,5 @@
 library(tidyverse)
-
-
 library(ggpubr)
-
-
 
 
 ### 5a_Comparing_Yield_Between_Haplotypes.R
@@ -26,7 +22,6 @@ ggplot(Haplo_graph,aes(x= Haplotype, y = Avg_TW, fill = `Avg Yield > Pop & Gen A
   theme(axis.text.x = element_text(angle = 90)) +
   scale_fill_manual(values = c("black", "red")) 
 ggsave("scripts/plotting/05a_Average_TW_Haplotypes_2022_2023.png", width = 16, height = 12)
-
 
 ### 5ai_Comparing_FT_Between_Haplotypes.R
 

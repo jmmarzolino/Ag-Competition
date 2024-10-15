@@ -1,7 +1,7 @@
 library(tidyverse)
 library(ggpubr)
 
-#fitness = (Plot Germination * Fecundity
+
 ### 02_Single_Fitness_over_Generation.R
 
 fa <- ggplot(Rep_Single, aes(Generation, Centered_Fit, add = "reg.line")) +
