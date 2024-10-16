@@ -4,7 +4,7 @@
 #SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/003_change_over_gens.stdout
 #SBATCH -p short
 
-setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
+setwd("/rhome/jmarz001/bigdata/Ag-Competition")
 source("../scripts/CUSTOM_FNS.R")
 
 library(tidyverse)
