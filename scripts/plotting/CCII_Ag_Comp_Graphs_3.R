@@ -20,7 +20,7 @@ test <- ifelse(test$)
 
 test$new <- ifelse(test$TOTAL_WEIGHT_single > test$TOTAL_WEIGHT_single, 1,0)
 
-fitness_df <- fitness_df[]
+fitness_df <- fitness_df %>% mutate(stand_tw = ifelse(Condition == "sing;e"))
 
 
 ### 3a_Bar_Graph_Avg_Yield_Between_Genotype.R
@@ -34,7 +34,7 @@ ggplot(fitness_df, aes(Genotype, TOTAL_MASS, color = Condition, fill = Condition
   theme(axis.text.x = element_text(angle = 90)) +
   scale_y_continuous(breaks = seq(0, 200, 10)) +
   theme_bw()
-ggsave("scripts/plotting/03a_Bar_Graph_TW_Between_Conditions_2022_2023.png", width = 18, height = 10)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03a_Bar_Graph_TW_Between_Conditions_2022_2023.png", width = 18, height = 10)
 
 ### 3ai_Bar_Graph_Avg_FT_Between_Genotype.R
 
@@ -46,7 +46,7 @@ ggplot(fitness_df, aes(Genotype, FT, color = Condition, fill = Condition)) +
   theme(axis.text.x = element_text(size = 5)) +
   theme(axis.text.x = element_text(angle = 90)) +
   theme_bw()
-ggsave("scripts/plotting/03ai_Bar_Graph_FT_Between_Conditions_2022_2023.png", width = 18, height = 10)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03ai_Bar_Graph_FT_Between_Conditions_2022_2023.png", width = 18, height = 10)
 
 ### 3aii_Bar_Graph_Avg_Fec_Between_Genotype.R
 
@@ -58,7 +58,7 @@ ggplot(fitness_df, aes(Genotype, FECUNDITY, color = Condition, fill = Condition)
   theme(axis.text.x = element_text(size = 5)) +
   theme(axis.text.x = element_text(angle = 90)) +
   theme_bw()
-ggsave("scripts/plotting/03aii_Bar_Graph_Fec_Between_Conditions_2022_2023.png", width = 18, height = 10)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03aii_Bar_Graph_Fec_Between_Conditions_2022_2023.png", width = 18, height = 10)
 
 ### 3aiii_Bar_Graph_Avg_Fit_Between_Genotype.R
 
@@ -70,7 +70,7 @@ ggplot(fitness_df, aes(Genotype, FITNESS, color = Condition, fill = Condition)) 
   theme(axis.text.x = element_text(size = 5)) +
   theme(axis.text.x = element_text(angle = 90)) +
   theme_bw()
-ggsave("scripts/plotting/03aiii_Bar_Graph_Fit_Between_Conditions_2022_2023.png",  width = 18, height = 10)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03aiii_Bar_Graph_Fit_Between_Conditions_2022_2023.png",  width = 18, height = 10)
 
 ### 3b_Exp_Yield_Per_Plant_by_Condition.R
 
@@ -80,7 +80,7 @@ ggplot(fitness_df, aes(Generation, Exp_TW_Per_Plant, color = Condition, add = "r
   stat_regline_equation() +
   labs(y = "Expected Yield Per Plant (g)",
        title = "Generational Change in Expected Yield Per Plant")
-ggsave("scripts/plotting/03b_Exp_Per_Plant_Yield_by_Condition.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03b_Exp_Per_Plant_Yield_by_Condition.png")
 
 ### 3bi_Exp_Fec_Per_Plant_by_Condition.R
 
@@ -90,7 +90,7 @@ ggplot(Average_Haplo_rep, aes(Generation, Exp_Fec_Per_Plant, color = Condition, 
   stat_regline_equation() +
   labs(y = "Expected Fecundity Per Plant",
        title = "Generational Change in Expected Fecundity Per Plant")
-ggsave("scripts/plotting/03bi_Exp_Per_Plant_Fec_by_Condition.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03bi_Exp_Per_Plant_Fec_by_Condition.png")
 
 ### 3bii_Exp_Fit_by_Condition.R
 
@@ -100,7 +100,7 @@ ggplot(Average_Haplo_rep, aes(Generation, Exp_Fit_Per_Plant, color = Condition, 
   stat_regline_equation() +
   labs(y = "Expected Fitness Per Plant",
        title = "Generational Change in Expected Fitness Per Plant")
-ggsave("scripts/plotting/03bii_Exp_Per_Plant_Fit_by_Condition.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03bii_Exp_Per_Plant_Fit_by_Condition.png")
 
 ### 3c_Average_TW_Over_Generations.R
 
@@ -111,7 +111,7 @@ fa <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_TW, color = Con
   stat_regline_equation() +
   labs(x = "Generation",
        y = "Average Total Seed Weight (grams)")
-ggsave("scripts/plotting/03c_Scatterplot_Avg_TW_by_Condition.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03c_Scatterplot_Avg_TW_by_Condition.png")
 
 ### 3ci_Average_FT_Over_Generations.R
 
@@ -145,12 +145,12 @@ fd <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_Fit, color = Co
   stat_regline_equation() +
   labs(x = "Generation",
        y = "Average Fitness")
-ggsave("scripts/plotting/03ciii_Scatterplot_Avg_Fit_by_Condition.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03ciii_Scatterplot_Avg_Fit_by_Condition.png")
 
 ### 3ciiii_Combined_Mixed_v_Single_Scatterplots.R
 
 g <- grid.arrange(fa, fb, fc, fd, top = "Evolution of our Four Measured Phenotypes Between Condition 2022-2023 Season")
-ggsave("scripts/plotting/03ciiii_Combined_Mixed_v_Single_Scatterplots.png", g, width = 14, height = 10)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03ciiii_Combined_Mixed_v_Single_Scatterplots.png", g, width = 14, height = 10)
 
 ### 3cc_T_test_Mixed_vs_Single_Yield
 
@@ -180,14 +180,14 @@ ggplot(Rep_Single, aes(FT, Fitness, add = "reg.line")) +
   geom_point() +
   geom_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1) +
   facet_wrap(~Generation, scales = "free_x")
-ggsave("scripts/plotting/03e_Int_FT_vs_Fit.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03e_Int_FT_vs_Fit.png")
 
 # FT vs. Fec
 ggplot(Rep_Single, aes(FT, Fecundity)) +
   geom_point() +
   geom_smooth() +
   facet_wrap(~Generation, scales = "free_x")
-ggsave("scripts/plotting/03e_Int_FT_vs_fec.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03e_Int_FT_vs_fec.png")
 
 # FT vs. TW
 ggplot(Rep_Single, aes(FT, TOTAL_WEIGHT)) +
@@ -195,7 +195,7 @@ ggplot(Rep_Single, aes(FT, TOTAL_WEIGHT)) +
   geom_smooth() +
   labs(y = "Total Seed Weight (g)") +
   facet_wrap(~Generation, scales = "free_x")
-ggsave("scripts/plotting/03e_Int_FT_vs_TW.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03e_Int_FT_vs_TW.png")
 
 
 
@@ -278,4 +278,4 @@ ff <- ggplot(Average_Haplo_rep, aes(Generation, Fitness, col = Condition)) +
        y = "Average Fitness") 
 
 Compare_TW <- grid.arrange(fe,ff)
-ggsave("scripts/plotting/Extra_3_Average_Fitness_Comparisons.png", Compare_TW)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Extra_3_Average_Fitness_Comparisons.png", Compare_TW)

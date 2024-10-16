@@ -78,7 +78,7 @@ d <- ggplot(s_fit, aes(Generation, stand_tw, add = "reg.line")) +
   scale_y_continuous(breaks = seq(-4, 4,2), limits = c(-4,4)) +
   theme_bw()
 
-### 02_standard_100_over_gen.R
+### 02_standard_100sw_over_gen.R
 
 e <- ggplot(s_fit, aes(Generation, stand_100, add = "reg.line")) +
   geom_jitter(alpha = .5) +
@@ -102,9 +102,16 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/combined_single_evolu
 
 s_fit <- fitness_df[fitness_df$Condition == "single", ]
 
+unscaled_graphs <- function(x = df, y = trait){
+  x %>% ggplot(aes(Generation, y)) +
+    geom_point()
+}
+
+unscaled_graphs(s_fit, FECUNDITY)
+
 ### 02a_fit_over_gen.R
 
-ggplot(s_fit, aes(Generation, FITNESS, add = "reg.line")) +
+a <- ggplot(s_fit, aes(Generation, FITNESS, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   geom_hline(aes(yintercept = mean(FITNESS)), color = "red") +
@@ -114,9 +121,9 @@ ggplot(s_fit, aes(Generation, FITNESS, add = "reg.line")) +
        y = "Average Fitness") +
   theme_bw()
 
-### 02_standard_fec_over_gen.R
+### 02a_fec_over_gen.R
 
-ggplot(s_fit, aes(Generation, FECUNDITY, add = "reg.line")) +
+b <- ggplot(s_fit, aes(Generation, FECUNDITY, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   geom_hline(aes(yintercept = mean(FECUNDITY)), color = "red") +
@@ -126,9 +133,9 @@ ggplot(s_fit, aes(Generation, FECUNDITY, add = "reg.line")) +
        y = "Average Fecundity") +
   theme_bw()
 
-### 02_standard_fit_over_gen.R
+### 02a_ft_over_gen.R
 
-ggplot(s_fit, aes(Generation, FT, add = "reg.line")) +
+c <- ggplot(s_fit, aes(Generation, FT, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   geom_hline(aes(yintercept = mean(FT)), color = "red") +
@@ -138,9 +145,9 @@ ggplot(s_fit, aes(Generation, FT, add = "reg.line")) +
        y = "Average Flowering Time (Days)") +
   theme_bw()
 
-### 02_standard_tw_over_gen.R
+### 02a_tw_over_gen.R
 
-ggplot(s_fit, aes(Generation, TOTAL_MASS, add = "reg.line")) +
+d <- ggplot(s_fit, aes(Generation, TOTAL_MASS, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   geom_hline(aes(yintercept = mean(TOTAL_MASS)), color = "red") +
@@ -150,9 +157,9 @@ ggplot(s_fit, aes(Generation, TOTAL_MASS, add = "reg.line")) +
        y = "Average Total Seed Weight (g)") +
   theme_bw()
 
-### 02_standard_100_over_gen.R
+### 02a_100sw_over_gen.R
 
-ggplot(s_fit, aes(Generation, SEED_WEIGHT_100, add = "reg.line")) +
+e <- ggplot(s_fit, aes(Generation, SEED_WEIGHT_100, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
   geom_hline(aes(yintercept = mean(SEED_WEIGHT_100)), color = "red") +
@@ -165,8 +172,7 @@ ggplot(s_fit, aes(Generation, SEED_WEIGHT_100, add = "reg.line")) +
 ### 02_combined_single_evolution_scatterplots.R
 
 y <- grid.arrange(a, b, c, d, e, top = "Evolution of Our Four Measured Phenotypes", nrow = 2, ncol = 3)
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/combined_single_evolution_scatterplots.png",y, width = 14, height = 10)
-
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/combined_single_evolution_scatterplots_unscaled.png",y, width = 14, height = 10)
 
 
 
@@ -182,20 +188,20 @@ ggplot(Average_Haplo_rep, aes(x = Fecundity, color = Condition, fill = Condition
        y = "Frequency",
        title = "Fecundity Over Generations") +
   facet_wrap(~Generation, scales = "free_x")
-ggsave("scripts/plotting/02b_Fecundity_Over_Generations_Distributions_2022_2023.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results02b_Fecundity_Over_Generations_Distributions_2022_2023.png")
 
 Average_Haplo_rep$Generation <- as.factor(Average_Haplo_rep$Generation)
 ggplot(Average_Haplo_rep, aes(x = Fecundity, fill = Generation, group = Generation)) +
   geom_histogram(alpha = .5, position = "identity", binwidth = 70) +
   scale_fill_brewer(palette = "Blues")
-ggsave("scripts/plotting/02b_Overlapping_Distributions_Fecundity_Over_Generations_2022_2023.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02b_Overlapping_Distributions_Fecundity_Over_Generations_2022_2023.png")
 
 ### 02bi_100_SW_Distributions.R
 
 ggplot(Average_Haplo_rep, aes(x = `100 seed weight`, group = Generation, fill = Generation)) +
   geom_histogram(alpha =.5, position = "identity") +
   scale_fill_brewer(palette = "Blues")
-ggsave("scripts/plotting/02bi_Overlapping_Distributions_for_Generational_Change_100SW_Distributions_2022_2023.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02bi_Overlapping_Distributions_for_Generational_Change_100SW_Distributions_2022_2023.png")
 
 ### 02c_Single_Relative_Fitness_to_Atlas.R
 
@@ -206,7 +212,7 @@ sf <- ggplot(Rep_Single, aes(Generation, Fitness, add = "reg.line")) +
   geom_smooth(method = "lm") +
   geom_hline(yintercept = 21347.22, color = "red") +
   labs(title = "Relative Fitness of Atlas Compared to Single Condition") 
-ggsave("scripts/plotting/02c_Single_Relative_Fitness_to_Atlas_2022_2023.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02c_Single_Relative_Fitness_to_Atlas_2022_2023.png")
 
 ### 02ci_Mixed_Relative_Fitness_to_Atlas.R
 
@@ -217,7 +223,7 @@ mf <- ggplot(Rep_Mixed, aes(Generation, Fitness, add = "reg.line")) +
   geom_hline(yintercept = 21347.22, color = "red") +
   geom_smooth(method = "lm") +
   labs(title = "Relative Fitness of Atlas Compared to Mixed Condition")
-ggsave("scripts/plotting/02ci_Mixed_Relative_Fitness_to_Atlas_2022_2023.png")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02ci_Mixed_Relative_Fitness_to_Atlas_2022_2023.png")
 
 jf <- ggplot(Average_Haplo_rep, aes(Generation, Fitness, add = "reg.line", color = Condition)) +
   geom_jitter(alpha = .6) +
@@ -225,11 +231,9 @@ jf <- ggplot(Average_Haplo_rep, aes(Generation, Fitness, add = "reg.line", color
   geom_smooth(method = "lm" ) +
   geom_hline(yintercept = 21347.22, color = "red") +
   labs(title = "Relative Fitness of Atlas Compared to Both Conditions")
-ggsave("scripts/plotting/02cii_Relative_Fitness_to_Atlas_Combined_2022_2023.png", width = 12, height = 7)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02cii_Relative_Fitness_to_Atlas_Combined_2022_2023.png", width = 12, height = 7)
 
 ### 02cii_Relative_Fitness_to_Atlas_Combined.R
 
 g <- arrangeGrob(sf, mf, jf, nrow = 2)
-ggsave("scripts/plotting/02cii_Relative_Fitness_to_Atlas_Combined_2022_2023.png", g, width = 12, height = 7)
-
-write_delim(Rep_Single, "Rep_Single")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02cii_Relative_Fitness_to_Atlas_Combined_2022_2023.png", g, width = 12, height = 7)
