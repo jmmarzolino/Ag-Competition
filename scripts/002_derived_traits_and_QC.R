@@ -12,6 +12,8 @@ library(data.table)
 #library(dunn.test)
 
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition")
+source("../scripts/CUSTOM_FNS.R")
+
 
 df <- read_delim("data/JOINED_PHENOTYPES.tsv")
 # remove any rows without genotype
