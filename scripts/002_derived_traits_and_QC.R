@@ -6,7 +6,6 @@
 
 library(tidyverse)
 library(ggpubr)
-library(data.table)
 library(car)
 library(dunn.test)
 

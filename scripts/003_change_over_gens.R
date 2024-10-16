@@ -8,6 +8,7 @@ setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
 
 library(tidyverse)
+library(data.table)
 library(lme4)
 #install_packages("lmeTest")
 #library(lmeTest)
