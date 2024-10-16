@@ -7,15 +7,72 @@
 library(tidyverse)
 library(ggpubr)
 library(data.table)
-library(car)
-library(gridExtra)
-library(dunn.test)
+#library(car)
+#library(gridExtra)
+#library(dunn.test)
 
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition")
+
+df <- read_delim("data/JOINED_PHENOTYPES.tsv")
+# remove any rows without genotype
+df <- df %>% 
+    filter(!is.na(Genotype)) %>%
+    select(-c(BED, ROW, Replicate)) %>%
+    group_by(Genotype, Condition, Exp_year) %>%
+    summarise(across(where(is.numeric), \(x) mean(x, na.rm=T))) 
+
+# fn adds generation col based on 'Genotype' col
+df <- add_generation(df)
+
+
+# calculate derived phenotypes
+
+## survival = (plants/10) 
+over_sown <- df %>% filter(Plants > 10)
+# for plots have 11 or 12 seeds planted, 
+# assume max number planted is the same
+over_sown$SURVIVAL <- 1
+# plants / 11 or 12 will be 100% germination
+
+df2 <- df %>% filter(Plants <= 10)
+df2 <- df2 %>% mutate(SURVIVAL = Plants / 10)
+
+df3 <- full_join(df2, over_sown, by=c('Genotype', 'Condition', 'Exp_year', 'Plants', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Generation', 'SURVIVAL'))
+df3 <- df3 %>% group_by(Genotype, Condition) %>% summarise(across(where(is.numeric), mean)) %>% select(-Exp_year)
+
+
+# fecundity
+## fecundity = seed produced per plot
+## total seed weight / seed-weight-100/100
+df3 <- df3 %>% 
+    mutate(PER_SEED_WEIGHT = SEED_WEIGHT_100/100) %>%
+    mutate(SEED_COUNT = TOTAL_MASS / PER_SEED_WEIGHT) %>%
+    mutate(FECUNDITY = SEED_COUNT / Plants) %>% 
+    select(-c(PER_SEED_WEIGHT, Plants))
+
+## fitness = survival * fecundity
+df3 <- df3 %>% mutate(FITNESS = SURVIVAL * FECUNDITY) 
+df3$RELATIVE_FITNESS <- df3$FITNESS / max(df3$FITNESS)
+
+
+# fitness relative to Atlas (parent #48)
+AT <- df3 %>% filter(Genotype == "48_5") %>% summarise(across(where(is.numeric), mean))
+AT$Condition <- 'single'
+
+df4 <- df3 %>% filter(Genotype != "48_5")
+df4 <- full_join(df4, AT)
+
+df4$AT_REL_FITNESS <- df4$FITNESS / AT$FITNESS
+# write out data frame w derived phenotpyes
+write_delim(df4, "data/FITNESS.tsv")
+
+
+
+##########
 df <- fread("data/FITNESS.tsv")
 
 #  Centered data 
-#sw$FEC <- as.vector(scale(sw$FEC, center = TRUE, scale =TRUE))
+#df$FEC <- as.vector(scale(df$FEC, center = TRUE, scale =TRUE))
 
 # arrange data for facet plotting
 df_long <- df %>%
@@ -25,7 +82,7 @@ df_long <- df %>%
 
 
 # check normality & plot trait distributions
-ggplot(df_long, aes(VALUE)) +
+g <- ggplot(df_long, aes(VALUE)) +
   geom_density() +
   #geom_vline(aes(xintercept = mean(df2$Plants)), color = "#0c820c") +
   facet_wrap(~PHENOTYPE, scales="free") +
@@ -33,7 +90,7 @@ ggplot(df_long, aes(VALUE)) +
   stat_summary(fun = mean, geom = "vline", orientation = "y", 
     aes(xintercept = after_stat(x), y = 0)) #+
   #labs(title = "Distribution of plot survival")
-ggsave("results/trait_distributions.png")
+ggsave("results/trait_distributions.png", g)
 # traits look like normal enough distribution
 # survival has a bit of skew but it's not a trait I expect to be normal
 # 100-seed-weight has overly high values
@@ -43,51 +100,50 @@ ggsave("results/trait_distributions.png")
 
 
 # filter for outlier values
-summary(sw$TOTAL_MASS)
+print('SEED_WEIGHT_100')
+summary(df$SEED_WEIGHT_100)
 
-upper <- median(mix1$TOTAL_MASS, na.rm = T) + (2 * IQR(mix1$TOTAL_MASS, na.rm = T))
-lower <- median(mix1$TOTAL_MASS, na.rm = T) - (2 * IQR(mix1$TOTAL_MASS, na.rm = T))
+upper <- median(df$SEED_WEIGHT_100) + (3 * IQR(df$SEED_WEIGHT_100))
+lower <- median(df$SEED_WEIGHT_100) - (3 * IQR(df$SEED_WEIGHT_100))
 
-ggplot(X, aes(SEED_WEIGHT_100)) + geom_histogram()
-
-ggplot(sw, aes(TOTAL_MASS)) + geom_histogram() + 
-  geom_vline(aes(xintercept=high), color = "#F31919") + 
-  geom_vline(aes(xintercept=low), color = "#F31919") + 
-  geom_vline(aes(xintercept=median(sw$TOTAL_MASS, na.rm=TRUE), color = "#F31919"), linetype="dashed") + 
+g <- ggplot(df, aes(SEED_WEIGHT_100)) + geom_histogram() + 
+  geom_vline(aes(xintercept=upper, color = "#F31919")) + 
+  geom_vline(aes(xintercept=lower), color = "#F31919") + 
+  geom_vline(aes(xintercept=median(df$SEED_WEIGHT_100), color = "#F31919"), linetype="dashed") + 
   theme_bw()
 
-
+ggsave("results/seed_weight_outlier_distribution.png", g)
 # filter outlier 100 seed weight
-df[which(df$SEED_WEIGHT_100 > 30),]
-
+df[which(df$SEED_WEIGHT_100 > 8),]
+df <- df %>% filter(SEED_WEIGHT_100 < 8)
 
 
 
 ## plot all trait distributions w various facets
 
-ggplot(df_long, aes(VALUE, color=Condition)) +
+g <- ggplot(df_long, aes(VALUE, color=Condition)) +
   geom_density() +
   facet_wrap(~PHENOTYPE, scales="free") +
   theme_bw()+
   stat_summary(fun = mean, geom = "vline", orientation = "y", 
     aes(xintercept = after_stat(x), y = 0)) 
-ggsave("results/trait_distributions_Wcondition.png", width=12)
+ggsave("results/trait_distributions_Wcondition.png", g, width=12)
 
-ggplot(df_long, aes(VALUE, group=Generation, color=as.factor(Generation))) +
+g <- ggplot(df_long, aes(VALUE, group=Generation, color=as.factor(Generation))) +
   geom_density(linewidth=0.75) +
   facet_wrap(~PHENOTYPE, scales="free") +
   theme_bw() +
   stat_summary(fun = mean, geom = "vline", orientation = "y", 
     aes(xintercept = after_stat(x), y = 0)) 
-ggsave("results/trait_distributions_Wgeneration.png", width=14)
+ggsave("results/trait_distributions_Wgeneration.png", g, width=14)
 
-ggplot(df_long, aes(VALUE, color=as.factor(Generation))) +
+g <- ggplot(df_long, aes(VALUE, color=as.factor(Generation))) +
   geom_density(aes(linetype=Condition), linewidth=0.75) +
   facet_wrap(~PHENOTYPE, scales="free") +
   theme_bw() +
   stat_summary(fun = mean, geom = "vline", orientation = "y", 
     aes(xintercept = after_stat(x), y = 0)) 
-ggsave("results/trait_distributions_Wgeneration_Wcondition.png", width=14)
+ggsave("results/trait_distributions_Wgeneration_Wcondition.png", g, width=14)
 
 
 
