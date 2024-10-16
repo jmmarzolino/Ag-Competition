@@ -7,9 +7,8 @@
 library(tidyverse)
 library(ggpubr)
 library(data.table)
-#library(car)
-#library(gridExtra)
-#library(dunn.test)
+library(car)
+library(dunn.test)
 
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition")
 source("scripts/CUSTOM_FNS.R")
@@ -71,13 +70,8 @@ write_delim(df4, "data/FITNESS.tsv")
 
 
 ##########
-df <- fread("data/FITNESS.tsv")
-
-#  Centered data 
-#df$FEC <- as.vector(scale(df$FEC, center = TRUE, scale =TRUE))
-
 # arrange data for facet plotting
-df_long <- df %>%
+df_long <- df4 %>%
   pivot_longer(cols=-c(Genotype, Condition, Generation), names_to='PHENOTYPE', values_to="VALUE")
 
 #"#eca50b"
@@ -103,21 +97,21 @@ ggsave("results/trait_distributions.png", g)
 
 # filter for outlier values
 print('SEED_WEIGHT_100')
-summary(df$SEED_WEIGHT_100)
+summary(df4$SEED_WEIGHT_100)
 
-upper <- median(df$SEED_WEIGHT_100) + (3 * IQR(df$SEED_WEIGHT_100))
-lower <- median(df$SEED_WEIGHT_100) - (3 * IQR(df$SEED_WEIGHT_100))
+upper <- median(df4$SEED_WEIGHT_100) + (3 * IQR(df4$SEED_WEIGHT_100))
+lower <- median(df4$SEED_WEIGHT_100) - (3 * IQR(df4$SEED_WEIGHT_100))
 
-g <- ggplot(df, aes(SEED_WEIGHT_100)) + geom_histogram() + 
-  geom_vline(aes(xintercept=upper, color = "#F31919")) + 
+g <- ggplot(df4, aes(SEED_WEIGHT_100)) + geom_histogram() + 
+  geom_vline(aes(xintercept=upper), color = "#F31919") + 
   geom_vline(aes(xintercept=lower), color = "#F31919") + 
-  geom_vline(aes(xintercept=median(df$SEED_WEIGHT_100), color = "#F31919"), linetype="dashed") + 
+  geom_vline(aes(xintercept=median(df4$SEED_WEIGHT_100), color = "#F31919"), linetype="dashed") + 
   theme_bw()
 
 ggsave("results/seed_weight_outlier_distribution.png", g)
 # filter outlier 100 seed weight
-df[which(df$SEED_WEIGHT_100 > 8),]
-df <- df %>% filter(SEED_WEIGHT_100 < 8)
+df4[which(df4$SEED_WEIGHT_100 > 8),]
+df4 <- df4 %>% filter(SEED_WEIGHT_100 < 8)
 
 
 
@@ -146,72 +140,3 @@ g <- ggplot(df_long, aes(VALUE, color=as.factor(Generation))) +
   stat_summary(fun = mean, geom = "vline", orientation = "y", 
     aes(xintercept = after_stat(x), y = 0)) 
 ggsave("results/trait_distributions_Wgeneration_Wcondition.png", g, width=14)
-
-
-
-
-# set up for normality and variance equity tests
-single <- df %>% filter(Condition == "single") 
-collist <- c('FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'SURVIVAL', 'SEED_COUNT', 'FECUNDITY', 'FITNESS', 'RELATIVE_FITNESS', 'AT_REL_FITNESS')
-generationlist <- c(0, 18, 28, 50, 58)
-par(mfrow = c(2, 3))
-
-# test for normal distributions 
-# w shapiro test
-# and visualize w qq-plot
-for(i in collist) {
-
-  print(i)
-  tmp <- df %>% select(c(Genotype, Generation, Condition, all_of(i)))
-
-  for(g in generationlist) {
-
-    print(g)
-    tmp_gen <- tmp %>% filter(Generation == g)
-    s <- shapiro.test(tmp_gen$FITNESS)
-    print(s)
-
-    qqnorm(p$TOTAL_MASS, main = paste0("Generation ", i))
-    qqline(p$TOTAL_MASS)
-  }
-}
-
-#TOTAL_MASS (SOME GROUPS NOT NORMAL)
-# FT (SOME GROUPS NOT NORMAL)
-# Fec (NOT NORMAL)
-# Fitness (NOT ALL NORMAL)
-# 100 seed weight (NORMAL)
-
-
-
-
-# test for equality of variance between groups before anova
-# w Levene test
-for(i in collist){
-  print(i)
-  leveneTest(get(i) ~ as.factor(Generation), single) %>% print
-}
-## only flowering time has unequal variance between generations
-
-
-### Not normal distributions &| not equal variance btwn trait-groups
-### Kruskal Wallis and Dunn Tests
-kruskal.test(TOTAL_MASS ~ Generation, single)
-dunn.test(single$TOTAL_MASS, single$Generation)
-
-kruskal.test(FECUNDITY ~ Generation, single)
-dunn.test(single$FEC, single$Generation)
-
-kruskal.test(ABS_FITNESS ~ Generation, single)
-dunn.test(single$ABS_FITNESS, single$Generation)
-
-
-# normally distributed traits & equal trait-group variance
-### AVOVA/Tukey Post-hoc
-ANOVA_Fec <- aov(Fecundity ~ as.factor(Generation), single)
-summary(ANOVA_Fec)
-TukeyHSD(ANOVA_Fec)
-
-ANOVA_100 <- aov(SEED_WEIGHT_100 ~ as.factor(Generation), single)
-summary(ANOVA_100)
-TukeyHSD(ANOVA_100)
