@@ -34,7 +34,7 @@ df %>%
 
 
 # write table out with generation/condition trait averages / summary statistics
-df %>%
+
 
 
 # set up for normality and variance equity tests
