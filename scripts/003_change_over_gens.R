@@ -5,7 +5,7 @@
 #SBATCH -p short
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition")
-source("../scripts/CUSTOM_FNS.R")
+source("scripts/CUSTOM_FNS.R")
 
 library(tidyverse)
 library(data.table)
@@ -32,6 +32,9 @@ df %>%
     group_by(Generation, Condition) %>% 
     summarise(across(where(is.numeric), var))
 
+
+# write table out with generation/condition trait averages / summary statistics
+df %>%
 
 
 # set up for normality and variance equity tests
