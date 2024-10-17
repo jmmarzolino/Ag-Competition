@@ -106,18 +106,47 @@ labellist <- c("Average Fitness", "Average Fecundity")
 for(i in traitlist) {
 
 
+<<<<<<< Updated upstream
+||||||| Stash base
+unscaled_graphs <- function(x = df, y = trait){
+  x %>% ggplot(aes(Generation, y)) +
+    geom_point()
+=======
+unscaled_graphs <- function(x = df, y = trait){
+  ggplot(x, aes(Generation, y)) +
+    geom_jitter() +
+    geom_boxplot(aes(group = Generation), width = 1.5, alpha = .5) +
+    theme_bw() 
+>>>>>>> Stashed changes
 }
 
+<<<<<<< Updated upstream
 unscaled_graphs <- function(x = df, y = trait){
   # set label per plot based on graphed trait
   l <- paste("Average", y)
+||||||| Stash base
+unscaled_graphs(s_fit, FECUNDITY)
+=======
+>>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
   x %>% ggplot(aes(Generation, get(y))) +
     geom_point() +
     labs(x="Generation",
           y = l)
 }
+||||||| Stash base
+### 02a_fit_over_gen.R
+=======
+plot_list <- list(c(3,2))
+loop_over <- names(fitness_df)[c(3,4,5)]
+for (i in loop_over){
+  a <- ggplot(fitness_df, aes(Generation, fitness_df[i])) + geom_point()
+  
+}
+>>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
 unscaled_graphs(sin, FECUNDITY)
 
 
@@ -133,9 +162,27 @@ a <- ggplot(sin, aes(Generation, FITNESS, add = "reg.line")) +
   labs(x = "Generation",
        y = "Average Fitness") +
   theme_bw()
+||||||| Stash base
+a <- ggplot(s_fit, aes(Generation, FITNESS, add = "reg.line")) +
+  geom_jitter(alpha = .5) +
+  geom_smooth(method = lm) +
+  geom_hline(aes(yintercept = mean(FITNESS)), color = "red") +
+  geom_boxplot(aes(Generation, FITNESS, group = Generation), width = 1.5, alpha = .5) +
+  stat_regline_equation() +
+  labs(x = "Generation",
+       y = "Average Fitness") +
+  theme_bw()
+=======
+>>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
 ### 02a_fec_over_gen
+||||||| Stash base
+### 02a_fec_over_gen.R
+=======
+>>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
 b <- ggplot(sin, aes(Generation, FECUNDITY, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
@@ -145,9 +192,30 @@ b <- ggplot(sin, aes(Generation, FECUNDITY, add = "reg.line")) +
   labs(x = "Generation",
        y = "Average Fecundity") +
   theme_bw()
+||||||| Stash base
+b <- ggplot(s_fit, aes(Generation, FECUNDITY, add = "reg.line")) +
+  geom_jitter(alpha = .5) +
+  geom_smooth(method = lm) +
+  geom_hline(aes(yintercept = mean(FECUNDITY)), color = "red") +
+  geom_boxplot(aes(Generation, FECUNDITY, group = Generation), width = 1.5, alpha = .5) +
+  stat_regline_equation() +
+  labs(x = "Generation",
+       y = "Average Fecundity") +
+  theme_bw()
+=======
+### 02a_fit_over_gen
+>>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
 ### 02a_ft_over_gen
+||||||| Stash base
+### 02a_ft_over_gen.R
+=======
+a <- unscaled_graphs(s_fit, s_fit$FITNESS) +
+  labs(y = "Average Fitness")
+>>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
 c <- ggplot(sin, aes(Generation, FT, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
@@ -157,9 +225,30 @@ c <- ggplot(sin, aes(Generation, FT, add = "reg.line")) +
   labs(x = "Generation",
        y = "Average Flowering Time (Days)") +
   theme_bw()
+||||||| Stash base
+c <- ggplot(s_fit, aes(Generation, FT, add = "reg.line")) +
+  geom_jitter(alpha = .5) +
+  geom_smooth(method = lm) +
+  geom_hline(aes(yintercept = mean(FT)), color = "red") +
+  stat_regline_equation() +
+  geom_boxplot(aes(Generation, FT, group = Generation), width = 1.5, alpha = .5) +
+  labs(x = "Generation",
+       y = "Average Flowering Time (Days)") +
+  theme_bw()
+=======
+### 02a_fec_over_gen
+>>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
 ### 02a_tw_over_gen
+||||||| Stash base
+### 02a_tw_over_gen.R
+=======
+b <- unscaled_graphs(s_fit, s_fit$FECUNDITY) +
+  labs(y = "Average Fecundity")
+>>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
 d <- ggplot(sin, aes(Generation, TOTAL_MASS, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
@@ -169,9 +258,30 @@ d <- ggplot(sin, aes(Generation, TOTAL_MASS, add = "reg.line")) +
   labs(x = "Generation",
        y = "Average Total Seed Weight (g)") +
   theme_bw()
+||||||| Stash base
+d <- ggplot(s_fit, aes(Generation, TOTAL_MASS, add = "reg.line")) +
+  geom_jitter(alpha = .5) +
+  geom_smooth(method = lm) +
+  geom_hline(aes(yintercept = mean(TOTAL_MASS)), color = "red") +
+  geom_boxplot(aes(Generation, TOTAL_MASS, group = Generation), width = 1.5, alpha = .5)+
+  stat_regline_equation() +
+  labs(x = "Generation",
+       y = "Average Total Seed Weight (g)") +
+  theme_bw()
+=======
+### 02a_ft_over_gen
+>>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
 ### 02a_100sw_over_gen
+||||||| Stash base
+### 02a_100sw_over_gen.R
+=======
+c <- unscaled_graphs(s_fit, s_fit$FT) +
+  labs(y = "Average Flowering Time")
+>>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
 e <- ggplot(sin, aes(Generation, SEED_WEIGHT_100, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
@@ -181,33 +291,81 @@ e <- ggplot(sin, aes(Generation, SEED_WEIGHT_100, add = "reg.line")) +
   labs(x = "Generation",
        y = "Average 100 Seed Weight (g)") +
   theme_bw()
+||||||| Stash base
+e <- ggplot(s_fit, aes(Generation, SEED_WEIGHT_100, add = "reg.line")) +
+  geom_jitter(alpha = .5) +
+  geom_smooth(method = lm) +
+  geom_hline(aes(yintercept = mean(SEED_WEIGHT_100)), color = "red") +
+  geom_boxplot(aes(Generation, SEED_WEIGHT_100, group = Generation), width = 1.5, alpha = .5)+
+  stat_regline_equation() +
+  labs(x = "Generation",
+       y = "Average 100 Seed Weight (g)") +
+  theme_bw()
+=======
+### 02a_tw_over_gen
+
+d <- unscaled_graphs(s_fit, s_fit$TOTAL_MASS) +
+  labs(y = "Average Total Weight")
+
+### 02a_100sw_over_gen
+
+e <- unscaled_graphs(s_fit, s_fit$SEED_WEIGHT_100) +
+  labs(y = "Average 100 Seed Weight")
+>>>>>>> Stashed changes
 
 ### 02_combined_single_evolution_scatterplots
 
 gg <- ggarrange(a, b, c, d, e) #, top = "Evolution of Our Four Measured Phenotypes", nrow = 2, ncol = 3)
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/traits_over_generations_scatterplot.png", gg, width = 14, height = 10)
 
+list_df <- c(TOTAL_MASS, SEED_WEIGHT_100)
 
 
 
-
-
+for (i in colnames(fitness_df)[c(3,4,5,7,8)]){
+  p <- ggplot(fitness_df, aes(Generation, i))
+  print(p)
+}
 
 ### 02b_Fecundity_Distributions_Over_Generations
 
-ggplot(Average_Haplo_rep, aes(x = Fecundity, color = Condition, fill = Condition)) +
+ggplot(fitness_df, aes(x = FECUNDITY, color = Condition, fill = Condition)) +
   geom_histogram(position = "identity", bins = 45, alpha = .3) +
   labs(x = "Fecundity",
        y = "Frequency",
        title = "Fecundity Over Generations") +
+<<<<<<< Updated upstream
   facet_wrap(~Generation, scales = "free_x")
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02b_Fecundity_Over_Generations_Distributions.png")
+||||||| Stash base
+  facet_wrap(~Generation, scales = "free_x")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results02b_Fecundity_Over_Generations_Distributions_2022_2023.png")
+=======
+  facet_wrap(~Generation, scales = "free_x") +
+  theme_bw()
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results02b_Fecundity_Over_Generations_Distributions_2022_2023.png")
+>>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
 Average_Haplo_rep$Generation <- as.factor(Average_Haplo_rep$Generation)
 ggplot(Average_Haplo_rep, aes(x = Fecundity, fill = Generation, group = Generation)) +
   geom_histogram(alpha = .5, position = "identity", binwidth = 70) +
   scale_fill_brewer(palette = "Blues")
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02b_Overlapping_Distributions_Fecundity_Over_Generations.png")
+||||||| Stash base
+Average_Haplo_rep$Generation <- as.factor(Average_Haplo_rep$Generation)
+ggplot(Average_Haplo_rep, aes(x = Fecundity, fill = Generation, group = Generation)) +
+  geom_histogram(alpha = .5, position = "identity", binwidth = 70) +
+  scale_fill_brewer(palette = "Blues")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02b_Overlapping_Distributions_Fecundity_Over_Generations_2022_2023.png")
+=======
+fitness_df$Generation <- as.factor(fitness_df$Generation)
+ggplot(fitness_df, aes(x = FECUNDITY, fill = Generation, group = Generation)) +
+  geom_density(alpha = .5, position = "identity", bins = 70) +
+  scale_fill_brewer(palette = "Blues") +
+  facet_wrap(~Condition)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/02b_Overlapping_Distributions_Fecundity_Over_Generations_2022_2023.png")
+>>>>>>> Stashed changes
 
 ### 02bi_100_SW_Distributions
 

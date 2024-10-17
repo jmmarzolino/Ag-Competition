@@ -14,16 +14,11 @@ library(ggplot2)
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 fitness_df <- read_delim("FITNESS.tsv")
 
-test <- Average_Haplo_rep %>% select(c("Genotype", "Generation", "Condition", "TOTAL_WEIGHT", "Fitness", "Fecundity", "FT")) %>% group_by(Genotype) %>% 
-  pivot_wider(names_from = "Condition", values_from = c("TOTAL_WEIGHT", "Fecundity", "Fitness"))
-test <- ifelse(test$)
-
-test$new <- ifelse(test$TOTAL_WEIGHT_single > test$TOTAL_WEIGHT_single, 1,0)
-
-fitness_df <- fitness_df %>% mutate(stand_tw = ifelse(Condition == "sing;e"))
 
 
-### 3a_Bar_Graph_Avg_Yield_Between_Genotype.R
+
+
+### 3a_bar_graph_avg_tw
 
 ggplot(fitness_df, aes(Genotype, TOTAL_MASS, color = Condition, fill = Condition)) +
   geom_bar(stat = "identity", position = position_dodge(), alpha = .5, width = .5) +
@@ -34,9 +29,9 @@ ggplot(fitness_df, aes(Genotype, TOTAL_MASS, color = Condition, fill = Condition
   theme(axis.text.x = element_text(angle = 90)) +
   scale_y_continuous(breaks = seq(0, 200, 10)) +
   theme_bw()
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03a_Bar_Graph_TW_Between_Conditions_2022_2023.png", width = 18, height = 10)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03a_bar_graphs_avg_tw.png", width = 18, height = 10)
 
-### 3ai_Bar_Graph_Avg_FT_Between_Genotype.R
+### 3a_bar_graph_avg_ft
 
 ggplot(fitness_df, aes(Genotype, FT, color = Condition, fill = Condition)) +
   geom_bar(stat = "identity", position = position_dodge(), alpha = .3, width = .5) +
@@ -46,9 +41,9 @@ ggplot(fitness_df, aes(Genotype, FT, color = Condition, fill = Condition)) +
   theme(axis.text.x = element_text(size = 5)) +
   theme(axis.text.x = element_text(angle = 90)) +
   theme_bw()
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03ai_Bar_Graph_FT_Between_Conditions_2022_2023.png", width = 18, height = 10)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03a_bar_graphs_avg_ft.png", width = 18, height = 10)
 
-### 3aii_Bar_Graph_Avg_Fec_Between_Genotype.R
+### 3a_bar_graphs_avg_fec
 
 ggplot(fitness_df, aes(Genotype, FECUNDITY, color = Condition, fill = Condition)) +
   geom_bar(stat = "identity", position = position_dodge(), alpha = .3, width = .5) +
@@ -58,9 +53,8 @@ ggplot(fitness_df, aes(Genotype, FECUNDITY, color = Condition, fill = Condition)
   theme(axis.text.x = element_text(size = 5)) +
   theme(axis.text.x = element_text(angle = 90)) +
   theme_bw()
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03aii_Bar_Graph_Fec_Between_Conditions_2022_2023.png", width = 18, height = 10)
-
-### 3aiii_Bar_Graph_Avg_Fit_Between_Genotype.R
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/3a_bar_graphs_avg_fec.png"width = 18, height = 10)
+### 3a_bar_graph_avg_fit
 
 ggplot(fitness_df, aes(Genotype, FITNESS, color = Condition, fill = Condition)) +
   geom_bar(stat = "identity", position = position_dodge(), alpha = .3, width = .5) +
@@ -70,7 +64,11 @@ ggplot(fitness_df, aes(Genotype, FITNESS, color = Condition, fill = Condition)) 
   theme(axis.text.x = element_text(size = 5)) +
   theme(axis.text.x = element_text(angle = 90)) +
   theme_bw()
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03aiii_Bar_Graph_Fit_Between_Conditions_2022_2023.png",  width = 18, height = 10)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03_bar_graphs_avg_fit.png", width = 18, height = 10)
+
+### 3a_bar_graph_avg_100sw
+
+
 
 ### 3b_Exp_Yield_Per_Plant_by_Condition.R
 
