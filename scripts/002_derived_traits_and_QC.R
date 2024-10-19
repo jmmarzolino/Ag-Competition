@@ -175,21 +175,18 @@ df3 <- df3 %>% filter(FECUNDITY <= upper)
 
 ### PLOTTING
 # arrange data for facet plotting
-df_long <- df4 %>%
-  pivot_longer(cols=-c(Genotype, Condition, Generation), names_to='PHENOTYPE', values_to="VALUE")
-
-#"#eca50b"
+df_long <- df3 %>%
+  pivot_longer(cols=-c(Genotype, Condition, Generation, Exp_year, Replicate), names_to='PHENOTYPE', values_to="VALUE")
 
 
 # check normality & plot trait distributions
 g <- ggplot(df_long, aes(VALUE)) +
   geom_density() +
-  #geom_vline(aes(xintercept = mean(df2$Plants)), color = "#0c820c") +
   facet_wrap(~PHENOTYPE, scales="free") +
   theme_bw() +
   stat_summary(fun = mean, geom = "vline", orientation = "y", 
-    aes(xintercept = after_stat(x), y = 0)) #+
-  #labs(title = "Distribution of plot survival")
+    aes(xintercept = after_stat(x), y = 0), color="#eca50b") 
+
 ggsave("results/trait_distributions.png", g)
 
 
