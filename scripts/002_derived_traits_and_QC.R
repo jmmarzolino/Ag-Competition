@@ -17,16 +17,81 @@ df <- read_delim("data/JOINED_PHENOTYPES.tsv")
 # remove any rows without genotype
 df <- df %>% 
     filter(!is.na(Genotype)) %>%
-    select(-c(BED, ROW, Replicate)) %>%
-    group_by(Genotype, Condition, Exp_year) %>%
-    summarise(across(where(is.numeric), \(x) mean(x, na.rm=T))) 
+    select(-c(BED, ROW))
 
 # fn adds generation col based on 'Genotype' col
 df <- add_generation(df)
 
 
-# calculate derived phenotypes
+# filter for outlier values
+## 100 seed weight
+upper <- median(df$SEED_WEIGHT_100, na.rm=T) + (2 * IQR(df$SEED_WEIGHT_100, na.rm=T))
+lower <- median(df$SEED_WEIGHT_100, na.rm=T) - (2 * IQR(df$SEED_WEIGHT_100, na.rm=T))
 
+g <- ggplot(df, aes(SEED_WEIGHT_100)) + geom_histogram() + 
+  geom_vline(aes(xintercept=upper), color = "#F31919") + 
+  geom_vline(aes(xintercept=lower), color = "#F31919") + 
+  geom_vline(aes(xintercept=median(SEED_WEIGHT_100, na.rm=T)), color = "#F31919", linetype="dashed") + 
+  theme_bw()
+
+ggsave("results/seed_weight_outlier_distribution.png", g)
+# record outlier 100 seed weight
+print('SEED_WEIGHT_100')
+summary(df$SEED_WEIGHT_100)
+df[which(df$SEED_WEIGHT_100 > upper | df$SEED_WEIGHT_100 < lower),]
+# remove extreme 100 seed weight values
+df <- df[which(df$SEED_WEIGHT_100 <= round(upper)),]
+df <- df[which(df$SEED_WEIGHT_100 >= round(lower)),]
+summary(df$SEED_WEIGHT_100)
+
+
+## total seed weight
+upper <- median(df$TOTAL_MASS, na.rm=T) + (2 * IQR(df$TOTAL_MASS, na.rm=T))
+lower <- median(df$TOTAL_MASS, na.rm=T) - (2 * IQR(df$TOTAL_MASS, na.rm=T))
+
+g <- ggplot(df, aes(TOTAL_MASS)) + geom_histogram() + 
+  geom_vline(aes(xintercept=upper), color = "#F31919") + 
+  geom_vline(aes(xintercept=lower), color = "#F31919") + 
+  geom_vline(aes(xintercept=median(TOTAL_MASS, na.rm=T)), color = "#F31919", linetype="dashed") + 
+  theme_bw()
+
+ggsave("results/total_weight_outlier_distribution.png", g)
+# record outlier total weight
+print('TOTAL_MASS')
+summary(df$TOTAL_MASS)
+df[which(df$TOTAL_MASS > upper | df$TOTAL_MASS < lower),]
+
+df <- df[which(df$TOTAL_MASS < upper),]
+df <- df[which(df$TOTAL_MASS > lower),]
+summary(df$TOTAL_MASS)
+
+
+## flowering time
+upper <- median(df$FT, na.rm=T) + (2 * IQR(df$FT, na.rm=T))
+lower <- median(df$FT, na.rm=T) - (3 * IQR(df$FT, na.rm=T))
+# manually increasing the lower FT limit to keep early flowering lines
+
+g <- ggplot(df, aes(FT)) + geom_histogram() + 
+  geom_vline(aes(xintercept=upper), color = "#F31919") + 
+  geom_vline(aes(xintercept=lower), color = "#F31919") + 
+  geom_vline(aes(xintercept=median(FT, na.rm=T)), color = "#F31919", linetype="dashed") + 
+  theme_bw()
+
+
+ggsave("results/flowering_time_outlier_distribution.png", g)
+# record outlier total weight
+print('FT')
+summary(df$FT)
+df[which(df$FT > upper | df$FT < lower),]
+
+df <- df[which(df$FT < upper),]
+df <- df[which(df$FT >= lower),]
+summary(df$FT)
+
+
+
+
+# calculate derived phenotypes
 ## survival = (plants/10) 
 over_sown <- df %>% filter(Plants > 10)
 # for plots have 11 or 12 seeds planted, 
@@ -37,38 +102,78 @@ over_sown$SURVIVAL <- 1
 df2 <- df %>% filter(Plants <= 10)
 df2 <- df2 %>% mutate(SURVIVAL = Plants / 10)
 
-df3 <- full_join(df2, over_sown, by=c('Genotype', 'Condition', 'Exp_year', 'Plants', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Generation', 'SURVIVAL'))
-df3 <- df3 %>% group_by(Genotype, Condition) %>% summarise(across(where(is.numeric), mean)) %>% select(-Exp_year)
+df3 <- full_join(df2, over_sown) 
+#, by=c('Genotype', 'Condition', 'Exp_year', 'Plants', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Generation', 'SURVIVAL'))
+
 
 
 # fecundity
 ## fecundity = seed produced per plot
 ## total seed weight / seed-weight-100/100
-df3 <- df3 %>% 
-    mutate(PER_SEED_WEIGHT = SEED_WEIGHT_100/100) %>%
-    mutate(SEED_COUNT = TOTAL_MASS / PER_SEED_WEIGHT) %>%
-    mutate(FECUNDITY = SEED_COUNT / Plants) %>% 
-    select(-c(PER_SEED_WEIGHT, Plants))
-
 ## fitness = survival * fecundity
-df3 <- df3 %>% mutate(FITNESS = SURVIVAL * FECUNDITY) 
-df3$RELATIVE_FITNESS <- df3$FITNESS / max(df3$FITNESS)
 
+df3 <- df3 %>% 
+    mutate(SEED_COUNT = TOTAL_MASS / (SEED_WEIGHT_100/100)) %>%
+    mutate(FECUNDITY = SEED_COUNT / Plants) %>% 
+    select(-c(Plants)) %>% 
+    mutate(FITNESS = SURVIVAL * FECUNDITY) %>%
+    mutate(RELATIVE_FITNESS = FITNESS / mean(FITNESS, na.rm=T))
 
 # fitness relative to Atlas (parent #48)
-AT <- df3 %>% filter(Genotype == "48_5") %>% summarise(across(where(is.numeric), mean))
-AT$Condition <- 'single'
-
-df4 <- df3 %>% filter(Genotype != "48_5")
-df4 <- full_join(df4, AT)
-
-df4$AT_REL_FITNESS <- df4$FITNESS / AT$FITNESS
-# write out data frame w derived phenotpyes
-write_delim(df4, "data/FITNESS.tsv")
+AT <- df3 %>% filter(Genotype == "48_5") %>% group_by(Genotype) %>% summarise(across(where(is.numeric), \(x) mean(x, na.rm=T)))
+df3$AT_REL_FITNESS <- df3$FITNESS / AT$FITNESS
 
 
 
-##########
+
+
+#problem w fecundity!
+#values over 500 up to 2500
+## for the MOST part, rows w outlier fecundity have survival between 1-5 out of 10 seeds (0.1 - 0.5)
+# one occurance of high survival 0.9
+df3[which(df3$FECUNDITY > 500),] -> x
+summary(x$SURVIVAL)
+summary(df3$SURVIVAL)
+#0.1 0.2 0.3 0.4 0.5 0.6 0.9
+# 21  11   8   9   7   1   1
+
+# either ... filter outlier fecundity values that have survival below 50%...
+# or filter all low survival values
+# or filter all outlier fecundity values...
+# the 0.9 survival row does have a huge total weight, like double any others in the set
+
+# how many rows removed if we filter out low survival?
+df3 %>% filter(SURVIVAL <= 0.5 )
+(xy <- df3 %>% filter(SURVIVAL <= 0.5 ) %>% nrow)
+xy / nrow(df3)
+# removes about 9% of plots
+(yy <- df3 %>% filter(SURVIVAL <= 0.4 ) %>% nrow)
+yy / nrow(df3)
+# only 5% fitlered if lower suvival threshhold to 0.4 
+
+low_survival <- df3 %>% filter(SURVIVAL <= 0.5)
+high_fecundity <- df3 %>% filter(FECUNDITY >= 500)
+inner_join(low_survival, high_fecundity)
+
+# filtering for both things yields 56 rows & only 1 or 2 entries per genotype
+zz <- inner_join(low_survival, high_fecundity)
+table(zz$Genotype)
+
+tmp_df <- df3 %>% filter(SURVIVAL >= 0.5)
+
+
+upper <- median(df3$FECUNDITY) + 2*IQR(df3$FECUNDITY)
+df3 <- df3 %>% filter(FECUNDITY <= upper)
+
+
+
+
+
+
+
+
+
+### PLOTTING
 # arrange data for facet plotting
 df_long <- df4 %>%
   pivot_longer(cols=-c(Genotype, Condition, Generation), names_to='PHENOTYPE', values_to="VALUE")
@@ -86,32 +191,6 @@ g <- ggplot(df_long, aes(VALUE)) +
     aes(xintercept = after_stat(x), y = 0)) #+
   #labs(title = "Distribution of plot survival")
 ggsave("results/trait_distributions.png", g)
-# traits look like normal enough distribution
-# survival has a bit of skew but it's not a trait I expect to be normal
-# 100-seed-weight has overly high values
-
-
-
-
-
-# filter for outlier values
-print('SEED_WEIGHT_100')
-summary(df4$SEED_WEIGHT_100)
-
-upper <- median(df4$SEED_WEIGHT_100) + (3 * IQR(df4$SEED_WEIGHT_100))
-lower <- median(df4$SEED_WEIGHT_100) - (3 * IQR(df4$SEED_WEIGHT_100))
-
-g <- ggplot(df4, aes(SEED_WEIGHT_100)) + geom_histogram() + 
-  geom_vline(aes(xintercept=upper), color = "#F31919") + 
-  geom_vline(aes(xintercept=lower), color = "#F31919") + 
-  geom_vline(aes(xintercept=median(df4$SEED_WEIGHT_100), color = "#F31919"), linetype="dashed") + 
-  theme_bw()
-
-ggsave("results/seed_weight_outlier_distribution.png", g)
-# filter outlier 100 seed weight
-df4[which(df4$SEED_WEIGHT_100 > 8),]
-df4 <- df4 %>% filter(SEED_WEIGHT_100 < 8)
-
 
 
 ## plot all trait distributions w various facets
