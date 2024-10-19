@@ -16,18 +16,16 @@ library(lme4)
 
 # read in data
 df <- fread("data/FITNESS.tsv")
-
+df <- df %>% filter(Condition == "single")
 
 ### BASE STATISTICS
-# parent genotype averages
-df %>% 
-    filter(Generation == 0) %>% 
-    filter(Condition == "single") 
+
 
 # summarise mean & variance
 df %>% 
     group_by(Generation, Condition) %>% 
-    summarise(across(where(is.numeric), mean))
+    summarise(across(where(is.numeric), list(mean=mean, var=var), .names="{.col}_{.fn}")) -> x
+write_delim(x, "data/generations_trait_averages.tsv")
 df %>% 
     group_by(Generation, Condition) %>% 
     summarise(across(where(is.numeric), var))
