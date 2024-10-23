@@ -6,13 +6,13 @@
 #SBATCH -p koeniglab
 
 # GEMMA 0.98
-cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
+cd /rhome/jmarz001/bigdata/Ag-Competition/results
 
 # define variables
 GENO=all_traits
 KINSHIP=output/related_matrix.cXX.txt
 PCS=pca.txt
-OUT=derived_traits_ASSOC
+OUT=gwas
 COL=$(expr $SLURM_ARRAY_TASK_ID + 5)
 
 PHENO_NAME="ASSOC_${COL}"
