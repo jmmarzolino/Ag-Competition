@@ -36,8 +36,6 @@ cut -d\  -f1 all_traits.fam | awk '{$1=$1}{print $1" "$1}' > common_progeny_geno
 
 
 
-
-
 plink --vcf AG.recode.vcf --double-id --allow-no-sex --allow-extra-chr --keep common_progeny_geno_pheno_list --pca 20 --out all_traits
 # --distance square
 # cut only eigenvec values from file; ensure proper formatting of value-tab-value (awk reconstitutes all fields)
@@ -56,7 +54,7 @@ module load gemma/0.98.5
 cut -f1 -d\  trait_name_to_col_numbers.tsv | tail -n +2 > pheno_lst.txt
 ARRAY_LIM=$(wc -l pheno_lst.txt | cut -d\  -f1)
 # genotype-phenotype association
-sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/4_multivariate_association_array.sh
+sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_multivariate_association_array.sh
 #sleep 10s
 
 #### plot results
