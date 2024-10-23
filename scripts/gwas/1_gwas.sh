@@ -50,12 +50,12 @@ module load gemma/0.98.5
 #-miss 1 -notsnp
 
 
-# list of phenoteypes from raw pheno file
-cut -f1 -d\  trait_name_to_col_numbers.tsv | tail -n +2 > pheno_lst.txt
-ARRAY_LIM=$(wc -l pheno_lst.txt | cut -d\  -f1)
+# set number of univariate gwas to run based on
+# the number of traits in trait-gwas number file
+ARRAY_LIM=$(tail -n +2 trait_name_to_col_numbers.tsv | wc -l | cut -d\  -f1)
 # genotype-phenotype association
 sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_multivariate_association_array.sh
-#sleep 10s
+
 
 #### plot results
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5_plot_AllDerivedTraits_GWAS.R
