@@ -108,9 +108,8 @@ ggsave("../results/replicate_correlations_total_mass.png", c1, width = 12, heigh
 ggsave("../results/replicate_correlations_seed_weight_100.png", c2, width = 12, height = 12, dpi=300)
 ggsave("../results/replicate_correlations_FT.png", c3, width = 12, height = 12, dpi=300)
 
-png("../results/replicate_correlations_all.png")
-ggarrange(c1, c2, c3)
-dev.off()
+gc <- ggarrange(c1, c2, c3)
+ggsave("../results/replicate_correlations_all.png", gc)
 
 
 
