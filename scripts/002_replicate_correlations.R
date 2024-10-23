@@ -86,7 +86,7 @@ graph_correlation <- function(x=df, y='TOTAL_MASS'){
  x %>%
   filter(Plants>0 & !is.na(TOTAL_MASS) & !is.na(SEED_WEIGHT_100)) %>% 
   select(-c(Plants, BED, ROW)) %>%
-  select(all_of(c('Genotype', 'Condition', 'Replicate', 'Exp_year', y))) %>% 
+  select(c('Genotype', 'Condition', 'Replicate', 'Exp_year', all_of(y))) %>% 
   pivot_wider(names_from=Replicate, names_prefix="REP_", values_from=y) %>%
   ggplot(aes(REP_1, REP_2), add = "reg.line") +
     geom_jitter() +
@@ -129,7 +129,7 @@ plot_residuals <- function(scaled, y='TOTAL_MASS', condition="single", year=2022
     scaled <- na.omit(scaled)
     sc2 <- scaled %>% 
         filter(Condition == condition) %>%
-        select(c(Genotype, Replicate, Exp_year, y)) %>%
+        select(c(Genotype, Replicate, Exp_year, all_of(y))) %>%
         pivot_wider(names_from=Replicate, names_prefix="REP_", values_from=y)
 
     sc_22 <- sc2 %>% filter(Exp_year == year) %>% select(-Exp_year) %>% na.omit()
