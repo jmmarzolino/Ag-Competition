@@ -138,18 +138,24 @@ TukeyHSD(lil)
 
 ### Plotting
 ## boxplots comparing conditions
-trait_df <- df4 %>% pivot_longer(cols=c('FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'SURVIVAL', 'SEED_COUNT', 'FECUNDITY', 'FITNESS', 'RELATIVE_FITNESS', 'AT_REL_FITNESS'), values_to="VALUE", names_to="trait")
+trait_df <- df %>% pivot_longer(cols=c('FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'SURVIVAL', 'SEED_COUNT', 'FECUNDITY', 'FITNESS', 'RELATIVE_FITNESS', 'AT_REL_FITNESS'), values_to="VALUE", names_to="trait")
 
 ggplot(trait_df, aes(y=VALUE, x=Condition)) +
-geom_boxplot() +
-theme_minimal() +
-facet_wrap(~trait, scales="free")
-
-ggplot( aes(y=FT, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
-df %>% filter(Condition == "single") %>% ggplot( aes(y=FT, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
-
-save_name <- paste0("boxplot", factor, ".png")
-png(save_name)
+    geom_boxplot() +
+    theme_minimal() +
+    facet_wrap(~trait, scales="free")
 
 
-ggplot(df, aes(y=FT, x=Replicate, group=Replicate, fill=Replicate)) +
+## boxplots comparing traits over generations
+ggplot(single, aes(y=FT, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
+    geom_boxplot() +
+    theme_minimal() +
+    facet_wrap(~trait, scales="free")
+
+ggplot(single, aes(y=FT, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
+    geom_boxplot() +
+    theme_minimal() +
+    facet_wrap(~trait, scales="free")
+
+
+
