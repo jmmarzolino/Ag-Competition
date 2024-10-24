@@ -6,13 +6,12 @@
 #SBATCH -p koeniglab
 
 # GEMMA 0.98
-cd /rhome/jmarz001/bigdata/Ag-Competition/results
+cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
 
 # define variables
 GENO=all_traits
-KINSHIP=output/related_matrix.cXX.txt
+KINSHIP=../output/related_matrix.cXX.txt
 PCS=pca.txt
-OUT=gwas
 PHENO_NAME="MULI_PHENO"
 
 ### Univariate Linear Mixed Model
@@ -32,4 +31,4 @@ PHENO_NAME="MULI_PHENO"
 #when a small proportion of phenotypes are partially missing, one can impute these missing values before association tests w/ -predict
 
 
-/rhome/jmarz001/software/gemma0.98.5 -bfile "$GENO" -k "$KINSHIP" -c "$PCS" -lmm 4 -outdir $OUT -n 1 2 3 4 5 6 7 8 9 -o $PHENO_NAME -debug
+/rhome/jmarz001/software/gemma0.98.5 -bfile "$GENO" -k "$KINSHIP" -c "$PCS" -lmm 4 -n 1 2 3 4 5 6 7 8 9 -o $PHENO_NAME -debug
