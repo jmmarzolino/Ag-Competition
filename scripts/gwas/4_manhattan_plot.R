@@ -20,7 +20,7 @@ system("ls ASSOC_*assoc.txt > association_files.txt")
 #args = commandArgs(trailingOnly=TRUE)
 assoc_files_list <- read_delim("association_files.txt", "\t", col_names=F)
 # put the files in real number order
-assoc_files_list$order_col <- gsub("(.*)\\/(.*)_(\\d+)\\.assoc.txt", "\\3", assoc_files_list$X1) %>% as.numeric
+assoc_files_list$order_col <- gsub("ASSOC_(\\d+)\\.assoc.txt", "\\1", assoc_files_list$X1) %>% as.numeric
 assoc_files_list <- assoc_files_list[order(assoc_files_list$order_col), ]
 
 # load file with trait names,
