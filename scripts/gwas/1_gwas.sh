@@ -29,20 +29,16 @@ plink --vcf AG.recode.vcf --double-id --allow-no-sex --allow-extra-chr --keep pr
 mv all_traits.log all_traits_bed.log
 
 
-
 #### add phenotypes to .fam file
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/2_prep_phenotypes.R
 # and filter vcf file to individuals in phenotype data
 cut -d\  -f1 all_traits.fam | awk '{$1=$1}{print $1" "$1}' > common_progeny_geno_pheno_list
 
 
-
 plink --vcf AG.recode.vcf --double-id --allow-no-sex --allow-extra-chr --keep common_progeny_geno_pheno_list --pca 20 --out all_traits
 # --distance square
 # cut only eigenvec values from file; ensure proper formatting of value-tab-value (awk reconstitutes all fields)
 cut -d" " -f3-23 all_traits.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\t"$0}' > pca.txt
-
-
 
 
 # Relatedness Matrix
@@ -55,7 +51,21 @@ module load gemma/0.98.5
 # the number of traits in trait-gwas number file
 ARRAY_LIM=$(tail -n +2 trait_name_to_col_numbers.tsv | wc -l | cut -d\  -f1)
 # genotype-phenotype association
-sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_multivariate_association_array.sh
+sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_univariate_association_array.sh
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #### plot results
