@@ -33,8 +33,8 @@ write_delim(trait_n_list, "trait_name_to_col_numbers.tsv")
 
 ## make genotypes match between genotype and phenotype files
 plink_file <- fread("all_traits.fam")
-# remove 'no phenotype' tag from fam file
-plink_file <- plink_file[,-6]
+# remove any existing &or'no phenotype' tag from fam file
+plink_file <- plink_file[,1:5]
 
 # find union of genotype numbers between the two data sets
 # & keep only overlapping genotypes
