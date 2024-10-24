@@ -5,8 +5,9 @@
 #SBATCH --time=2:00:00
 #SBATCH -p short
 
-cd /rhome/jmarz001/bigdata/Ag-Competition/results
-
+#cd /rhome/jmarz001/bigdata/Ag-Competition/results
+# mkdir gwas
+cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
 #############################################################################
 #source files location, alignment by chromosome then stitched back into one vcf. see documentation in BARLEY_CCII_PROGENY_RAD directories
 #cp /rhome/dkoenig/bigdata/BARLEY_CCII_PROGENY_RAD/DATA/OUTPUT/STITCH/PROGENY.vcf.gz PROGENY.vcf.gz
