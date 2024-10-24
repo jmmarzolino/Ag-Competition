@@ -9,6 +9,7 @@ source("scripts/CUSTOM_FNS.R")
 
 library(tidyverse)
 library(data.table)
+library(corrplot)
 library(lme4)
 #install_packages("lmeTest")
 #library(lmeTest)
@@ -17,6 +18,20 @@ library(lme4)
 # read in data
 df <- fread("data/FITNESS.tsv")
 df <- df %>% filter(Condition == "single")
+
+
+
+# check correlations trait between traits 
+# remove highly correlated phenotypes from gwas
+# fitness / atlas-fitness / 
+traits_df <- pheno %>% select(c(ends_with("_scaled"))) 
+#traits_df <- pheno %>% select(c(ends_with("_scaled"))) %>% select(-c(SEED_COUNT_scaled, RELATIVE_FITNESS_scaled, AT_REL_FITNESS_scaled)) 
+
+x <- cor(traits_df, use="na.or.complete", method="spearman")
+corrplot(x, method="color", type="upper", order="original", title="", mar=c(0,0,4,0), addCoef.col = "black")
+
+
+
 
 
 ## BASE STATISTICS

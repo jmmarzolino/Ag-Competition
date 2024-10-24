@@ -7,7 +7,6 @@
 
 library(tidyverse)
 library(data.table)
-library(corrplot)
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 # read in phenotypes file
