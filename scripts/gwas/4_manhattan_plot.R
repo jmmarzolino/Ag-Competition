@@ -36,10 +36,6 @@ addPlot <- function(FileName){
   AssocTraitName <- as.character(assoc_files_list[grep(FileName, assoc_files_list$X1), 1])
   # change periods in trait name to spaces so it can be split by strwrap
   # put line breaks into long trait names so they're readable
-
-  # split trait text into (trait) & (slope|blup lta|ltc) by "_"
-  AssocTraitName_substring <- gsub("(.*)_(.*)", "\\2", AssocTraitName)
-  AssocTraitName <- standardize_trait_text(AssocTraitName)[[2]]
   AssocTraitName <- paste(strwrap(AssocTraitName, width=60), collapse="\n")
 
   # set subtitle based on assoc #
