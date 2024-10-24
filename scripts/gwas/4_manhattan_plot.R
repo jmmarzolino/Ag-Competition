@@ -3,7 +3,7 @@
 #SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/4_manhattan_plot.stdout
 #SBATCH --mem=40G
 #SBATCH -t 02:00:00
-#SBATCH -p short
+#SBATCH -p koeniglab
 
 #Sys.setenv("DISPLAY"=":0.0")
 
