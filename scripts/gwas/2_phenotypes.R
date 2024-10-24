@@ -13,12 +13,12 @@ setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 pheno <- fread("../../data/FITNESS.tsv")
 
 # remove parent lines that won't be in gwas
-pheno <- pheno %>% filter(Generation != 0) 
+pheno <- pheno %>% filter(Generation != 0) %>% select(-Generation)
 # filter out 'mixed' condition plots
 pheno <- pheno %>% filter(Condition != "mixed") %>% select(-Condition)
 
 # scale the phenotypes
-pheno <- pheno %>% mutate(across(-c(Genotype, Generation), ~(scale(.) %>% as.vector), .names="{.col}_scaled")) %>% select(c(Genotype, Generation, ends_with("_scaled")))
+pheno <- pheno %>% mutate(across(-c(Genotype), ~(scale(.) %>% as.vector), .names="{.col}_scaled")) %>% select(c(Genotype, ends_with("_scaled")))
 
 # remove highly correlated phenotypes 
 pheno <- pheno %>% select(-c(SEED_COUNT_scaled, RELATIVE_FITNESS_scaled, AT_REL_FITNESS_scaled)) 
