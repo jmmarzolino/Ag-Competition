@@ -2,7 +2,7 @@
 #SBATCH --mem=50G
 #SBATCH --time=02:00:00
 #SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/003_change_over_gens.stdout
-#SBATCH -p short
+#SBATCH -p koeniglab
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition")
 source("scripts/CUSTOM_FNS.R")
@@ -18,19 +18,13 @@ library(lme4)
 df <- fread("data/FITNESS.tsv")
 df <- df %>% filter(Condition == "single")
 
-### BASE STATISTICS
 
-
+## BASE STATISTICS
 # summarise mean & variance
 df %>% 
     group_by(Generation, Condition) %>% 
     summarise(across(where(is.numeric), list(mean=mean, var=var), .names="{.col}_{.fn}")) -> x
-write_delim(x, "data/generations_trait_averages.tsv")
-df %>% 
-    group_by(Generation, Condition) %>% 
-    summarise(across(where(is.numeric), var))
-
-
+write_delim(x, "data/generations_trait_avg_var.tsv")
 # write table out with generation/condition trait averages / summary statistics
 
 
