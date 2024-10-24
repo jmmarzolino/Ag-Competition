@@ -8,9 +8,9 @@
 library(tidyverse)
 library(data.table)
 
-setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
+setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 # read in phenotypes file
-pheno <- fread("FITNESS.tsv")
+pheno <- fread("../../data/FITNESS.tsv")
 
 # remove parent lines that won't be in gwas
 pheno <- pheno %>% filter(Generation != 0) 
@@ -21,11 +21,11 @@ pheno <- pheno %>% filter(Condition != "mixed") %>% select(-Condition)
 trait_names_list <- colnames(pheno)[3:ncol(pheno)]
 trait_num_list <- 6:(length(trait_names_list)+5)
 trait_n_list <- tibble(trait_names_list, trait_num_list)
-write_delim(trait_n_list, "../results/trait_name_to_col_numbers.tsv")
+write_delim(trait_n_list, "trait_name_to_col_numbers.tsv")
 
 
 ## make genotypes match between genotype and phenotype files
-plink_file <- fread("../results/all_traits.fam")
+plink_file <- fread("all_traits.fam")
 # remove 'no phenotype' tag from fam file
 plink_file <- plink_file[,-6]
 
@@ -37,4 +37,4 @@ joined <- inner_join(plink_file, pheno, by=c('V2'='Genotype'))
 
 #### over-write formatted genotype and phenotype .fam file
 ## format = famID / indvID / <phenotype / cols /...>
-write_delim(joined, "../results/all_traits.fam", " ", col_names=F)
+write_delim(joined, "all_traits.fam", " ", col_names=F)
