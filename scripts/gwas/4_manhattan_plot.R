@@ -35,6 +35,8 @@ addPlot <- function(FileName){
   # look up file name in df that connects trait name and file
   AssocTraitName <- as.character(assoc_files_list[grep(FileName, assoc_files_list$X1), 1])
   # change periods in trait name to spaces so it can be split by strwrap
+  AssocTraitName <- gsub("\\.", " ", AssocTraitName)
+  #AssocTraitName <- str_to_upper(AssocTraitName)
   # put line breaks into long trait names so they're readable
   AssocTraitName <- paste(strwrap(AssocTraitName, width=60), collapse="\n")
 
@@ -42,8 +44,6 @@ addPlot <- function(FileName){
   #OutName1 <- unlist(strsplit(FileName, ".", fixed=T))[1]
   #OutName1 <- unlist(strsplit(OutName1, "/", fixed=T))[2]
   #OutName1 <- gsub("_", " ", OutName1)
-  AssocTraitName_substring <- gsub("\\.", " ", AssocTraitName_substring)
-  AssocTraitName_substring <- str_to_upper(AssocTraitName_substring)
 
   # import data
   df <- fread(FileName)
@@ -97,7 +97,7 @@ addPlot <- function(FileName){
               plot.subtitle = element_text(size=10)) +
         xlab("Chromosome") +
         ylab(expression(-log[10](italic(p)))) +
-        ggtitle(AssocTraitName, subtitle = AssocTraitName_substring)
+        ggtitle(AssocTraitName, subtitle = AssocTraitName)
 
     #print(g)
     }
