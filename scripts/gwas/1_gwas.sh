@@ -43,7 +43,7 @@ cut -d" " -f3-23 all_traits.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\t"$0}' >
 
 # Relatedness Matrix
 module load gemma/0.98.5
-/rhome/jmarz001/software/gemma0.98.5 -bfile all_traits -gk 1 -o related_matrix 
+/rhome/jmarz001/software/gemma0.98.5 -bfile all_traits -gk 1 -outdir ../output -o related_matrix 
 #-miss 1 -notsnp
 
 
