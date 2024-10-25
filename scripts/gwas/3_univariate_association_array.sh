@@ -13,7 +13,6 @@ GENO=all_traits
 KINSHIP=../output/related_matrix.cXX.txt
 PCS=pca.txt
 COL=$(expr $SLURM_ARRAY_TASK_ID + 5)
-
 PHENO_NAME="ASSOC_${COL}"
 
 ### Univariate Linear Mixed Model
@@ -24,4 +23,4 @@ PHENO_NAME="ASSOC_${COL}"
 ## if no covar use lm instead of lmm
 #One can specify a different column as the phenotype column by using “-n [num]”, where ”-n 1” uses the original sixth column as phenotypes, and “-n 2” uses the seventh column, and so on and so forth.
 
-/rhome/jmarz001/software/gemma0.98.5 -bfile "$GENO" -k "$KINSHIP" -c "$PCS" -lmm 4 -n $SLURM_ARRAY_TASK_ID -o $PHENO_NAME -debug
+/rhome/jmarz001/software/gemma0.98.5 -bfile "$GENO" -k "$KINSHIP" -c "$PCS" -lmm 4 -n $SLURM_ARRAY_TASK_ID -outdir . -o $PHENO_NAME -debug
