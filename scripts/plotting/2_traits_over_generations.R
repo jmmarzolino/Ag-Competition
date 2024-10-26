@@ -14,7 +14,41 @@ library(ggplot2)
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 df <- read_delim("FITNESS.tsv")
 # filter data to single-genotype plots
-sin <- df[df$Condition == "single", ]
+sin <- df[which(df$Condition == "single"), ]
+
+
+
+
+
+
+
+
+### Plotting
+## boxplots comparing conditions
+trait_df <- df %>% pivot_longer(cols=c('FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'SURVIVAL', 'SEED_COUNT', 'FECUNDITY', 'FITNESS', 'RELATIVE_FITNESS', 'AT_REL_FITNESS'), values_to="VALUE", names_to="trait")
+
+ggplot(trait_df, aes(y=VALUE, x=Condition)) +
+    geom_boxplot() +
+    theme_minimal() +
+    facet_wrap(~trait, scales="free")
+
+
+## boxplots comparing traits over generations
+ggplot(single, aes(y=FT, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
+    geom_boxplot() +
+    theme_minimal() +
+    facet_wrap(~trait, scales="free")
+
+ggplot(single, aes(y=FT, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
+    geom_boxplot() +
+    theme_minimal() +
+    facet_wrap(~trait, scales="free")
+
+
+
+
+
+
 
 ## plotting traits over generations
 # w standardized data
@@ -30,7 +64,6 @@ s_fit <- df %>% mutate(stand_fit = scale(FECUNDITY),
 a <- ggplot(s_fit, aes(Generation, stand_fit, add = "reg.line")) +
 geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
-  geom_hline(aes(yintercept = 0), color = "red") +
   geom_boxplot(aes(Generation, stand_fit, group = Generation), width = 1.5, alpha = .5) +
   stat_regline_equation() +
   scale_y_continuous(breaks = seq(-4, 4, 2), limits = c(-4,4)) +
@@ -43,7 +76,6 @@ geom_jitter(alpha = .5) +
 b <- ggplot(s_fit, aes(Generation, stand_fec, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
-  geom_hline(aes(yintercept = 0), color = "red") +
   geom_boxplot(aes(Generation, stand_fec, group = Generation), width = 1.5, alpha = .5) +
   stat_regline_equation() +
   labs(x = "Generation",
@@ -56,7 +88,6 @@ b <- ggplot(s_fit, aes(Generation, stand_fec, add = "reg.line")) +
 c <- ggplot(s_fit, aes(Generation, stand_ft, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
-  geom_hline(aes(yintercept = 0), color = "red") +
   stat_regline_equation() +
   geom_boxplot(aes(Generation, stand_ft, group = Generation), width = 1.5, alpha = .5) +
   labs(x = "Generation",
@@ -69,7 +100,6 @@ c <- ggplot(s_fit, aes(Generation, stand_ft, add = "reg.line")) +
 d <- ggplot(s_fit, aes(Generation, stand_tw, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
-  geom_hline(aes(yintercept = 0), color = "red") +
   geom_boxplot(aes(Generation, stand_tw, group = Generation), width = 1.5, alpha = .5)+
   stat_regline_equation() +
   labs(x = "Generation",
@@ -82,7 +112,6 @@ d <- ggplot(s_fit, aes(Generation, stand_tw, add = "reg.line")) +
 e <- ggplot(s_fit, aes(Generation, stand_100, add = "reg.line")) +
   geom_jitter(alpha = .5) +
   geom_smooth(method = lm) +
-  geom_hline(aes(yintercept = 0), color = "red") +
   geom_boxplot(aes(Generation, stand_100, group = Generation), width = 1.5, alpha = .5)+
   stat_regline_equation() +
   scale_y_continuous(breaks = seq(-4, 4, 2), limits = c(-4,4)) +
