@@ -62,7 +62,7 @@ pdf("results/normality_test.pdf")
 for(i in collist) {
 
   print(i)
-  tmp <- df %>% select(c(Genotype, Generation, Condition, all_of(i))) %>% tibble
+  tmp <- df %>% select(c(Genotype, Generation, all_of(i))) %>% tibble
 
   for(g in generationlist) {
 
