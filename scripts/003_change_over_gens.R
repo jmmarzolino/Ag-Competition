@@ -42,7 +42,7 @@ dev.off()
 ## BASE STATISTICS
 # summarise mean & variance
 df %>% 
-    group_by(Generation, Condition) %>% 
+    group_by(Generation) %>% 
     summarise(across(where(is.numeric), list(mean=mean, var=var), .names="{.col}_{.fn}")) -> x
 write_delim(x, "data/generations_trait_avg_var.tsv")
 # write table out with generation/condition trait averages / summary statistics
@@ -50,7 +50,6 @@ write_delim(x, "data/generations_trait_avg_var.tsv")
 
 
 # set up for normality and variance equity tests
-single <- df %>% filter(Condition == "single") 
 collist <- c('FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'SURVIVAL', 'SEED_COUNT', 'FECUNDITY', 'FITNESS', 'RELATIVE_FITNESS', 'AT_REL_FITNESS')
 generationlist <- c(0, 18, 28, 50, 58)
 
@@ -63,7 +62,7 @@ pdf("results/normality_test.pdf")
 for(i in collist) {
 
   print(i)
-  tmp <- single %>% select(c(Genotype, Generation, Condition, all_of(i))) %>% tibble
+  tmp <- df %>% select(c(Genotype, Generation, Condition, all_of(i))) %>% tibble
 
   for(g in generationlist) {
 
@@ -86,7 +85,7 @@ dev.off()
 # w Levene test
 for(i in collist){
   print(i)
-  leveneTest(get(i) ~ as.factor(Generation), single) %>% print
+  leveneTest(get(i) ~ as.factor(Generation), df) %>% print
 }
 ## only flowering time has unequal variance between generations
 
@@ -95,87 +94,48 @@ for(i in collist){
 # seed-weight-100, survival, fecundity, ft
 ### Kruskal Wallis and Dunn Tests
 print('100 seed weight')
-kruskal.test(SEED_WEIGHT_100 ~ Generation, single)
-dunn.test(single$SEED_WEIGHT_100, single$Generation)
+kruskal.test(SEED_WEIGHT_100 ~ Generation, df)
+dunn.test(df$SEED_WEIGHT_100, df$Generation)
 
 print('survival')
-kruskal.test(SURVIVAL ~ Generation, single)
-dunn.test(single$SURVIVAL, single$Generation)
+kruskal.test(SURVIVAL ~ Generation, df)
+dunn.test(df$SURVIVAL, df$Generation)
 
 print('flowering time')
-kruskal.test(FT ~ Generation, single)
-dunn.test(single$FT, single$Generation)
+kruskal.test(FT ~ Generation, df)
+dunn.test(df$FT, df$Generation)
 
 
 # normally distributed traits & equal trait-group variance
 # total mass, seed-count, fitness, relative-fitness, at-rel-fitness
 ### AVOVA/Tukey Post-hoc
 print('total mass')
-lil <- aov(TOTAL_MASS ~ as.factor(Generation), single)
+lil <- aov(TOTAL_MASS ~ as.factor(Generation), df)
 summary(lil)
 TukeyHSD(lil)
 
 print('seed count')
-lil <- aov(SEED_COUNT ~ as.factor(Generation), single)
+lil <- aov(SEED_COUNT ~ as.factor(Generation), df)
 summary(lil)
 TukeyHSD(lil)
 
 print('fecundity')
-lil <- aov(FECUNDITY ~ as.factor(Generation), single)
+lil <- aov(FECUNDITY ~ as.factor(Generation), df)
 summary(lil)
 TukeyHSD(lil)
 
 print('fitness')
-lil <- aov(FITNESS ~ as.factor(Generation), single)
+lil <- aov(FITNESS ~ as.factor(Generation), df)
 summary(lil)
 TukeyHSD(lil)
 
 print('relative fitness')
-lil <- aov(RELATIVE_FITNESS ~ as.factor(Generation), single)
+lil <- aov(RELATIVE_FITNESS ~ as.factor(Generation), df)
 summary(lil)
 TukeyHSD(lil)
 
 print('Atlas-relative fitness')
-lil <- aov(AT_REL_FITNESS ~ as.factor(Generation), single)
+lil <- aov(AT_REL_FITNESS ~ as.factor(Generation), df)
 summary(lil)
 TukeyHSD(lil)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### Plotting
-## boxplots comparing conditions
-trait_df <- df %>% pivot_longer(cols=c('FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'SURVIVAL', 'SEED_COUNT', 'FECUNDITY', 'FITNESS', 'RELATIVE_FITNESS', 'AT_REL_FITNESS'), values_to="VALUE", names_to="trait")
-
-ggplot(trait_df, aes(y=VALUE, x=Condition)) +
-    geom_boxplot() +
-    theme_minimal() +
-    facet_wrap(~trait, scales="free")
-
-
-## boxplots comparing traits over generations
-ggplot(single, aes(y=FT, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
-    geom_boxplot() +
-    theme_minimal() +
-    facet_wrap(~trait, scales="free")
-
-ggplot(single, aes(y=FT, x=as.factor(Generation), group=as.factor(Generation), fill=as.factor(Generation))) +
-    geom_boxplot() +
-    theme_minimal() +
-    facet_wrap(~trait, scales="free")
-
-
 
