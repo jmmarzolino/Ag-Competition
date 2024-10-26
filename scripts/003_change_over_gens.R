@@ -11,6 +11,7 @@ library(tidyverse)
 library(data.table)
 library(corrplot)
 library(lme4)
+library(car)
 #install_packages("lmeTest")
 #library(lmeTest)
 
@@ -41,9 +42,9 @@ dev.off()
 
 ## BASE STATISTICS
 # summarise mean & variance
-df %>% 
+x <- df %>% 
     group_by(Generation) %>% 
-    summarise(across(where(is.numeric), list(mean=mean, var=var), .names="{.col}_{.fn}")) -> x
+    summarise(across(where(is.numeric), list(mean=mean, var=var), .names="{.col}_{.fn}")) 
 write_delim(x, "data/generations_trait_avg_var.tsv")
 # write table out with generation/condition trait averages / summary statistics
 
@@ -68,11 +69,11 @@ for(i in collist) {
 
     print(g)
     tmp_gen <- tmp %>% filter(Generation == g)
-    s <- shapiro.test(tmp_gen[,4][[1]])
+    s <- shapiro.test(tmp_gen[,3][[1]])
     print(s)
 
-    qqnorm(tmp_gen[,4][[1]], main = paste0("Generation ", i))
-    qqline(tmp_gen[,4][[1]])
+    qqnorm(tmp_gen[,3][[1]], main = paste0("Generation ", i))
+    qqline(tmp_gen[,3][[1]])
   }
 }
 
