@@ -5,8 +5,6 @@
 #SBATCH -t 02:00:00
 #SBATCH -p koeniglab
 
-#Sys.setenv("DISPLAY"=":0.0")
-
 # Manhattan plots of GEMMA results
 library(pacman)
 p_load(tidyverse, data.table, gridExtra, ggsci, Cairo)
@@ -14,21 +12,8 @@ options(stringsAsFactors = F)
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 
-# ls ASSOC_*assoc.txt > association_files.txt
-system("ls ASSOC_*assoc.txt > association_files.txt")
-
-#args = commandArgs(trailingOnly=TRUE)
-assoc_files_list <- read_delim("association_files.txt", "\t", col_names=F)
-# put the files in real number order
-assoc_files_list$order_col <- gsub("ASSOC_(\\d+)\\.assoc.txt", "\\1", assoc_files_list$X1) %>% as.numeric
-assoc_files_list <- assoc_files_list[order(assoc_files_list$order_col), ]
-
-# load file with trait names,
+# load file with trait names and combine
 phenotype_names <- read_delim("trait_name_to_col_numbers.tsv", col_names=T)
-#correct_number_of_traits <- phenotype_names$trait_num_list %>% tail(n=1)
-#assoc_files_list[1:correct_number_of_traits, ] %>% tail
-assoc_files_list <- left_join(phenotype_names, assoc_files_list, by=c("trait_num_list"="order_col"))
-write_delim(assoc_files_list, "association_files_traits.txt", "\t")
 
 
 addPlot <- function(FileName){
@@ -40,11 +25,6 @@ addPlot <- function(FileName){
   # put line breaks into long trait names so they're readable
   AssocTraitName <- paste(strwrap(AssocTraitName, width=60), collapse="\n")
 
-  # set subtitle based on assoc #
-  #OutName1 <- unlist(strsplit(FileName, ".", fixed=T))[1]
-  #OutName1 <- unlist(strsplit(OutName1, "/", fixed=T))[2]
-  #OutName1 <- gsub("_", " ", OutName1)
-
   # import data
   df <- fread(FileName)
 
@@ -54,8 +34,7 @@ addPlot <- function(FileName){
   # parse locus
   names(df)[1] <- "CHR"
   df$CHR <- gsub("(chr\\w+)_\\w+_\\d+", "\\1", df$CHR)
-  # test your regular expression works
-  #  gsub("(chr\\w+)_\\w+_\\d+", "\\1", df$CHR) %>% table
+
   # following code adapted from:
     # https://www.r-graph-gallery.com/wp-content/uploads/2018/02/Manhattan_plot_in_R.html
     # format for plotting
@@ -104,7 +83,7 @@ addPlot <- function(FileName){
 
 # set variables
 #df <- read.table(args[1])
-lst <- assoc_files_list$X1
+lst <- phenotype_names$file
 
 test <- lapply(lst, addPlot)
 
