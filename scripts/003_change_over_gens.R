@@ -23,23 +23,6 @@ df <- df %>% filter(Condition == "single") %>% select(-Condition)
 
 
 
-# check correlations trait between traits 
-# remove highly correlated phenotypes from gwas
-# fitness / atlas-fitness / 
-traits_df <- df %>% select(-c(Genotype, Generation)) 
-x <- cor(traits_df, use="na.or.complete", method="spearman")
-png("data/trait_correlations.png")
-corrplot(x, method="color", type="upper", order="original", title="", mar=c(0,0,4,0), addCoef.col = "black")
-dev.off()
-
-png("data/trait_correlations_filtered.png")
-traits_df <- df %>% select(-c(Genotype, Generation, SEED_COUNT, RELATIVE_FITNESS, AT_REL_FITNESS)) 
-#traits_df <- pheno %>% select(c(ends_with("_scaled"))) %>% select(-c(SEED_COUNT_scaled, RELATIVE_FITNESS_scaled, AT_REL_FITNESS_scaled)) 
-x <- cor(traits_df, use="na.or.complete", method="spearman")
-corrplot(x, method="color", type="upper", order="original", title="", mar=c(0,0,4,0), addCoef.col = "black")
-dev.off()
-
-
 
 ## BASE STATISTICS
 # summarise mean & variance
