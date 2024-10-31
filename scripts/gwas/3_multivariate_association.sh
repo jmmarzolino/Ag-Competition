@@ -12,7 +12,7 @@ cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
 GENO=all_traits
 KINSHIP=../output/related_matrix.cXX.txt
 PCS=pca.txt
-PHENO_NAME="MULI_PHENO"
+PHENO_NAME="ASSOC_MULI"
 
 ### Univariate Linear Mixed Model
 # -km 1: PLINK binary ped as relatedness matrix; 1 is default
@@ -30,4 +30,4 @@ PHENO_NAME="MULI_PHENO"
 # restrict the number of phenotypes to be < ten
 #when a small proportion of phenotypes are partially missing, one can impute these missing values before association tests w/ -predict
 
-/rhome/jmarz001/software/gemma0.98.5 -bfile "$GENO" -k "$KINSHIP" -c "$PCS" -lmm 4 -n 1 2 3 4 5 -outdir . -o $PHENO_NAME -debug
+/rhome/jmarz001/software/gemma0.98.5 -bfile "$GENO" -k "$KINSHIP" -c "$PCS" -lmm 4 -n 1 2 3 4 5 6 -outdir . -o $PHENO_NAME -debug
