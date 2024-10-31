@@ -18,17 +18,18 @@ pheno <- pheno %>% filter(Generation != 0) %>% select(-Generation)
 pheno <- pheno %>% filter(Condition != "mixed") %>% select(-Condition)
 
 # scale the phenotypes
-pheno <- pheno %>% mutate(across(-c(Genotype), ~(scale(.) %>% as.vector), .names="{.col}_scaled")) %>% select(c(Genotype, ends_with("_scaled")))
+pheno <- pheno %>% mutate(across(-c(Genotype), ~(scale(.) %>% as.vector))
 
 # remove highly correlated phenotypes 
-pheno <- pheno %>% select(-c(SEED_COUNT_scaled, RELATIVE_FITNESS_scaled, AT_REL_FITNESS_scaled)) 
+pheno <- pheno %>% select(-c(SEED_COUNT, RELATIVE_FITNESS, AT_REL_FITNESS)) 
 
 
 # record traits and corresponding col number
-trait_names_list <- colnames(pheno)[3:ncol(pheno)]
-trait_num_list <- 6:(length(trait_names_list)+5)
-trait_n_list <- tibble(trait_names_list, trait_num_list)
-write_delim(trait_n_list, "trait_name_to_col_numbers.tsv")
+trait_names <- colnames(pheno)[2:ncol(pheno)]
+trait_num <- 6:(length(trait_names)+5)
+file <- paste0("ASSOC_", trait_num, ".assoc.txt")
+trait_n <- tibble(trait_names, trait_num, file)
+write_delim(trait_n, "trait_name_to_col_numbers.tsv")
 
 
 ## make genotypes match between genotype and phenotype files
