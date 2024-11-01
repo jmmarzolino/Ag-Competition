@@ -18,7 +18,7 @@ phenotype_names <- read_delim("trait_name_to_col_numbers.tsv", col_names=T)
 
 addPlot <- function(FileName){
   # look up file name in df that connects trait name and file
-  AssocTraitName <- as.character(assoc_files_list[grep(FileName, assoc_files_list$X1), 1])
+  AssocTraitName <- as.character(phenotype_names[grep(FileName, phenotype_names$file), 1])
   # change periods in trait name to spaces so it can be split by strwrap
   AssocTraitName <- gsub("\\.", " ", AssocTraitName)
   #AssocTraitName <- str_to_upper(AssocTraitName)
