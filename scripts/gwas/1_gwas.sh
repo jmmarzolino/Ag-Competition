@@ -30,16 +30,36 @@ mv all_traits.log all_traits_bed.log
 
 
 #### add phenotypes to .fam file
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/2_prep_phenotypes.R
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/2_phenotypes.R
 # and filter vcf file to individuals in phenotype data
 cut -d\  -f1 all_traits.fam | awk '{$1=$1}{print $1" "$1}' > common_progeny_geno_pheno_list
 
 
-plink --vcf AG.recode.vcf --double-id --allow-no-sex --allow-extra-chr --keep common_progeny_geno_pheno_list --pca 20 --out all_traits
+
+# filter vcf again to variant sites in retained progeny
+# re-create plink files w filtered progeny list
+vcftools --gzvcf PROGENY.vcf.gz --remove-indels --not-chr chrUn --recode --recode-INFO-all --keep common_progeny_geno_pheno_list --maf 0.002 --out AG
+# minor allele freq set to 1/(2*208 seq'd indvs) = 0.0024
+# so maf filter will only remove freqs of 0
+
+#Output nucleotide diversity at a list of positions
+vcftools --vcf MAF_filt.recode.vcf --freq
+
+###
+# create plink format files from vcf (bed, bim, fam)
+plink --vcf AG.recode.vcf --double-id --allow-no-sex --allow-extra-chr --keep common_progeny_geno_pheno_list -indiv-sort file common_progeny_geno_pheno_list --make-bed --out all_traits
+mv all_traits.log all_traits_bed2.log
+
+
+#### add phenotypes to .fam file
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/2_phenotypes.R
+
+
+plink --vcf AG.recode.vcf --double-id --allow-no-sex --allow-extra-chr --keep common_progeny_geno_pheno_list --pca 5 --out all_traits
+mv all_traits.log all_traits_pca.log
 # --distance square
 # cut only eigenvec values from file; ensure proper formatting of value-tab-value (awk reconstitutes all fields)
 cut -d" " -f3-23 all_traits.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\t"$0}' > pca.txt
-
 
 # Relatedness Matrix
 module load gemma/0.98.5
@@ -53,10 +73,12 @@ ARRAY_LIM=$(tail -n +2 trait_name_to_col_numbers.tsv | wc -l | cut -d\  -f1)
 # genotype-phenotype association
 sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_univariate_association_array.sh
 
-
+# and gwas with all the traits
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_multivariate_association.sh
 
 
+## plot results
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/4_manhattan_plot.R
 
 
 
@@ -69,8 +91,8 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_multivariate_associ
 
 
 
-#### plot results
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5_plot_AllDerivedTraits_GWAS.R
+
+
 
 ####
 # format all_traits.bim
