@@ -76,7 +76,7 @@ addPlot <- function(FileName){
               plot.subtitle = element_text(size=10)) +
         xlab("Chromosome") +
         ylab(expression(-log[10](italic(p)))) +
-        ggtitle(AssocTraitName, subtitle = AssocTraitName)
+        ggtitle(AssocTraitName)
 
     #print(g)
     }
