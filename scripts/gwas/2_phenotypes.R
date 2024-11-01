@@ -18,9 +18,9 @@ pheno <- pheno %>% filter(Generation != 0) %>% select(-Generation)
 pheno <- pheno %>% filter(Condition != "mixed") %>% select(-Condition)
 
 # scale the phenotypes
-pheno <- pheno %>% mutate(across(-c(Genotype), ~(scale(.) %>% as.vector))
+pheno <- pheno %>% mutate(across(-c(Genotype), ~(scale(.) %>% as.vector)))
 
-# remove highly correlated phenotypes 
+# remove highly correlated phenotypes
 pheno <- pheno %>% select(-c(SEED_COUNT, RELATIVE_FITNESS, AT_REL_FITNESS)) 
 
 
