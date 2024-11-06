@@ -29,7 +29,8 @@ df <- df %>% filter(Condition == "single") %>% select(-Condition)
 x <- df %>% 
     group_by(Generation) %>% 
     summarise(across(where(is.numeric), list(mean=mean, var=var), .names="{.col}_{.fn}")) 
-write_delim(x, "data/generations_trait_avg_var.tsv")
+print(x)
+write_delim(x, "data/generations_trait_avg_var.tsv", "\t")
 # write table out with generation/condition trait averages / summary statistics
 
 
