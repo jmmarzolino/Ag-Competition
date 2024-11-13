@@ -165,7 +165,7 @@ tmp_df <- df3 %>% filter(SURVIVAL >= 0.5)
 upper <- median(df3$FECUNDITY) + 2*IQR(df3$FECUNDITY)
 df3 <- df3 %>% filter(FECUNDITY <= upper)
 
-
+write_delim(df3, "data/DERIVED_PHENOTYPES.tsv", "\t")
 
 
 
