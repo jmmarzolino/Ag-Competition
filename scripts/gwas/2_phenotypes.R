@@ -10,18 +10,20 @@ library(data.table)
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 # read in phenotypes file
-pheno <- fread("../../data/FITNESS.tsv")
+#pheno <- fread("../../data/FITNESS.tsv")
+pheno <- fread("../../data/trait_BLUPs.tsv")
+
 
 # remove parent lines that won't be in gwas
-pheno <- pheno %>% filter(Generation != 0) %>% select(-Generation)
+#pheno <- pheno %>% filter(Generation != 0) %>% select(-Generation)
 # filter out 'mixed' condition plots
-pheno <- pheno %>% filter(Condition != "mixed") %>% select(-Condition)
+#pheno <- pheno %>% filter(Condition != "mixed") %>% select(-Condition)
 
 # scale the phenotypes
 pheno <- pheno %>% mutate(across(-c(Genotype), ~(scale(.) %>% as.vector)))
 
 # remove highly correlated phenotypes
-pheno <- pheno %>% select(-c(SEED_COUNT, RELATIVE_FITNESS, AT_REL_FITNESS)) 
+#pheno <- pheno %>% select(-contains(c(SEED_COUNT, RELATIVE_FITNESS, AT_REL_FITNESS))) 
 
 
 # record traits and corresponding col number
