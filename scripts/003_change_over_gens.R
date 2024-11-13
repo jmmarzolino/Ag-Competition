@@ -9,7 +9,6 @@ source("scripts/CUSTOM_FNS.R")
 
 library(tidyverse)
 library(data.table)
-library(corrplot)
 library(lme4)
 library(car)
 library(dunn.test)
