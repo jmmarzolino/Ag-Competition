@@ -16,12 +16,10 @@ fitness_df <- read_delim("FITNESS.tsv")
 
 
 
-
-
 ### 3a_bar_graph_avg_tw
 
-ggplot(fitness_df, aes(Genotype, TOTAL_MASS, color = Condition, fill = Condition)) +
-  geom_bar(stat = "identity", position = position_dodge(), alpha = .5, width = .5) +
+ggplot(fitness_df, aes(Genotype, TOTAL_MASS, fill = Condition)) +
+  geom_bar(stat = "identity", position = position_dodge(), width = .5) +
   labs(y = "Average Total Seed Weight (grams)",
        title = "Comparing Average Total Seed Weight Between Individual Genotype") +
   facet_wrap(~Generation, scales = "free_x") +
@@ -33,8 +31,8 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03a_bar_graphs_avg_tw
 
 ### 3a_bar_graph_avg_ft
 
-ggplot(fitness_df, aes(Genotype, FT, color = Condition, fill = Condition)) +
-  geom_bar(stat = "identity", position = position_dodge(), alpha = .3, width = .5) +
+ggplot(fitness_df, aes(Genotype, FT, fill = Condition)) +
+  geom_bar(stat = "identity", position = position_dodge(), width = .5) +
   labs(y = "Flowering Time (Days)",
        title = "Comparing Flowering Time Between Individual Genotype") +
   facet_wrap(~Generation, scales = "free_x") +
@@ -45,8 +43,8 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03a_bar_graphs_avg_ft
 
 ### 3a_bar_graphs_avg_fec
 
-ggplot(fitness_df, aes(Genotype, FECUNDITY, color = Condition, fill = Condition)) +
-  geom_bar(stat = "identity", position = position_dodge(), alpha = .3, width = .5) +
+ggplot(fitness_df, aes(Genotype, FECUNDITY, fill = Condition)) +
+  geom_bar(stat = "identity", position = position_dodge(), width = .5) +
   labs(y = "Fecundity",
        title = "Comparing Fecundity Between Individual Genotype") +
   facet_wrap(~Generation, scales = "free_x") +
@@ -56,8 +54,8 @@ ggplot(fitness_df, aes(Genotype, FECUNDITY, color = Condition, fill = Condition)
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/3a_bar_graphs_avg_fec.png"width = 18, height = 10)
 ### 3a_bar_graph_avg_fit
 
-ggplot(fitness_df, aes(Genotype, FITNESS, color = Condition, fill = Condition)) +
-  geom_bar(stat = "identity", position = position_dodge(), alpha = .3, width = .5) +
+ggplot(fitness_df, aes(Genotype, FITNESS, fill = Condition)) +
+  geom_bar(stat = "identity", position = position_dodge(), width = .5) +
   labs(y = "Fitness",
        title = "Comparing Fitness Between Individual Genotype") +
   facet_wrap(~Generation, scales = "free_x") +
@@ -70,9 +68,12 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03_bar_graphs_avg_fit
 
 
 
-### 3b_Exp_Yield_Per_Plant_by_Condition.R
 
-ggplot(fitness_df, aes(Generation, Exp_TW_Per_Plant, color = Condition, add = "reg.line")) +
+
+## Expected yields
+### 3b_Exp_Yield_Per_Plant_by_Condition
+
+ggplot(fitness_df, aes(Generation, Exp_TW_Per_Plant, add = "reg.line")) +
   geom_jitter() +
   geom_smooth(method = lm) +
   stat_regline_equation() +
@@ -80,9 +81,9 @@ ggplot(fitness_df, aes(Generation, Exp_TW_Per_Plant, color = Condition, add = "r
        title = "Generational Change in Expected Yield Per Plant")
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03b_Exp_Per_Plant_Yield_by_Condition.png")
 
-### 3bi_Exp_Fec_Per_Plant_by_Condition.R
+### 3bi_Exp_Fec_Per_Plant_by_Condition
 
-ggplot(Average_Haplo_rep, aes(Generation, Exp_Fec_Per_Plant, color = Condition, add = "reg.line")) +
+ggplot(Average_Haplo_rep, aes(Generation, Exp_Fec_Per_Plant, add = "reg.line")) +
   geom_jitter() +
   geom_smooth(method = lm) +
   stat_regline_equation() +
@@ -90,9 +91,9 @@ ggplot(Average_Haplo_rep, aes(Generation, Exp_Fec_Per_Plant, color = Condition, 
        title = "Generational Change in Expected Fecundity Per Plant")
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03bi_Exp_Per_Plant_Fec_by_Condition.png")
 
-### 3bii_Exp_Fit_by_Condition.R
+### 3bii_Exp_Fit_by_Condition
 
-ggplot(Average_Haplo_rep, aes(Generation, Exp_Fit_Per_Plant, color = Condition, add = "reg.line")) +
+ggplot(Average_Haplo_rep, aes(Generation, Exp_Fit_Per_Plant, add = "reg.line")) +
   geom_jitter() +
   geom_smooth(method = lm) +
   stat_regline_equation() +
@@ -100,9 +101,9 @@ ggplot(Average_Haplo_rep, aes(Generation, Exp_Fit_Per_Plant, color = Condition, 
        title = "Generational Change in Expected Fitness Per Plant")
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03bii_Exp_Per_Plant_Fit_by_Condition.png")
 
-### 3c_Average_TW_Over_Generations.R
+### 3c_Average_TW_Over_Generations
 
-fa <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_TW, color = Condition, add = "reg.line")) +
+fa <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_TW, add = "reg.line")) +
   geom_jitter() +
   geom_smooth(method = lm) +
   geom_hline(yintercept = 0, color = "red") +
@@ -111,9 +112,9 @@ fa <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_TW, color = Con
        y = "Average Total Seed Weight (grams)")
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03c_Scatterplot_Avg_TW_by_Condition.png")
 
-### 3ci_Average_FT_Over_Generations.R
+### 3ci_Average_FT_Over_Generations
 
-fb <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_FT, color = Condition, add = "reg.line")) +
+fb <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_FT, add = "reg.line")) +
   geom_jitter() +
   geom_smooth(method = lm) +
   geom_hline(yintercept = 0, color = "red") +
@@ -123,9 +124,9 @@ fb <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_FT, color = Con
   scale_y_continuous(breaks = seq(0, 140, 10))
 ggsave("scripts/plotting/03ci_Scatterplot_Avg_FT_by_Condition.png")
 
-### 3cii_Average_Fecundity_Over_Generations.R
+### 3cii_Average_Fecundity_Over_Generations
 
-fc <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_Fec, color = Condition, add = "reg.line")) +
+fc <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_Fec, add = "reg.line")) +
   geom_jitter() +
   geom_smooth(method = lm) +
   geom_hline(yintercept = 0, color = "red") +
@@ -134,9 +135,9 @@ fc <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_Fec, color = Co
        y = "Average Fecundity")
 ggsave("scripts/plotting/03cii_Scatterplot_Avg_Fec_by_Condition.png")
 
-### 3ciii_Average_Fitness_Over_Generations.R
+### 3ciii_Average_Fitness_Over_Generations
 
-fd <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_Fit, color = Condition, add = "reg.line")) +
+fd <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_Fit, add = "reg.line")) +
   geom_jitter() +
   geom_smooth(method = lm) +
   geom_hline(yintercept = 0, color = "red") +
@@ -145,7 +146,7 @@ fd <- ggplot(Average_Haplo_rep, aes(x = Generation, y = Centered_Fit, color = Co
        y = "Average Fitness")
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03ciii_Scatterplot_Avg_Fit_by_Condition.png")
 
-### 3ciiii_Combined_Mixed_v_Single_Scatterplots.R
+### 3ciiii_Combined_Mixed_v_Single_Scatterplots
 
 g <- grid.arrange(fa, fb, fc, fd, top = "Evolution of our Four Measured Phenotypes Between Condition 2022-2023 Season")
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03ciiii_Combined_Mixed_v_Single_Scatterplots.png", g, width = 14, height = 10)
@@ -171,7 +172,7 @@ ggplot(Average_Haplo_rep, aes(x = reorder(Genotype, +TOTAL_WEIGHT), TOTAL_WEIGHT
   facet_wrap(~Generation, scales = "free_x") +
   theme(axis.text.x = element_text(angle = 90))
 
-### 3e_Intermediate_FT_reproductive_success.R
+### 3e_Intermediate_FT_reproductive_success
 
 # FT vs. Fit
 ggplot(Rep_Single, aes(FT, Fitness, add = "reg.line")) +
@@ -205,7 +206,7 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/03e_Int_FT_vs_TW.png"
 ### Avg_Total_Seed_Weight_Over_Time
 
 fe <- ggplot(Average_Haplo_rep, aes(Generation, TOTAL_WEIGHT, add = "reg.line")) +
-  geom_jitter(alpha = .3) +
+  geom_jitter() +
   geom_smooth(method = lm) +
   stat_regline_equation(label.y = 200) +
   labs(x = "Generation",
@@ -213,7 +214,7 @@ fe <- ggplot(Average_Haplo_rep, aes(Generation, TOTAL_WEIGHT, add = "reg.line"))
   facet_wrap(~Condition)
 
 ff <- ggplot(Average_Haplo_rep, aes(Generation, TOTAL_WEIGHT, col = Condition)) +
-  geom_jitter(alpha = .5) +
+  geom_jitter() +
   geom_smooth(method = lm) +
   labs(x = "Generation",
        y = "Average Total Seed Weight (grams)") 
@@ -221,10 +222,10 @@ ff <- ggplot(Average_Haplo_rep, aes(Generation, TOTAL_WEIGHT, col = Condition)) 
 Compare_TW <- grid.arrange(fe,ff)
 ggsave("scripts/plotting/Extra_3_Average_Yield_Comparisons.png", Compare_TW)
 
-### Avg_FT_Over_Generations.R
+### Avg_FT_Over_Generations
 
 fe <- ggplot(Average_Haplo_rep, aes(Generation, FT, add = "reg.line")) +
-  geom_jitter(alpha = .3) +
+  geom_jitter() +
   geom_smooth(method = lm) +
   stat_regline_equation(label.y = 130) +
   labs(x = "Generation",
@@ -232,7 +233,7 @@ fe <- ggplot(Average_Haplo_rep, aes(Generation, FT, add = "reg.line")) +
   facet_wrap(~Condition)
 
 ff <- ggplot(Average_Haplo_rep, aes(Generation, FT, col = Condition)) +
-  geom_jitter(alpha = .5) +
+  geom_jitter() +
   geom_smooth(method = lm) +
   labs(x = "Generation",
        y = "Average Total Seed Weight (grams)") 
@@ -240,10 +241,10 @@ ff <- ggplot(Average_Haplo_rep, aes(Generation, FT, col = Condition)) +
 Compare_TW <- grid.arrange(fe,ff)
 ggsave("scripts/plotting/Extra_3_Average_FT_Comparisons.png", Compare_TW)
 
-### Avg_Fec_Over_Generations.R
+### Avg_Fec_Over_Generations
 
 fe <- ggplot(Average_Haplo_rep, aes(Generation, Fecundity, add = "reg.line")) +
-  geom_jitter(alpha = .3) +
+  geom_jitter() +
   geom_smooth(method = lm) +
   stat_regline_equation(label.y = 3500) +
   labs(x = "Generation",
@@ -251,7 +252,7 @@ fe <- ggplot(Average_Haplo_rep, aes(Generation, Fecundity, add = "reg.line")) +
   facet_wrap(~Condition)
 
 ff <- ggplot(Average_Haplo_rep, aes(Generation, Fecundity, col = Condition)) +
-  geom_jitter(alpha = .5) +
+  geom_jitter() +
   geom_smooth(method = lm) +
   labs(x = "Generation",
        y = "Average Fecundity") 
@@ -259,10 +260,10 @@ ff <- ggplot(Average_Haplo_rep, aes(Generation, Fecundity, col = Condition)) +
 Compare_TW <- grid.arrange(fe,ff)
 ggsave("scripts/plotting/Extra_3_Average_Fecundity_Comparisons.png", Compare_TW)
 
-### Avg_Fit_Over_Generations.R
+### Avg_Fit_Over_Generations
 
 fe <- ggplot(Average_Haplo_rep, aes(Generation, Fitness, add = "reg.line")) +
-  geom_jitter(alpha = .3) +
+  geom_jitter() +
   geom_smooth(method = lm) +
   stat_regline_equation(label.y = 31000) +
   labs(x = "Generation",
@@ -270,7 +271,7 @@ fe <- ggplot(Average_Haplo_rep, aes(Generation, Fitness, add = "reg.line")) +
   facet_wrap(~Condition)
 
 ff <- ggplot(Average_Haplo_rep, aes(Generation, Fitness, col = Condition)) +
-  geom_jitter(alpha = .5) +
+  geom_jitter() +
   geom_smooth(method = lm) +
   labs(x = "Generation",
        y = "Average Fitness") 
