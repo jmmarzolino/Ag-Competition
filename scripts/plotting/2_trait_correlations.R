@@ -13,11 +13,9 @@ library(corrplot)
 #library(car)
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition")
-source("scripts/CUSTOM_FNS.R")
 
 df <- fread("data/FITNESS.tsv")
 df <- df %>% filter(Condition == "single") %>% select(-Condition)
-
 
 
 # check correlations between traits 
