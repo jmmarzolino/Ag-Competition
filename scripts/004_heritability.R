@@ -34,7 +34,6 @@ for(i in 6:ncol(pheno)) {
 
 
 
-
 # Breeders function for calculating heritability
 
 Breeders_funct <- function(x) {
@@ -115,6 +114,47 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/genetic_phenotypic_va
 
 
 
+# calculate response and selection
+## response
+responses <- pheno %>% 
+      group_by(Generation) %>% 
+      summarise(across(.cols = c(FT, TOTAL_MASS, SURVIVAL, SEED_WEIGHT_100, FECUNDITY, FITNESS), \(x) mean(x, na.rm = T))) %>% 
+      ungroup()
+
+P_18 <-  (responses[2,] - responses[1,])/18
+P_58 <-  (responses[5,] - responses[1,])/58
+F18_58 <-  (responses[5,] - responses[2,])/40
+
+rts_df <- bind_rows(P_18, P_58, F18_58) %>%
+    mutate(Generation = c("P_F18", "P_F58", "F18_F58")) %>%
+    pivot_longer(cols=-c(Generation), names_to='trait', values_to='response')
+
+a1 <- ggplot(rts_df, aes(Generation, response)) +
+  geom_point() +
+  facet_wrap(~trait) +
+  labs(title="Response between generations") +
+  theme_bw()
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/response.png", a1)
+
+
+## selection
+herit_mini <- heritability %>% select(c(trait, H2))
+herit_response <- full_join(herit_mini, rts_df)
+herit_response$selection_est <- herit_response$response / herit_response$H2
+
+a <- ggplot(herit_response, aes(Generation, selection_est)) +
+  geom_point() +
+  facet_wrap(~trait) +
+  labs(y="selection estimate", x="time span") +
+  theme_bw()
+
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selections.png", a)
+
+
+
+
+
+
 
 
 
@@ -135,133 +175,4 @@ for (i in 6:ncol(pheno)){
 
 write_delim(blup_output, "trait_BLUPs.tsv", "\t")
 
-
-
-
-
-
-
-
-
-    # Response to Selection
-
-    subtract <- function(x){
-      x[2] - x[1]
-    }
-
-    # P to F58
-
-    preserved <- phenos %>% filter(Generation == 0 | Generation == 58)
-    P_F58 <- preserved %>% group_by(Generation) %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), mean, na.rm = T)) %>% ungroup()
-    P_F58 <- P_F58 %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), subtract)) %>% ungroup()
-    P_F58 <- P_F58 %>% mutate(SEED_WEIGHT_100 = SEED_WEIGHT_100/58,
-                              FECUNDITY = FECUNDITY/58,
-                              ABS_FITNESS = ABS_FITNESS/58,
-                              FT = FT/58,
-                              TOTAL_MASS = TOTAL_MASS/58,
-                              response_years = "P_F58")
-    # P to F18
-
-    preserved <- phenos %>% filter(Generation == 0 | Generation == 18)
-    P_F18 <- preserved %>% group_by(Generation) %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), mean, na.rm = T)) %>% ungroup()
-    P_F18 <- P_F18 %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), subtract)) %>% ungroup()
-    P_F18 <- P_F18 %>% mutate(SEED_WEIGHT_100 = SEED_WEIGHT_100/18,
-                              FECUNDITY = FECUNDITY/18,
-                              ABS_FITNESS = ABS_FITNESS/18,
-                              FT = FT/18,
-                              TOTAL_MASS = TOTAL_MASS/18,
-                              response_years = "P_F18")
-
-    # F18 to F58
-
-    preserved <- phenos %>% filter(Generation == 18 | Generation == 58)
-    F18_F58 <- preserved %>% group_by(Generation) %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), mean, na.rm = T)) %>% ungroup()
-    F18_F58 <- F18_F58 %>% summarise(across(.cols = c(SEED_WEIGHT_100, FECUNDITY, ABS_FITNESS, TOTAL_MASS, FT), subtract)) %>% ungroup()
-    F18_F58 <- F18_F58 %>% mutate(SEED_WEIGHT_100 = SEED_WEIGHT_100/40,
-                              FECUNDITY = FECUNDITY/40,
-                              ABS_FITNESS = ABS_FITNESS/40,
-                              FT = FT/40,
-                              TOTAL_MASS = TOTAL_MASS/40,
-                              response_years = "F18_F58")
-
-    rts_df <- rbind(P_F18, P_F58, F18_F58)
-
-    a1 <- ggplot(rts_df, aes(response_years, TOTAL_MASS)) +
-      geom_point() +
-      ylim(-.03, .030)
-
-    a2 <- ggplot(rts_df, aes(response_years, SEED_WEIGHT_100)) +
-      geom_point() +
-      ylim(-.03, .03)
-
-    a3 <- ggplot(rts_df, aes(response_years, FT)) +
-      geom_point() +
-      ylim(-.03, .03)
-
-    a4 <- ggplot(rts_df, aes(response_years, FECUNDITY)) +
-      geom_point() +
-      ylim(-.03, .03)
-
-    a5 <- ggplot(rts_df, aes(response_years, ABS_FITNESS)) +
-      geom_point() +
-      ylim(-.03, .03)
-
-    g <- ggarrange(a1, a2, a3, a4, a5, top = "Response to Selection", nrow = 1, ncol = 5)
-    ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Response_to_Selection_Single.png", g, width = 22, height = 10)
-
-    # Selection
-
-    rts_df <- rts_df %>% mutate(H2_FT = herit$H2[4],
-                                H2_100 = herit$H2[1],
-                                H2_tw = herit$H2[5],
-                                H2_fec = herit$H2[3],
-                                H2_fit = herit$H2[2])
-
-    rts_df <- rts_df %>% mutate(si_100 = SEED_WEIGHT_100/ H2_100,
-                                si_fec = FECUNDITY / H2_fec,
-                                si_ft = FT/H2_FT,
-                                si_tw = TOTAL_MASS/H2_tw,
-                                si_fit = ABS_FITNESS/H2_fit)
-
-    selection_intensity_single <- rts_df %>% select(starts_with("si"), response_years)
-
-    # 100 SW SI
-
-    a <- ggplot(selection_intensity_single, aes(response_years, si_100)) +
-      geom_point() +
-      labs(y = "100 Seed Weight") +
-      ylim(-.04,.3)
-
-    # TW
-
-    a1 <- ggplot(selection_intensity_single, aes(response_years, si_tw)) +
-      geom_point() +
-      labs(y = "Total Weight") +
-      ylim(-.04,.3)
-
-    # FT
-
-    a2 <- ggplot(selection_intensity_single, aes(response_years, si_ft)) +
-      geom_point() +
-      labs(y = "Flowering Time") +
-      ylim(-.04,.3)
-
-    # Fit
-
-    a3 <- ggplot(selection_intensity_single, aes(response_years, si_fit)) +
-      geom_point() +
-      labs(y = "Absolute Fitness") +
-      ylim(-.04,.3)
-
-    # fec
-
-    a4 <- ggplot(selection_intensity_single, aes(response_years, si_fec)) +
-      geom_point() +
-      labs(y = "Fecundity") +
-      ylim(-.04,.3)
-
-    y <- ggarrange(a, a1, a2, a3, a4, top = "Selection Intensity", nrow = 1, ncol =5)
-    ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection_intensity_single.png", y, width = 24, height = 12)
-
-}
 
