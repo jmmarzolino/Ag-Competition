@@ -86,7 +86,7 @@ ggplot(herit, aes(Generation, H2, color = trait)) +
   geom_smooth(alpha = .4) +
   labs(y = "Broad Sense Heritability",
       title = "Generational Change in Broad Sense Heritability")
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/H2_over_gens.png", width = 14, height = 10)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/H2_over_gens.png")
 
 # Genetic Variance over time
 
@@ -107,7 +107,7 @@ a1 <- ggplot(herit, aes(Generation, total_var, color = trait)) +
       title = "Generational Change in Phenotypic Variance")
 
 y <- ggarrange(a, a1, ncol =2, nrow = 1)
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/genetic_phenotypic_var_over_gens.png", y, width = 22, height = 12)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/genetic_phenotypic_var_over_gens.png", y)
 
 #herit2 <- herit %>% group_by(trait) %>% summarise(across(where(is.numeric), .fns = mean, na.rm = T)) %>% select(-c("Generation")) %>% ungroup()
 
