@@ -164,7 +164,7 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/response.png", a1)
 herit_mini <- heritability %>% select(c(trait, H2))
 herit_response <- full_join(herit_mini, rts_df)
 herit_response$selection_est <- herit_response$response / herit_response$H2
-write_delim(herit_response, "trait_selection_ests.tsv", "/t")
+write_delim(herit_response, "trait_selection_ests.tsv", "\t")
 
 a <- ggplot(herit_response, aes(Generation, selection_est)) +
   geom_point() +
