@@ -75,7 +75,8 @@ g <- ggplot(df, aes(FT)) + geom_histogram() +
   geom_vline(aes(xintercept=upper), color = "#F31919") + 
   geom_vline(aes(xintercept=lower), color = "#F31919") + 
   geom_vline(aes(xintercept=median(FT, na.rm=T)), color = "#F31919", linetype="dashed") + 
-  theme_bw()
+  theme_bw() +
+  facet_wrap(~Exp_year)
 
 
 ggsave("results/flowering_time_outlier_distribution.png", g)
