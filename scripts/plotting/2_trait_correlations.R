@@ -7,14 +7,15 @@
 
 library(tidyverse)
 library(ggpubr)
+library(RColorBrewer)
 library(data.table)
 library(corrplot)
 #library(lme4)
 #library(car)
 
-setwd("/rhome/jmarz001/bigdata/Ag-Competition")
+setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 
-df <- fread("data/FITNESS.tsv")
+df <- fread("FITNESS.tsv")
 df <- df %>% filter(Condition == "single") %>% select(-Condition)
 
 
@@ -23,11 +24,11 @@ df <- df %>% filter(Condition == "single") %>% select(-Condition)
 # fitness / atlas-fitness / 
 traits_df <- df %>% select(-c(Genotype, Generation)) 
 x <- cor(traits_df, use="na.or.complete", method="spearman")
-png("data/trait_correlations.png")
+png("trait_correlations.png")
 corrplot(x, method="color", type="upper", order="original", title="", mar=c(0,0,4,0), addCoef.col = "black")
 dev.off()
 
-png("data/trait_correlations_filtered.png")
+png("trait_correlations_filtered.png")
 traits_df <- df %>% select(-c(Genotype, Generation, SEED_COUNT, RELATIVE_FITNESS, AT_REL_FITNESS)) 
 #traits_df <- pheno %>% select(c(ends_with("_scaled"))) %>% select(-c(SEED_COUNT_scaled, RELATIVE_FITNESS_scaled, AT_REL_FITNESS_scaled)) 
 x <- cor(traits_df, use="na.or.complete", method="spearman")
@@ -35,7 +36,7 @@ corrplot(x, method="color", type="upper", order="original", title="", mar=c(0,0,
 dev.off()
 
 
-pdf("data/trait_correlations_per_generation.pdf")
+pdf("trait_correlations_per_generation.pdf")
 # check correlations between traits for each generation
 for(i in c(0, 18, 28, 50, 58)) {
 
@@ -49,7 +50,7 @@ dev.off()
 
 
 ## plot trait relationships w scatterplots
-png("all_trait_correlations.png", height=40, width=40, units="in")
+png("all_trait_correlations.png", height=40, width=40, units="in", res=300)
 plot(df, col=as.factor(df$Generation))
 dev.off()
 
@@ -59,7 +60,15 @@ dev.off()
 # and look to see if value range or relationship change much...
 tmp <- df %>% select(-c(Genotype, GERMINATION, RELATIVE_FITNESS, SEED_COUNT, AT_REL_FITNESS)) %>% pivot_longer(-c(FT, Generation), values_to = "VALUE", names_to="TRAIT")
 
-ggplot(tmp, aes(x=FT, y=VALUE, group=Generation)) +
-    geom_point(tmp, aes(color=Generation)) +
-    geom_abline(aes()) +
-    facet_wrap(~TRAIT)
+# the lowest color value is too light, so adjust the color scale down one
+#display.brewer.pal(6, "Blues")
+adjusted_blues <- brewer.pal(7, "Blues")[3:7]
+
+gee <- ggplot(tmp, aes(x=FT, y=VALUE, group=Generation)) + 
+  geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
+  geom_smooth(aes(color=as.factor(Generation))) +
+  scale_color_manual(values=adjusted_blues) + 
+  facet_wrap(~TRAIT, scales="free_y") +
+  labs(x="Flowering Time", y="", color="Generation") +
+  theme_bw()
+ggsave("traits_vs_FT.png", gee)
