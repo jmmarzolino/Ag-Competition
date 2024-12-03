@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 #SBATCH --mem=50G
 #SBATCH --time=02:00:00
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/004_heritability.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/003_BLUPs.stdout
 #SBATCH -p koeniglab
 
 library(tidyverse)
@@ -10,13 +10,12 @@ library(lme4)
 library(ggpubr)
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
+source("../scripts/CUSTOM_FNS.R")
 
 # Loading Data
 pheno <- read_delim("DERIVED_PHENOTYPES.tsv")
 # select columns and scale phenotype data
-pheno <- pheno %>% filter(Condition == "single") %>% select(c(Genotype, Generation, Condition, Replicate, Exp_year, FT, TOTAL_MASS, SURVIVAL, SEED_WEIGHT_100, FECUNDITY, FITNESS)) %>% mutate(across(-c(Genotype, Generation, Condition, Replicate, Exp_year), ~(scale(.) %>% as.vector))) 
-
-
+pheno <- pheno %>% filter(Condition == "single") %>% select(c(Genotype, Generation, Condition, Replicate, Exp_year, FT, TOTAL_MASS, GERMINATION, SEED_WEIGHT_100, FECUNDITY, FITNESS)) #%>% mutate(across(-c(Genotype, Generation, Condition, Replicate, Exp_year), ~(scale(.) %>% as.vector))) 
 
 # check model fits for different traits 
 for(i in 6:ncol(pheno)) {
@@ -33,38 +32,51 @@ for(i in 6:ncol(pheno)) {
 # Exp_year + (1|Genotype) is a winner across the board
 
 
+# Creating BLUP dataframe
+blup_output <- tibble("Genotype" = unique(pheno$Genotype), )
 
-# Breeders function for calculating heritability
+# model traits and extract random effect of genotype
+for (i in 6:ncol(pheno)){
+      model <- lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + (1|Genotype), data = pheno)
+      summary(model)
+      model_ranefs <- ranef(model)
+      geno_blups <- model_ranefs[[1]][[1]]
+      geno_blups <- tibble(geno_blups)
+      geno_blups$Genotype <- rownames(model_ranefs[[1]])
+      colnames(geno_blups)[1] <- paste(colnames(pheno[,i]),"blup",sep="_")
+      blup_output <- full_join(blup_output, geno_blups)
+}
+write_delim(blup_output, "trait_BLUPs.tsv", "\t")
 
-Breeders_funct <- function(x) {
-  # set up empty df for storing results
-  var_tab <- tibble(trait= character(), genetic_var=double(), total_var=double())
+Breeders_funct <- function(pheno){
+    # mixed model loop to calculate heritability
 
-      # calculate for each trait
-      for(i in c(6:ncol(x))){
-          df <- x %>%
-              select(c(all_of(i), Genotype, Replicate, Generation, Exp_year))
-            # calculate mixed model
-            genotype_mod <- lmer(df[,1][[1]] ~ Exp_year + (1| Genotype), data = df)
-            ## summary of the model
-            geno_mod_summ <- summary(genotype_mod)
+    # set up empty df for storing results
+    var_tab <- tibble(trait= character(), genetic_var=double(), total_var=double())
 
-            ## genotypic variance
-            genotypic_variance <- (data.frame(geno_mod_summ$varcor)$sdcor[1]^2)
-            ## total variance
-            total_variance <- genotypic_variance + (data.frame(geno_mod_summ$varcor)$sdcor[2]^2)
-            new_row <- tibble(trait= colnames(x[,i]), genetic_var=genotypic_variance, total_var=total_variance)
-            var_tab <- bind_rows(var_tab, new_row)
-          }
+    # calculate for each trait
+    for (i in 6:ncol(pheno)){
+    df <- pheno %>%
+        select(c(all_of(i), Genotype, Exp_year))
+      # calculate mixed model
+      genotype_mod <- lmer(df[,1][[1]] ~ Exp_year + (1| Genotype), data = df)
+      ## summary of the model
+      geno_mod_summ <- summary(genotype_mod)
 
-          ## ratio of Vg and Vp
-          var_tab$H2 <- var_tab$genetic_var / var_tab$total_var
-          return(var_tab)
-  }
+      ## genotypic variance
+      genotypic_variance <- (data.frame(geno_mod_summ$varcor)$sdcor[1]^2)
+      ## total variance
+      total_variance <- genotypic_variance + (data.frame(geno_mod_summ$varcor)$sdcor[2]^2)
+      new_row <- tibble(trait= colnames(pheno[,i]), genetic_var=genotypic_variance, total_var=total_variance)
+      var_tab <- bind_rows(var_tab, new_row)
+    }
+
+    ## heritability = ratio of Vg and Vp
+    var_tab$H2 <- var_tab$genetic_var / var_tab$total_var
+    return(var_tab)
+}
 
 heritability <- Breeders_funct(pheno)
-# note - survival isn't well described by the model, probably because of how it was filtered to only plots with high enough survival
-# model fit is singular
 write_delim(heritability, "trait_heritability.tsv", "\t")
 
 
@@ -139,17 +151,23 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/genetic_phenotypic_va
 
 # calculate response and selection
 ## response
+
 responses <- pheno %>% 
+      group_by(Genotype) %>%
+      summarise(across(where(is.numeric), \(x) mean(x, na.rm = T))) %>% 
+      ungroup() %>%
+      group_by(Genotype, Generation) %>%
+      summarise(across(where(is.numeric), \(x) mean(x, na.rm = T))) %>% 
+      ungroup() %>%
       group_by(Generation) %>% 
-      summarise(across(.cols = c(FT, TOTAL_MASS, SURVIVAL, SEED_WEIGHT_100, FECUNDITY, FITNESS), \(x) mean(x, na.rm = T))) %>% 
+      summarise(across(.cols = c(FT, TOTAL_MASS, GERMINATION, SEED_WEIGHT_100, FECUNDITY, FITNESS), \(x) mean(x, na.rm = T))) %>% 
       ungroup()
 
-P_18 <-  (responses[2,] - responses[1,])/18
-P_58 <-  (responses[5,] - responses[1,])/58
-F18_58 <-  (responses[5,] - responses[2,])/40
+P_18 <-  (responses[2,] - responses[1,])/(18-0)
+F18_58 <-  (responses[5,] - responses[2,])/(58-18)
 
-rts_df <- bind_rows(P_18, P_58, F18_58) %>%
-    mutate(Generation = c("P_F18", "P_F58", "F18_F58")) %>%
+rts_df <- bind_rows(P_18, F18_58) %>%
+    mutate(Generation = c("P_F18", "F18_F58")) %>%
     pivot_longer(cols=-c(Generation), names_to='trait', values_to='response')
 
 a1 <- ggplot(rts_df, aes(Generation, response)) +
@@ -174,29 +192,10 @@ a <- ggplot(herit_response, aes(Generation, selection_est)) +
 
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection.png", a)
 
-
-
-
-
-
-
-
-
-# Creating BLUP dataframe
-blup_output <- tibble("Genotype" = unique(pheno$Genotype), )
-
-# model traits and extract random effect of genotype
-for (i in 6:ncol(pheno)){
-      model <- lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + (1|Genotype), data = pheno)
-      summary(model)
-      model_ranefs <- ranef(model)
-      geno_blups <- model_ranefs[[1]][[1]]
-      geno_blups <- tibble(geno_blups)
-      geno_blups$Genotype <- rownames(model_ranefs[[1]])
-      colnames(geno_blups)[1] <- paste(colnames(pheno[,i]),"blup",sep="_")
-      blup_output <- full_join(blup_output, geno_blups)
-}
-
-write_delim(blup_output, "trait_BLUPs.tsv", "\t")
-
+a2 <- ggplot(herit_response, aes(Generation, selection_est)) +
+  geom_point() +
+  facet_wrap(~trait, scales="free_y") +
+  labs(y="selection estimate", x="time span") +
+  theme_bw()
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection_freescale.png", a2)
 
