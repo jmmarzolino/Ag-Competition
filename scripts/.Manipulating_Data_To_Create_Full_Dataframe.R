@@ -91,8 +91,8 @@ PHENO_FULL[which(PHENO_FULL$Genotypes=="2_156" & PHENO_FULL$number_of_plants==0)
 
 # seed produced per individual
 PHENO_FULL$FECUNDITY <- PHENO_FULL$TOTAL_SEED_COUNT/ PHENO_FULL$number_of_plants
-PHENO_FULL$SURVIVAL <- PHENO_FULL$number_of_plants / 10
-PHENO_FULL$ABS_FITNESS <- PHENO_FULL$SURVIVAL * PHENO_FULL$FECUNDITY
+PHENO_FULL$GERMINATION <- PHENO_FULL$number_of_plants / 10
+PHENO_FULL$ABS_FITNESS <- PHENO_FULL$GERMINATION * PHENO_FULL$FECUNDITY
 
 PHENO_FULL$REL_FITNESS <- PHENO_FULL$ABS_FITNESS / max(PHENO_FULL$ABS_FITNESS, na.rm=T)
 
@@ -111,5 +111,5 @@ mean_for_summarise <- function(x){
 }
 
 # Dataframe that contains the avveraged replicates for both years
-PHENO_FULL_AVERAGE <- PHENO_FULL %>% group_by(Genotypes, Condition, Exp_year) %>% summarise_at(vars("number_of_plants", "FT_DAYS", "total_seed_mass_g", "100_seed_weight", "TOTAL_SEED_COUNT", "FECUNDITY", "SURVIVAL", "ABS_FITNESS", "REL_FITNESS"), mean_for_summarise)
+PHENO_FULL_AVERAGE <- PHENO_FULL %>% group_by(Genotypes, Condition, Exp_year) %>% summarise_at(vars("number_of_plants", "FT_DAYS", "total_seed_mass_g", "100_seed_weight", "TOTAL_SEED_COUNT", "FECUNDITY", "GERMINATION", "ABS_FITNESS", "REL_FITNESS"), mean_for_summarise)
 PHENO_FULL_AVERAGE <- add_generation(PHENO_FULL_AVERAGE)

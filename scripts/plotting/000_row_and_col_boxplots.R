@@ -13,7 +13,7 @@ ft_22 <- read_delim("FT_2021_2022.tsv")
   colnames(ft22) <- c("Genotype", "Condition", "Replicate", "Bed", "Row", "FT")
   ft22$Exp_year <- 2022
 ft_23 <- read_delim("FT_2023.tsv")
-  ft23 <- ft_23 %>% select(-c(Plot_Survival, PLOT_ID, Generation))
+  ft23 <- ft_23 %>% select(-c(Plot_germination, PLOT_ID, Generation))
   colnames(ft23) <- c("Genotype", "Condition", "Replicate", "Bed", "Row", "FT")
   ft23$Exp_year <- 2023
 ## join ft year data frames

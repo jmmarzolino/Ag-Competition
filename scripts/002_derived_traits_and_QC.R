@@ -92,36 +92,32 @@ summary(df$FT)
 
 
 # calculate derived phenotypes
-## survival = (plants/10) 
+## germination = (plants/10) 
 over_sown <- df %>% filter(Plants > 10)
 # for plots have 11 or 12 seeds planted, 
 # assume max number planted is the same
-over_sown$SURVIVAL <- 1
+over_sown$GERMINATION <- 1
 # plants / 11 or 12 will be 100% germination
 
 df2 <- df %>% filter(Plants <= 10)
-df2 <- df2 %>% mutate(SURVIVAL = Plants / 10)
+df2 <- df2 %>% mutate(GERMINATION = Plants / 10)
 
 df3 <- full_join(df2, over_sown) 
-#, by=c('Genotype', 'Condition', 'Exp_year', 'Plants', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Generation', 'SURVIVAL'))
+#, by=c('Genotype', 'Condition', 'Exp_year', 'Plants', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Generation', 'GERMINATION'))
 
 
 
 # fecundity
 ## fecundity = seed produced per plot
 ## total seed weight / seed-weight-100/100
-## fitness = survival * fecundity
+## fitness = germination * fecundity
 
 df3 <- df3 %>% 
     mutate(SEED_COUNT = TOTAL_MASS / (SEED_WEIGHT_100/100)) %>%
     mutate(FECUNDITY = SEED_COUNT / Plants) %>% 
     select(-c(Plants)) %>% 
-    mutate(FITNESS = SURVIVAL * FECUNDITY) %>%
-    mutate(RELATIVE_FITNESS = FITNESS / mean(FITNESS, na.rm=T))
-
-# fitness relative to Atlas (parent #48)
-AT <- df3 %>% filter(Genotype == "48_5") %>% group_by(Genotype) %>% summarise(across(where(is.numeric), \(x) mean(x, na.rm=T)))
-df3$AT_REL_FITNESS <- df3$FITNESS / AT$FITNESS
+    mutate(FITNESS = GERMINATION * FECUNDITY) 
+#
 
 
 
@@ -129,42 +125,35 @@ df3$AT_REL_FITNESS <- df3$FITNESS / AT$FITNESS
 
 #problem w fecundity!
 #values over 500 up to 2500
-## for the MOST part, rows w outlier fecundity have survival between 1-5 out of 10 seeds (0.1 - 0.5)
-# one occurance of high survival 0.9
+df3[which(df3$FECUNDITY > 1000),] 
+# 20 rows w extreme fecundity, all w germination of 0.1-0.2
+
+## for the MOST part, rows w outlier fecundity have germination between 1-5 out of 10 seeds (0.1 - 0.5)
+# one occurance of high germination 0.9
 df3[which(df3$FECUNDITY > 500),] -> x
-summary(x$SURVIVAL)
-summary(df3$SURVIVAL)
-#0.1 0.2 0.3 0.4 0.5 0.6 0.9
-# 21  11   8   9   7   1   1
+summary(x$GERMINATION)
+summary(df3$GERMINATION)
+# so fecundity cutoff of 500 is probably too low on its own
 
-# either ... filter outlier fecundity values that have survival below 50%...
-# or filter all low survival values
+# either ... filter outlier fecundity values that have germination below 50%...
+# or filter all low germination values
 # or filter all outlier fecundity values...
-# the 0.9 survival row does have a huge total weight, like double any others in the set
+# the 0.9 germination row does have a huge total weight, like double any others in the set
 
-# how many rows removed if we filter out low survival?
-df3 %>% filter(SURVIVAL <= 0.5 )
-(xy <- df3 %>% filter(SURVIVAL <= 0.5 ) %>% nrow)
+# how many rows removed if we filter out low germination?
+df3 %>% filter(GERMINATION < 0.3 )
+(xy <- df3 %>% filter(GERMINATION < 0.3 ) %>% nrow)
 xy / nrow(df3)
-# removes about 9% of plots
-(yy <- df3 %>% filter(SURVIVAL <= 0.4 ) %>% nrow)
+# removes about 2% of plots
+
+(yy <- df3 %>% filter(GERMINATION <= 0.3 ) %>% nrow)
 yy / nrow(df3)
-# only 5% fitlered if lower suvival threshhold to 0.4 
+# only 3% fitlered if lower suvival threshhold to 0.3 
 
-low_survival <- df3 %>% filter(SURVIVAL <= 0.5)
-high_fecundity <- df3 %>% filter(FECUNDITY >= 500)
-inner_join(low_survival, high_fecundity)
+#upper <- median(df3$FECUNDITY) + 2*IQR(df3$FECUNDITY)
+#df3 <- df3 %>% filter(FECUNDITY <= upper)
 
-# filtering for both things yields 56 rows & only 1 or 2 entries per genotype
-zz <- inner_join(low_survival, high_fecundity)
-table(zz$Genotype)
-
-tmp_df <- df3 %>% filter(SURVIVAL >= 0.5)
-
-
-upper <- median(df3$FECUNDITY) + 2*IQR(df3$FECUNDITY)
-df3 <- df3 %>% filter(FECUNDITY <= upper)
-
+df3 <- df3 %>% filter(GERMINATION > 0.2 & FECUNDITY < 750) 
 write_delim(df3, "data/DERIVED_PHENOTYPES.tsv", "\t")
 
 

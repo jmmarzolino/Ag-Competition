@@ -25,7 +25,7 @@ sin <- df[which(df$Condition == "single"), ]
 
 ### Plotting
 ## boxplots comparing conditions
-trait_df <- df %>% pivot_longer(cols=c('FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'SURVIVAL', 'SEED_COUNT', 'FECUNDITY', 'FITNESS', 'RELATIVE_FITNESS', 'AT_REL_FITNESS'), values_to="VALUE", names_to="trait")
+trait_df <- df %>% pivot_longer(cols=c('FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'GERMINATION', 'SEED_COUNT', 'FECUNDITY', 'FITNESS', 'RELATIVE_FITNESS', 'AT_REL_FITNESS'), values_to="VALUE", names_to="trait")
 
 ggplot(trait_df, aes(y=VALUE, x=Condition)) +
     geom_boxplot() +

@@ -57,7 +57,7 @@ dev.off()
 # to see more clearly if the relationship between traits are changing over generations
 # plot trait v. trait, colored & approx line by generation
 # and look to see if value range or relationship change much...
-tmp <- df %>% select(-c(Genotype, SURVIVAL, RELATIVE_FITNESS, SEED_COUNT, AT_REL_FITNESS)) %>% pivot_longer(-c(FT, Generation), values_to = "VALUE", names_to="TRAIT")
+tmp <- df %>% select(-c(Genotype, GERMINATION, RELATIVE_FITNESS, SEED_COUNT, AT_REL_FITNESS)) %>% pivot_longer(-c(FT, Generation), values_to = "VALUE", names_to="TRAIT")
 
 ggplot(tmp, aes(x=FT, y=VALUE, group=Generation)) +
     geom_point(tmp, aes(color=Generation)) +
