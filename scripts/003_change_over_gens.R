@@ -17,11 +17,8 @@ library(dunn.test)
 
 
 # read in data
-df <- fread("data/FITNESS.tsv")
-df <- df %>% filter(Condition == "single") %>% select(-Condition)
-
-
-
+df <- fread("data/trait_BLUPs.tsv")
+df <- add_generation(df)
 
 ## BASE STATISTICS
 # summarise mean & variance
@@ -35,7 +32,7 @@ write_delim(x, "data/generations_trait_avg_var.tsv", "\t")
 
 
 # set up for normality and variance equity tests
-collist <- c('FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'SURVIVAL', 'SEED_COUNT', 'FECUNDITY', 'FITNESS', 'RELATIVE_FITNESS', 'AT_REL_FITNESS')
+collist <- paste0(c('FT', 'TOTAL_MASS', 'GERMINATION','SEED_WEIGHT_100', 'FECUNDITY', 'FITNESS'), "_blup")
 generationlist <- c(0, 18, 28, 50, 58)
 
 
@@ -76,51 +73,40 @@ for(i in collist){
 
 
 ### Not normal distributions &| not equal variance btwn trait-groups
-# seed-weight-100, survival, fecundity, ft
+# seed-weight-100, germination, fecundity, ft
 ### Kruskal Wallis and Dunn Tests
 print('100 seed weight')
-kruskal.test(SEED_WEIGHT_100 ~ Generation, df)
-dunn.test(df$SEED_WEIGHT_100, df$Generation)
+kruskal.test(SEED_WEIGHT_100_blup ~ Generation, df)
+dunn.test(df$SEED_WEIGHT_100_blup, df$Generation)
 
-print('survival')
-kruskal.test(SURVIVAL ~ Generation, df)
-dunn.test(df$SURVIVAL, df$Generation)
+print('germination')
+kruskal.test(GERMINATION_blup ~ Generation, df)
+dunn.test(df$GERMINATION_blup, df$Generation)
 
 print('flowering time')
-kruskal.test(FT ~ Generation, df)
-dunn.test(df$FT, df$Generation)
+kruskal.test(FT_blup ~ Generation, df)
+dunn.test(df$FT_blup, df$Generation)
 
 
 # normally distributed traits & equal trait-group variance
-# total mass, seed-count, fitness, relative-fitness, at-rel-fitness
+# total mass, seed-count, fitness
 ### AVOVA/Tukey Post-hoc
 print('total mass')
-lil <- aov(TOTAL_MASS ~ as.factor(Generation), df)
+lil <- aov(TOTAL_MASS_blup ~ as.factor(Generation), df)
 summary(lil)
 TukeyHSD(lil)
 
 print('seed count')
-lil <- aov(SEED_COUNT ~ as.factor(Generation), df)
+lil <- aov(SEED_COUNT_blup ~ as.factor(Generation), df)
 summary(lil)
 TukeyHSD(lil)
 
 print('fecundity')
-lil <- aov(FECUNDITY ~ as.factor(Generation), df)
+lil <- aov(FECUNDITY_blup ~ as.factor(Generation), df)
 summary(lil)
 TukeyHSD(lil)
 
 print('fitness')
-lil <- aov(FITNESS ~ as.factor(Generation), df)
+lil <- aov(FITNESS_blup ~ as.factor(Generation), df)
 summary(lil)
 TukeyHSD(lil)
-
-print('relative fitness')
-lil <- aov(RELATIVE_FITNESS ~ as.factor(Generation), df)
-summary(lil)
-TukeyHSD(lil)
-
-print('Atlas-relative fitness')
-lil <- aov(AT_REL_FITNESS ~ as.factor(Generation), df)
-summary(lil)
-TukeyHSD(lil)
-
