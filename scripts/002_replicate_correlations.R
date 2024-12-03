@@ -13,9 +13,6 @@ library(ggrepel)
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 # load data
 df <- fread("JOINED_PHENOTYPES.tsv")
-## temporary code to identify extreme seed weight values
-df <- df %>% filter(SEED_WEIGHT_100 < 30)
-
 
 df1 <- df %>% filter(Exp_year==2022)
 df2 <- df %>% filter(Exp_year==2023)
