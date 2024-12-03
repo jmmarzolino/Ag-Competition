@@ -212,17 +212,10 @@ ggsave("results/trait_distributions_Wgeneration_Wcondition.png", g, width=14)
 ## record trait averages and variance for genotypes across replicate & years
 
 # parent & progeny genotypes average and variance
-df4 %>% group_by(Genotype, Condition, Generation) %>% select(-c(Replicate, Exp_year)) %>% summarise(across(where(is.numeric), c('mean'= \(x) mean(x, na.rm=T), 'var'= \(x) var(x, na.rm=T)), .names="{.col}_{.fn}")) -> x
-write_delim(x, "data/genotype_trait_averages.tsv")
+df3 %>% group_by(Genotype, Condition, Generation) %>% select(-c(Replicate, Exp_year)) %>% summarise(across(where(is.numeric), c('mean'= \(x) mean(x, na.rm=T), 'var'= \(x) var(x, na.rm=T)), .names="{.col}_{.fn}")) -> x
+write_delim(x, "data/genotype_trait_averages_variance.tsv")
 # subset to only parents
 x %>% filter(Generation == 0 & Condition == "single") -> x2
-write_delim(x2, "data/parent_trait_averages.tsv")
+write_delim(x2, "data/parent_trait_averages_variance.tsv")
 
 
-# write out data frame w derived phenotypes
-# w phenotypes averaged over replicate & year
-df5 <- df4 %>% group_by(Genotype, Condition, Generation) %>% select(-c(Replicate, Exp_year)) %>% summarise(across(where(is.numeric), \(x) mean(x, na.rm=T)))
-
-
-# write out averaged & filtered data
-write_delim(xyz, "data/FITNESS.tsv")
