@@ -10,27 +10,53 @@
 library(tidyverse)
 library(ggpubr)
 library(ggplot2)
+library(RColorBrewer)
 
-setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
-df <- read_delim("FITNESS.tsv")
-# filter data to single-genotype plots
-sin <- df[which(df$Condition == "single"), ]
+setwd("/bigdata/koeniglab/jmarz001/Ag-Competition")
+source("scripts/CUSTOM_FNS.R")
+df <- read_delim("data/trait_BLUPs.tsv")
+df <- add_generation(df)
+df <- df %>% filter(Generation != 50)
+#df$Generation <- as.factor(df$Generation)
+
+# the lowest color value is too light, so adjust the color scale down one
+#display.brewer.pal(6, "Blues")
+adjusted_blues <- brewer.pal(7, "Blues")[3:7]
 
 
+### PLOTTING
+## arrange data for facet plotting
+df_long <- df %>% pivot_longer(cols=-c('Genotype', 'Generation'), values_to="VALUE", names_to="TRAIT")
+
+# substitute trait names w/ tidy text versions
+df_long$TRAIT <- gsub("FT_blup", "Flowering Time BLUP", df_long$TRAIT)
+df_long$TRAIT <- gsub("TOTAL_MASS_blup", "Total Seed Mass BLUP", df_long$TRAIT)
+df_long$TRAIT <- gsub("GERMINATION_blup", "Germination BLUP", df_long$TRAIT)
+df_long$TRAIT <- gsub("SEED_WEIGHT_100_blup", "100-Seed Weight BLUP", df_long$TRAIT)
+df_long$TRAIT <- gsub("FECUNDITY_blup", "Fecundity BLUP", df_long$TRAIT)
+df_long$TRAIT <- gsub("FITNESS_blup", "Fitness BLUP", df_long$TRAIT)
 
 
+# check normality & plot trait distributions
+g <- ggplot(df_long, aes(VALUE)) +
+  geom_density(color="#084594", linewidth=1) +
+  facet_wrap(~TRAIT, scales="free") +  
+  labs(x="", y="density") +
+  theme_bw(base_size=20) #+
+  #stat_summary(fun = median, geom = "vline", orientation = "y", aes(xintercept = after_stat(x), y = 0), color="#eca50b", linewidth=1) 
+ggsave("results/trait_distributions.png", g, width=12)
 
 
+# one density line per generation
+g <- ggplot(df_long, aes(VALUE, group=Generation, color=as.factor(Generation))) +
+  geom_density(linewidth=1) +
+  scale_color_manual(values=adjusted_blues, name="Generation") + 
+  facet_wrap(~TRAIT, scales="free") +
+  theme_bw(base_size=20) +
+  labs(x="", y="density") +
+  stat_summary(fun = median, geom = "vline", orientation = "y", aes(xintercept = after_stat(x), y = 0), linewidth=1) 
+ggsave("results/trait_distributions_Wgeneration.png", g, width=16)
 
-
-### Plotting
-## boxplots comparing conditions
-trait_df <- df %>% pivot_longer(cols=c('FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'GERMINATION', 'SEED_COUNT', 'FECUNDITY', 'FITNESS', 'RELATIVE_FITNESS', 'AT_REL_FITNESS'), values_to="VALUE", names_to="trait")
-
-ggplot(trait_df, aes(y=VALUE, x=Condition)) +
-    geom_boxplot() +
-    theme_minimal() +
-    facet_wrap(~trait, scales="free")
 
 
 ## boxplots comparing traits over generations
