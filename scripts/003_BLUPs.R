@@ -15,7 +15,8 @@ source("../scripts/CUSTOM_FNS.R")
 # Loading Data
 pheno <- read_delim("DERIVED_PHENOTYPES.tsv")
 # select columns and scale phenotype data
-pheno <- pheno %>% filter(Condition == "single") %>% select(c(Genotype, Generation, Condition, Replicate, Exp_year, FT, TOTAL_MASS, GERMINATION, SEED_WEIGHT_100, FECUNDITY, FITNESS)) #%>% mutate(across(-c(Genotype, Generation, Condition, Replicate, Exp_year), ~(scale(.) %>% as.vector))) 
+pheno <- pheno %>% filter(Condition == "single") %>% select(c(Genotype, Generation, Condition, Replicate, Exp_year, FT, TOTAL_MASS, GERMINATION, SEED_WEIGHT_100, FECUNDITY, FITNESS))
+pheno_scaled <- pheno %>% mutate(across(-c(Genotype, Generation, Condition, Replicate, Exp_year), ~(scale(.) %>% as.vector))) 
 
 # check model fits for different traits 
 #for(i in 6:ncol(pheno)) {
@@ -80,6 +81,14 @@ heritability <- Breeders_funct(pheno)
 write_delim(heritability, "trait_heritability.tsv", "\t")
 
 
+# what's the difference between variance of averaged phenotypes vs of extracted blups?
+pheno %>% group_by(Genotype) %>% summarise(across(where(is.numeric), mean)) %>% ungroup() %>% group_by(Generation) %>% summarise(across(where(is.numeric), var))
+add_generation(blup_output) %>% group_by(Generation) %>% summarise(across(where(is.numeric), var))
+
+# number of samples per generation 
+pheno_avg <- pheno %>% group_by(Genotype) %>% summarise(across(where(is.numeric), mean)) %>% ungroup() 
+pheno_avg %>% group_by(Generation) %>% summarise(n())
+
 
 
 # Extracting Broad Sense Heritability per generation
@@ -91,8 +100,8 @@ h58 <- pheno %>% filter(Generation == 58) %>% Breeders_funct()
 herit <- rbind(h0, h18, h28, h50, h58)
 herit$Generation <- c(rep(0, 6), rep(18, 6), rep(28, 6), rep(50, 6), rep(58,6))
 write_delim(herit, "trait_heritability_per_generation.tsv", "\t")
-# Heritability over time
 
+# Heritability over time
 g <- ggplot(herit, aes(Generation, H2, color = trait)) +
   geom_point() +
   geom_smooth(alpha = .4) +
@@ -169,13 +178,10 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Vg_Vp_H2_over_gens_al
 
 
 # calculate response and selection
-## response
 
+## response
 responses <- pheno %>% 
       group_by(Genotype) %>%
-      summarise(across(where(is.numeric), \(x) mean(x, na.rm = T))) %>% 
-      ungroup() %>%
-      group_by(Genotype, Generation) %>%
       summarise(across(where(is.numeric), \(x) mean(x, na.rm = T))) %>% 
       ungroup() %>%
       group_by(Generation) %>% 
@@ -240,6 +246,8 @@ write_delim(rts_join, "/bigdata/koeniglab/jmarz001/Ag-Competition/results/respon
 herit_mini <- heritability %>% select(c(trait, H2))
 herit_response <- full_join(herit_mini, rts_join)
 herit_response$selection_est <- herit_response$response / herit_response$H2
+herit_response$selection_est_scaled <- herit_response$response_scaled / herit_response$H2
+
 write_delim(herit_response, "trait_selection_ests.tsv", "\t")
 
 a <- ggplot(herit_response, aes(Generation, selection_est)) +
