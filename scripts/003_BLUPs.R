@@ -18,17 +18,17 @@ pheno <- read_delim("DERIVED_PHENOTYPES.tsv")
 pheno <- pheno %>% filter(Condition == "single") %>% select(c(Genotype, Generation, Condition, Replicate, Exp_year, FT, TOTAL_MASS, GERMINATION, SEED_WEIGHT_100, FECUNDITY, FITNESS)) #%>% mutate(across(-c(Genotype, Generation, Condition, Replicate, Exp_year), ~(scale(.) %>% as.vector))) 
 
 # check model fits for different traits 
-for(i in 6:ncol(pheno)) {
-  print(i)
-  print(colnames(pheno[,i]))
-  print(AIC(lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + Replicate + Generation + (1|Genotype), data=pheno)))
-  print(AIC(lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + Replicate + (1|Genotype), data=pheno)))
-  print(AIC(lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + (1|Exp_year:Replicate) + (1|Genotype), data=pheno)))
-  print(AIC(lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + Generation + (1|Genotype), data=pheno)))
-  print(AIC(lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + (1|Generation:Genotype), data=pheno)))
-  print(AIC(lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + (1+Generation|Genotype), data=pheno)))
-  print(AIC(lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + (1|Genotype), data=pheno)))
-}
+#for(i in 6:ncol(pheno)) {
+#  print(i)
+#  print(colnames(pheno[,i]))
+#  print(AIC(lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + Replicate + Generation + (1|Genotype), data=pheno)))
+#  print(AIC(lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + Replicate + (1|Genotype), data=pheno)))
+#  print(AIC(lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + (1|Exp_year:Replicate) + (1|Genotype), data=pheno)))
+#  print(AIC(lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + Generation + (1|Genotype), data=pheno)))
+#  print(AIC(lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + (1|Generation:Genotype), data=pheno)))
+#  print(AIC(lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + (1+Generation|Genotype), data=pheno)))
+#  print(AIC(lmer(as.numeric(unlist(pheno[,i])) ~ Exp_year + (1|Genotype), data=pheno)))
+#}
 # Exp_year + (1|Genotype) is a winner across the board
 
 
