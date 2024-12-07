@@ -185,21 +185,60 @@ responses <- pheno %>%
 P_18 <-  (responses[2,] - responses[1,])/(18-0)
 F18_58 <-  (responses[5,] - responses[2,])/(58-18)
 
-rts_df <- bind_rows(P_18, F18_58) %>%
-    mutate(Generation = c("P_F18", "F18_F58")) %>%
-    pivot_longer(cols=-c(Generation), names_to='trait', values_to='response')
+resp_join <- bind_rows(P_18, F18_58) %>%
+    mutate(Generation = factor(c("Parents_to_F18", "F18_to_F58"), levels = c("Parents_to_F18", "F18_to_F58"))) 
+rts_df <- resp_join %>% pivot_longer(cols=-c(Generation), names_to='trait', values_to='response')
 
 a1 <- ggplot(rts_df, aes(Generation, response)) +
   geom_point() +
-  facet_wrap(~trait) +
+  facet_wrap(~trait, scales="free") +
   labs(title="Response between generations") +
   theme_bw()
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/response.png", a1)
 
 
+## response w scaled phenotypes
+responses_scaled <- pheno_scaled %>% group_by(Genotype) %>%
+      summarise(across(where(is.numeric), \(x) mean(x, na.rm = T))) %>% 
+      ungroup() %>%
+      group_by(Generation) %>% 
+      summarise(across(.cols = c(FT, TOTAL_MASS, GERMINATION, SEED_WEIGHT_100, FECUNDITY, FITNESS), \(x) mean(x, na.rm = T))) %>% 
+      ungroup()
+
+P_18 <-  (responses_scaled[2,] - responses_scaled[1,])/(18-0)
+F18_58 <-  (responses_scaled[5,] - responses_scaled[2,])/(58-18)
+
+resp_join2 <- bind_rows(P_18, F18_58) %>%
+    mutate(Generation = factor(c("Parents_to_F18", "F18_to_F58"), levels = c("Parents_to_F18", "F18_to_F58"))) 
+rts_df2 <- resp_join2 %>% pivot_longer(cols=-c(Generation), names_to='trait', values_to='response')
+
+a2 <- ggplot(rts_df2, aes(Generation, response)) +
+  geom_point() +
+  facet_wrap(~trait) +
+  labs(title="Scaled Response between generations", subtitle="change per generation in standard deviations") +
+  theme_bw()
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/response_scaled.png", a2)
+
+
+a3 <- ggplot(rts_df2, aes(Generation, response, group=trait, color=trait)) +
+  geom_point() +
+  #facet_wrap(~trait) +
+  labs(title="Scaled Response between generations", subtitle="change per generation in standard deviations") +
+  theme_bw()
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/response_scaled_combined.png", a3)
+
+
+## join response tables w normal & standard deviation units
+rts_join <- full_join(rts_df, rts_df2, by=c("Generation", "trait"), suffix=c("", "_scaled"))
+rts_join <- rts_join[order(rts_join$trait),]
+write_delim(rts_join, "/bigdata/koeniglab/jmarz001/Ag-Competition/results/response_table_traitunits_and_scaled.tsv")
+
+
+
+
 ## selection
 herit_mini <- heritability %>% select(c(trait, H2))
-herit_response <- full_join(herit_mini, rts_df)
+herit_response <- full_join(herit_mini, rts_join)
 herit_response$selection_est <- herit_response$response / herit_response$H2
 write_delim(herit_response, "trait_selection_ests.tsv", "\t")
 
@@ -217,4 +256,12 @@ a2 <- ggplot(herit_response, aes(Generation, selection_est)) +
   labs(y="selection estimate", x="time span") +
   theme_bw()
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection_freescale.png", a2)
+
+
+a3 <- ggplot(herit_response, aes(Generation, selection_est_scaled, color=trait)) +
+  geom_point(position = position_dodge(0.2)) +
+  labs(y="selection estimate", x="time span", title="Selection between Generations for All Traits") +
+  theme_bw()
+
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection.png", a3)
 
