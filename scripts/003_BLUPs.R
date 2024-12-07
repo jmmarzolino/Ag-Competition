@@ -120,32 +120,51 @@ a1 <- ggplot(herit, aes(Generation, total_var, color = trait)) +
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/phenotypic_var_over_gens.png", a1)
 #herit2 <- herit %>% group_by(trait) %>% summarise(across(where(is.numeric), .fns = mean, na.rm = T)) %>% select(-c("Generation")) %>% ungroup()
 
+
+
+## scaled data's heritability
+heritability_scaled <- Breeders_funct(pheno_scaled)
+
 # a few plots with combined factors of variance explained
+# using scaled phenotypes
+h0 <- pheno_scaled %>% filter(Generation == 0) %>% Breeders_funct()
+h18 <- pheno_scaled %>% filter(Generation == 18) %>% Breeders_funct()
+h28 <- pheno_scaled %>% filter(Generation == 28) %>% Breeders_funct()
+h50 <- pheno_scaled %>% filter(Generation == 50) %>% Breeders_funct()
+h58 <- pheno_scaled %>% filter(Generation == 58) %>% Breeders_funct()
+herit <- rbind(h0, h18, h28, h50, h58)
+herit$Generation <- c(rep(0, 6), rep(18, 6), rep(28, 6), rep(50, 6), rep(58,6))
+
+
 herit_piv <- herit %>% pivot_longer(cols=c(genetic_var, total_var), names_to="variance_source")
-g <- ggplot(herit_piv, aes(Generation, value, color=trait, shape=variance_source)) +
+g1 <- ggplot(herit_piv, aes(Generation, value, color=trait, shape=variance_source)) +
   geom_smooth() +
   geom_point(size=3) +
   theme_bw() +
   labs(y="variance", title="Total and Genetic Variance over Generations")
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/genetic_phenotypic_var_over_gens.png", g)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/genetic_phenotypic_var_over_gens_scaled.png", g1)
 
-g <- ggplot(herit_piv, aes(Generation, value, color=trait, shape=variance_source)) +
+g2 <- ggplot(herit_piv, aes(Generation, value, color=trait, shape=variance_source)) +
   geom_smooth() +
   geom_point(size=3) +
   theme_bw() +
   labs(y="variance", title="Total and Genetic Variance over Generations") +
   facet_wrap(~trait)
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/genetic_phenotypic_var_over_gens_trait_facet.png", g)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/genetic_phenotypic_var_over_gens_trait_facet_scaled.png", g2)
 
 herit_piv2 <- herit %>% pivot_longer(cols=c(genetic_var, total_var, H2), names_to="variance_source")
-g <- ggplot(herit_piv2, aes(Generation, value, color=trait, shape=variance_source)) +
+g3 <- ggplot(herit_piv2, aes(Generation, value, color=trait, shape=variance_source)) +
   geom_smooth(aes(linetype=variance_source)) +
   scale_linetype_manual(values=c("solid", "dashed", "solid")) +
   geom_point(size=3) +
   theme_bw() +
   labs(y="variance", title="Total, Genetic, and Heritable Variance over Generations") +
   facet_wrap(~trait)
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/genetic_phenotypic_var_H2_over_gens_trait_facet.png", g)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/genetic_phenotypic_var_H2_over_gens_trait_facet_scaled.png", g3)
+
+gsumm <- ggarrange(g1, g2, g3)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Vg_Vp_H2_over_gens_all_traits_scaled.png", gsumm)
+
 
 
 
