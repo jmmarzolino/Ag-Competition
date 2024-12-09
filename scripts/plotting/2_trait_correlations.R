@@ -2,7 +2,7 @@
 #SBATCH --ntasks=1
 #SBATCH --mem=30G
 #SBATCH --time=02:00:00
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/2_trait_correlations.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/plotting/2_trait_correlations.stdout
 #SBATCH -p koeniglab
 
 library(tidyverse)
@@ -67,9 +67,9 @@ dev.off()
 #display.brewer.pal(6, "Blues")
 adjusted_blues <- brewer.pal(7, "Blues")[3:7]
 
-gee <- tmp %>% 
+gee <- df %>% 
         pivot_longer(-c(FT, Generation), values_to = "VALUE", names_to="TRAIT") %>% 
-        ggplot(tmp, aes(x=FT, y=VALUE, group=Generation)) + 
+        ggplot(aes(x=FT, y=VALUE, group=Generation)) + 
           geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
           geom_smooth(aes(color=as.factor(Generation))) +
           scale_color_manual(values=adjusted_blues) + 
@@ -80,9 +80,9 @@ ggsave("traits_vs_FT.png", gee)
 
 
 
-gee_wiz <- tmp %>% 
+gee_wiz <- df %>% 
         pivot_longer(-c(FIT, Generation), values_to = "VALUE", names_to="TRAIT") %>% 
-        ggplot(tmp, aes(x=FIT, y=VALUE, group=Generation)) + 
+        ggplot(aes(x=FIT, y=VALUE, group=Generation)) + 
           geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
           geom_smooth(aes(color=as.factor(Generation))) +
           scale_color_manual(values=adjusted_blues) + 
