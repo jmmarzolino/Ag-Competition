@@ -72,7 +72,7 @@ gee <- df %>%
           facet_wrap(~TRAIT, scales="free_y") +
           labs(x="Flowering Time", y="", color="Generation") +
           theme_bw()
-ggsave("traits_vs_FT.png", gee)
+ggsave("traits_vs_FT.png", gee, width=14)
 
 gee <- df %>% 
         pivot_longer(-c(FT, Generation), values_to = "VALUE", names_to="TRAIT") %>% 
@@ -83,7 +83,7 @@ gee <- df %>%
           facet_wrap(~TRAIT, scales="free_y") +
           labs(x="Flowering Time", y="", color="Generation") +
           theme_bw()
-ggsave("traits_vs_FT_by_generation.png", gee)
+ggsave("traits_vs_FT_by_generation.png", gee, width=14)
 
 
 gee_wiz <- df %>% 
@@ -95,7 +95,7 @@ gee_wiz <- df %>%
           facet_wrap(~TRAIT, scales="free_y") +
           labs(x="Fitness", y="", color="Generation") +
           theme_bw()
-ggsave("traits_vs_FIT.png", gee_wiz)
+ggsave("traits_vs_FIT.png", gee_wiz, width=14)
 
 
 gee_wiz <- df %>% 
@@ -107,4 +107,4 @@ gee_wiz <- df %>%
           facet_wrap(~TRAIT, scales="free_y") +
           labs(x="Fitness", y="", color="Generation") +
           theme_bw()
-ggsave("traits_vs_FIT_by_generation.png", gee_wiz)
+ggsave("traits_vs_FIT_by_generation.png", gee_wiz, width=14)
