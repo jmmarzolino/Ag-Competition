@@ -14,7 +14,6 @@ library(corrplot)
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
 
-
 df <- fread("trait_BLUPs.tsv")
 df <- add_generation(df) %>% select(-c(Genotype))
 
@@ -56,8 +55,12 @@ dev.off()
 #display.brewer.pal(6, "Blues")
 adjusted_blues <- brewer.pal(7, "Blues")[3:7]
 
-gee <- df %>% 
-        pivot_longer(-c(FT_blup, Generation), values_to = "VALUE", names_to="TRAIT") %>% 
+# flowering time plots
+df_ft <- df %>% 
+        pivot_longer(-c(FT_blup, Generation), values_to = "VALUE", names_to="TRAIT")
+df_ft$TRAIT <- tidy_text_substitution(df_ft$TRAIT)
+
+gee <- df_ft %>% 
         ggplot(aes(x=FT_blup, y=VALUE,)) + 
           geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
           geom_smooth() +
@@ -67,8 +70,7 @@ gee <- df %>%
           theme_bw()
 ggsave("blups_vs_FT.png", gee, width=14)
 
-gee <- df %>% 
-        pivot_longer(-c(FT_blup, Generation), values_to = "VALUE", names_to="TRAIT") %>% 
+gee <- df_ft %>% 
         ggplot(aes(x=FT_blup, y=VALUE, group=as.factor(Generation))) + 
           geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
           geom_smooth(aes(color=as.factor(Generation))) +
@@ -79,8 +81,12 @@ gee <- df %>%
 ggsave("blups_vs_FT_by_generation.png", gee, width=14)
 
 
-gee_wiz <- df %>% 
-        pivot_longer(-c(FITNESS_blup, Generation), values_to = "VALUE", names_to="TRAIT") %>% 
+# fitness plots
+df_fit <- df %>% 
+        pivot_longer(-c(FITNESS_blup, Generation), values_to = "VALUE", names_to="TRAIT")
+df_fit$TRAIT <- tidy_text_substitution(df_fit$TRAIT)
+
+gee_wiz <- df_fit %>% 
         ggplot(aes(x=FITNESS_blup, y=VALUE)) + 
           geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
           geom_smooth() +
@@ -91,8 +97,7 @@ gee_wiz <- df %>%
 ggsave("blups_vs_FIT.png", gee_wiz, width=14)
 
 
-gee_wiz <- df %>% 
-        pivot_longer(-c(FITNESS_blup, Generation), values_to = "VALUE", names_to="TRAIT") %>% 
+gee_wiz <- df_fit %>% 
         ggplot(aes(x=FITNESS_blup, y=VALUE, group=Generation)) + 
           geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
           geom_smooth(aes(color=as.factor(Generation))) +

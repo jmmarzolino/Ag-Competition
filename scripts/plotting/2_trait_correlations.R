@@ -11,7 +11,6 @@ library(RColorBrewer)
 library(data.table)
 library(corrplot)
 
-
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
 
@@ -63,8 +62,12 @@ dev.off()
 #display.brewer.pal(6, "Blues")
 adjusted_blues <- brewer.pal(7, "Blues")[3:7]
 
-gee <- df %>% 
-        pivot_longer(-c(FT, Generation), values_to = "VALUE", names_to="TRAIT") %>% 
+# flowering time plots
+df_ft <- df %>% 
+        pivot_longer(-c(FT, Generation), values_to = "VALUE", names_to="TRAIT")
+df_ft$TRAIT <- tidy_text_substitution(df_ft$TRAIT)
+
+gee <- df_ft %>% 
         ggplot(aes(x=FT, y=VALUE,)) + 
           geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
           geom_smooth() +
@@ -74,8 +77,7 @@ gee <- df %>%
           theme_bw()
 ggsave("traits_vs_FT.png", gee, width=14)
 
-gee <- df %>% 
-        pivot_longer(-c(FT, Generation), values_to = "VALUE", names_to="TRAIT") %>% 
+gee <- df_ft %>% 
         ggplot(aes(x=FT, y=VALUE, group=as.factor(Generation))) + 
           geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
           geom_smooth(aes(color=as.factor(Generation))) +
@@ -86,8 +88,12 @@ gee <- df %>%
 ggsave("traits_vs_FT_by_generation.png", gee, width=14)
 
 
-gee_wiz <- df %>% 
-        pivot_longer(-c(FITNESS, Generation), values_to = "VALUE", names_to="TRAIT") %>% 
+# fitness plots
+df_fit <- df %>% 
+        pivot_longer(-c(FITNESS, Generation), values_to = "VALUE", names_to="TRAIT")
+df_fit$TRAIT <- tidy_text_substitution(df_fit$TRAIT)
+
+gee_wiz <- df_fit %>% 
         ggplot(aes(x=FITNESS, y=VALUE)) + 
           geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
           geom_smooth() +
@@ -98,8 +104,7 @@ gee_wiz <- df %>%
 ggsave("traits_vs_FIT.png", gee_wiz, width=14)
 
 
-gee_wiz <- df %>% 
-        pivot_longer(-c(FITNESS, Generation), values_to = "VALUE", names_to="TRAIT") %>% 
+gee_wiz <- df_fit %>% 
         ggplot(aes(x=FITNESS, y=VALUE, group=Generation)) + 
           geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
           geom_smooth(aes(color=as.factor(Generation))) +
