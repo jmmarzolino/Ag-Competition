@@ -96,11 +96,6 @@ lil <- aov(TOTAL_MASS_blup ~ as.factor(Generation), df)
 summary(lil)
 TukeyHSD(lil)
 
-print('seed count')
-lil <- aov(SEED_COUNT_blup ~ as.factor(Generation), df)
-summary(lil)
-TukeyHSD(lil)
-
 print('fecundity')
 lil <- aov(FECUNDITY_blup ~ as.factor(Generation), df)
 summary(lil)
