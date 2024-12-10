@@ -106,3 +106,54 @@ gee_wiz <- df_fit %>%
           labs(x="Fitness BLUP", y="", color="Generation") +
           theme_bw()
 ggsave("blups_vs_FIT_by_generation.png", gee_wiz, width=14)
+
+
+
+# seed-weight & total-mass plots
+df_tm <- df %>% 
+        pivot_longer(-c(TOTAL_MASS_blup, Generation), values_to = "VALUE", names_to="TRAIT")
+df_tm$TRAIT <- tidy_text_substitution(df_tm$TRAIT)
+golly <- df_tm %>% 
+        ggplot(aes(x=TOTAL_MASS_blup, y=VALUE)) + 
+          geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
+          geom_smooth() +
+          scale_color_manual(values=adjusted_blues) + 
+          facet_wrap(~TRAIT, scales="free_y") +
+          labs(x="Total Mass BLUP", y="", color="Generation") +
+          theme_bw()
+ggsave("blups_vs_TOTALMASS.png", golly, width=14)
+
+golly <- df_tm %>% 
+        ggplot(aes(x=TOTAL_MASS_blup, y=VALUE, group=Generation)) + 
+          geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
+          geom_smooth(aes(color=as.factor(Generation))) +
+          scale_color_manual(values=adjusted_blues) + 
+          facet_wrap(~TRAIT, scales="free_y") +
+          labs(x="Total Mass BLUP", y="", color="Generation") +
+          theme_bw()
+ggsave("blups_vs_TOTALMASS_by_generation.png", golly, width=14)
+
+
+# seed-weight & total-mass plots
+df_sw <- df %>% 
+        pivot_longer(-c(SEED_WEIGHT_100_blup, Generation), values_to = "VALUE", names_to="TRAIT")
+df_sw$TRAIT <- tidy_text_substitution(df_sw$TRAIT)
+golly <- df_sw %>% 
+        ggplot(aes(x=SEED_WEIGHT_100_blup, y=VALUE)) + 
+          geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
+          geom_smooth() +
+          scale_color_manual(values=adjusted_blues) + 
+          facet_wrap(~TRAIT, scales="free_y") +
+          labs(x="100-Seed Weight BLUP", y="", color="Generation") +
+          theme_bw()
+ggsave("blups_vs_100sw.png", golly, width=14)
+
+golly <- df_sw %>% 
+        ggplot(aes(x=SEED_WEIGHT_100_blup, y=VALUE, group=Generation)) + 
+          geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
+          geom_smooth(aes(color=as.factor(Generation)), alpha=0.5) +
+          scale_color_manual(values=adjusted_blues) + 
+          facet_wrap(~TRAIT, scales="free_y") +
+          labs(x="100-Seed Weight BLUP", y="", color="Generation") +
+          theme_bw()
+ggsave("blups_vs_100sw_by_generation.png", golly, width=14)
