@@ -29,12 +29,7 @@ adjusted_blues <- brewer.pal(7, "Blues")[3:7]
 df_long <- df %>% pivot_longer(cols=-c('Genotype', 'Generation'), values_to="VALUE", names_to="TRAIT")
 
 # substitute trait names w/ tidy text versions
-df_long$TRAIT <- gsub("FT_blup", "Flowering Time BLUP", df_long$TRAIT)
-df_long$TRAIT <- gsub("TOTAL_MASS_blup", "Total Seed Mass BLUP", df_long$TRAIT)
-df_long$TRAIT <- gsub("GERMINATION_blup", "Germination BLUP", df_long$TRAIT)
-df_long$TRAIT <- gsub("SEED_WEIGHT_100_blup", "100-Seed Weight BLUP", df_long$TRAIT)
-df_long$TRAIT <- gsub("FECUNDITY_blup", "Fecundity BLUP", df_long$TRAIT)
-df_long$TRAIT <- gsub("FITNESS_blup", "Fitness BLUP", df_long$TRAIT)
+df_long$TRAIT <- tidy_text_substitution(df_long$TRAIT)
 
 
 # check normality & plot trait distributions

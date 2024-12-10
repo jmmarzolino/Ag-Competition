@@ -10,6 +10,21 @@ add_generation <- function(x){
   return(x)
 }
 
+# substitute trait names w/ tidy text versions
+tidy_text_substitution <- function(x) {
+
+  x <- gsub("_blup", " BLUP", x)
+  x <- gsub("FT", "Flowering Time", x)
+  x <- gsub("TOTAL_MASS", "Total Seed Mass", x)
+  x <- gsub("GERMINATION", "Germination", x)
+  x <- gsub("SEED_WEIGHT_100", "100-Seed Weight", x)
+  x <- gsub("FECUNDITY", "Fecundity", x)
+  x <- gsub("FITNESS", "Fitness", x)
+  
+  return(x)
+  }
+
+
 Exp_Single <- function(x){
   result_single <- x/10
   return(result_single)
