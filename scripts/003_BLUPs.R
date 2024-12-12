@@ -171,8 +171,8 @@ g3 <- ggplot(herit_piv2, aes(Generation, value, color=trait, shape=variance_sour
   facet_wrap(~trait)
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/genetic_phenotypic_var_H2_over_gens_trait_facet_scaled.png", g3)
 
-gsumm <- ggarrange(g1, g2, g3)
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Vg_Vp_H2_over_gens_all_traits_scaled.png", gsumm)
+#gsumm <- ggarrange(g1, g2, g3, ncol=1)
+#ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/Vg_Vp_H2_over_gens_all_traits_scaled.png", gsumm, height=10)
 
 
 
@@ -188,6 +188,7 @@ responses <- pheno %>%
       summarise(across(.cols = c(FT, TOTAL_MASS, GERMINATION, SEED_WEIGHT_100, FECUNDITY, FITNESS), \(x) mean(x, na.rm = T))) %>% 
       ungroup()
 
+
 P_18 <-  (responses[2,] - responses[1,])/(18-0)
 F18_58 <-  (responses[5,] - responses[2,])/(58-18)
 
@@ -200,7 +201,7 @@ a1 <- ggplot(rts_df, aes(Generation, response)) +
   facet_wrap(~trait, scales="free") +
   labs(title="Response between generations") +
   theme_bw()
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/response.png", a1)
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/response.png", a1, width=12)
 
 
 ## response w scaled phenotypes
@@ -234,8 +235,45 @@ a3 <- ggplot(rts_df2, aes(Generation, response, group=trait, color=trait)) +
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/response_scaled_combined.png", a3)
 
 
+### using blup phenotypes
+blup_output <- add_generation(blup_output)
+colnames(blup_output) <- gsub("_blup", "", colnames(blup_output))
+responseB <- blup_output %>% 
+              group_by(Generation) %>%
+              summarise(across(where(is.numeric), \(x) mean(x, na.rm = T))) %>% 
+      ungroup()
+
+
+P_18 <-  (responseB[2,] - responseB[1,])/(18-0)
+F18_58 <-  (responseB[5,] - responseB[2,])/(58-18)
+
+resp_join2B <- bind_rows(P_18, F18_58) %>%
+    mutate(Generation = factor(c("Parents_to_F18", "F18_to_F58"), levels = c("Parents_to_F18", "F18_to_F58"))) 
+rts_df2B <- resp_join2B %>% pivot_longer(cols=-c(Generation), names_to='trait', values_to='response')
+
+a2B <- ggplot(rts_df2B, aes(Generation, response)) +
+  geom_point() +
+  facet_wrap(~trait) +
+  labs(title="Scaled Response between generations", subtitle="change per generation in standard deviations") +
+  theme_bw()
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/response_scaled.png", a2)
+
+
+a3B <- ggplot(rts_df2B, aes(Generation, response, group=trait, color=trait)) +
+  geom_point() +
+  #facet_wrap(~trait) +
+  labs(title="Scaled Response between generations", subtitle="change per generation in standard deviations") +
+  theme_bw()
+
+
+
+
+
+
+
 ## join response tables w normal & standard deviation units
 rts_join <- full_join(rts_df, rts_df2, by=c("Generation", "trait"), suffix=c("", "_scaled"))
+rts_join <- full_join(rts_join, rts_df2B, by=c("Generation", "trait"), suffix=c("", "_blup"))
 rts_join <- rts_join[order(rts_join$trait),]
 write_delim(rts_join, "/bigdata/koeniglab/jmarz001/Ag-Competition/results/response_table_traitunits_and_scaled.tsv")
 
@@ -252,13 +290,14 @@ write_delim(herit_response, "trait_selection_ests.tsv", "\t")
 
 a <- ggplot(herit_response, aes(Generation, selection_est)) +
   geom_point() +
+  geom_line() +
   facet_wrap(~trait) +
   labs(y="selection estimate", x="time span") +
   theme_bw()
 
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection.png", a)
 
-a2 <- ggplot(herit_response, aes(Generation, selection_est)) +
+a2 <- ggplot(herit_response, aes(Generation, selection_est)) +  
   geom_point() +
   facet_wrap(~trait, scales="free_y") +
   labs(y="selection estimate", x="time span") +
