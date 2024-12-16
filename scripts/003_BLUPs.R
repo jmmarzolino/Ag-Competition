@@ -15,8 +15,50 @@ source("../scripts/CUSTOM_FNS.R")
 # Loading Data
 pheno <- read_delim("DERIVED_PHENOTYPES.tsv")
 # select columns and scale phenotype data
-pheno <- pheno %>% filter(Condition == "single") %>% select(c(Genotype, Generation, Condition, Replicate, Exp_year, FT, TOTAL_MASS, GERMINATION, SEED_WEIGHT_100, FECUNDITY, FITNESS))
-pheno_scaled <- pheno %>% mutate(across(-c(Genotype, Generation, Condition, Replicate, Exp_year), ~(scale(.) %>% as.vector))) 
+pheno <- pheno %>% 
+    filter(Condition == "single") %>% 
+    select(c(Genotype, Generation, Replicate, Exp_year, FT, TOTAL_MASS, GERMINATION, SEED_WEIGHT_100, FECUNDITY, FITNESS)) %>% 
+    mutate(across(-c(Genotype, Generation, Replicate, Exp_year), ~(scale(.) %>% as.vector))) 
+
+
+
+
+
+
+
+
+# substitute 0 & 1 for experiment year numbers
+pheno$YEAR <- factor(x="I", levels=c("I", "II"))
+pheno[which(pheno$Exp_year == 2023), which(colnames(pheno)=="YEAR")] <- "II"
+# is there a difference in result, using exp-year vs year?
+H2cal(data = pheno, trait = "FT", emmeans = FALSE, plot_diag = TRUE, outliers.rm = TRUE, summary = TRUE,
+    gen.name = "Genotype", rep.n = 2, 
+    year.n = 2, year.name = "Exp_year", 
+    fixed.model = "0 + Genotype + (1|Genotype:Exp_year)", 
+    random.model = "1 + (1|Genotype) + (1|Genotype:Exp_year)"  )
+
+H2cal(data = pheno, trait = "FT", emmeans = FALSE, plot_diag = TRUE, outliers.rm = TRUE, summary = TRUE,
+    gen.name = "Genotype", rep.n = 2, 
+    year.n = 2, year.name = "YEAR", 
+    fixed.model = "0 + Genotype + (1|Genotype:YEAR)", 
+    random.model = "1 + (1|Genotype) + (1|Genotype:YEAR)"  )
+# yes, the same, no difference
+
+H2cal(data = pheno, trait = "TOTAL_MASS", emmeans = FALSE, plot_diag = TRUE, outliers.rm = TRUE, summary = TRUE,
+    gen.name = "Genotype", rep.n = 2, 
+    year.n = 2, year.name = "Exp_year", 
+    fixed.model = "0 + Genotype + (1|Genotype:Exp_year)", 
+    random.model = "1 + (1|Genotype) + (1|Genotype:Exp_year)"  )
+
+H2cal(data = pheno, trait = "TOTAL_MASS", emmeans = FALSE, plot_diag = TRUE, outliers.rm = TRUE, summary = TRUE,
+    gen.name = "Genotype", rep.n = 2, 
+    year.n = 2, year.name = "YEAR", 
+    fixed.model = "0 + Genotype + (1|Genotype:YEAR)", 
+    random.model = "1 + (1|Genotype) + (1|Genotype:YEAR)"  )
+# yep, also the same
+
+
+
 
 # check model fits for different traits 
 #for(i in 6:ncol(pheno)) {
