@@ -17,7 +17,6 @@ pheno <- read_delim("DERIVED_PHENOTYPES.tsv")
 pheno_year_scale <- pheno %>% 
     filter(Condition == "single") %>% 
     select(c(Genotype, Generation, Replicate, Exp_year, FT, TOTAL_MASS, GERMINATION, SEED_WEIGHT_100, FECUNDITY, FITNESS)) %>% 
-    #group_by(Exp_year) %>%
     mutate(across(-c(Genotype, Generation, Replicate, GERMINATION), ~(scale(.) %>% as.vector))) 
 
 
@@ -35,8 +34,8 @@ H2cal(data = pheno_year_scale
           , rep.n = 2
           , year.n = 2
           , year.name = "Exp_year"
-          , fixed.model = "0 + Genotype + (1|Genotype:Exp_year)"
-          , random.model = "1 + (1|Genotype) + (1|Genotype:Exp_year)"
+          , fixed.model = "0 + Exp_year + Genotype + (1|Genotype:Exp_year)"
+          , random.model = "1 + Exp_year + (1|Genotype) + (1|Genotype:Exp_year)"
           , plot_diag = TRUE
           , outliers.rm = TRUE
           , summary = TRUE
@@ -60,8 +59,8 @@ H2cal(data = pheno_year_scale
           , rep.n = 2
           , year.n = 2
           , year.name = "Exp_year"
-          , fixed.model = "0 + Genotype + (1|Genotype:Exp_year)"
-          , random.model = "1 + (1|Genotype) + (1|Genotype:Exp_year)"
+          , fixed.model = "0 + GERMINATION + (1|Replicate) + Genotype + (1|Genotype:Exp_year)"
+          , random.model = "1 + GERMINATION + (1|Replicate)  + (1|Genotype) + (1|Genotype:Exp_year)"
           , plot_diag = TRUE
           , outliers.rm = TRUE
           , summary = TRUE
