@@ -32,27 +32,16 @@ dimnames(x_cor)[[2]] <- tidy_text_substitution(dimnames(x_cor)[[2]])
 
 
 png("trait_correlations.png")
-corrplot(x, method="color", type="upper", order="original", title="", mar=c(0,0,4,0), addCoef.col = "black")
-dev.off()
-
-
-pdf("trait_correlations_per_generation.pdf")
-# check correlations between traits for each generation
-for(i in c(0, 18, 28, 50, 58)) {
-
-  traits_df <- df %>% filter(Generation == i) %>% select(-c(Generation)) 
-  x <- cor(traits_df, use="na.or.complete", method="spearman")
-  corrplot(x, method="color", type="upper", order="original", title=paste0("Generation ", i), mar=c(0,0,4,0), addCoef.col = "black")
-
-}
+corrplot(x_cor, method="color", type="upper", order="original", title="", mar=c(0,0,4,0), addCoef.col = "black")
 dev.off()
 
 
 
+
+###########
 ## plot trait relationships w scatterplots
 png("all_trait_correlations.png", height=40, width=40, units="in", res=300)
-tmp <- df %>% select(-c(Generation))
-plot(tmp)
+plot(df)
 dev.off()
 
 
