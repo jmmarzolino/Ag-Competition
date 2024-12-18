@@ -109,10 +109,45 @@ ggsave("results/trait_distributions_Wparentprogeny.png", g, width=16)
 
 
 
-a <- ggplot(df_long, aes(y=VALUE, x=Generation, group=as.factor(Generation))) +
-      facet_wrap(~TRAIT, scales="free") +
-      geom_boxplot(outliers=F) +
-      geom_jitter() +
-      theme_bw(base_size=20) +
-      labs(x = "Generation", y = "") 
-ggsave("results/traits_over_generations_scatterplot_TEST.png", a, width = 14, height = 10)
+
+# line for generation means...
+gen_men <- df %>%
+            group_by(Generation) %>%
+            summarise(across(where(is.numeric), mean)) 
+
+### strip plots
+a <- ggplot() + 
+      geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=FT)) + 
+      geom_line(data=gen_men, aes(x=Generation, y=FT), color="blue", linewidth=1) + 
+      theme_bw(base_size=18) +
+      labs(x = "Generation", y = tidy_text_substitution("FT"), title="Flowering Time over Generations") #, subtitle="Line connects generation averages") 
+
+# scale total mass by a factor of 10^10
+tmp <- df %>% mutate('TOTAL_MASS_scaled' = (TOTAL_MASS + 0.5484163055) * 10^11)
+mean_tmp <- tmp %>% group_by(Generation) %>% summarise('totmas' = mean(TOTAL_MASS_scaled)) 
+b <- ggplot(tmp) + 
+      geom_jitter(aes(x=Generation, y=TOTAL_MASS_scaled)) +
+      geom_line(data=mean_tmp, aes(x=Generation, y=totmas), color="blue", linewidth=1) + 
+      theme_bw(base_size=18) +
+      labs(x = "Generation", y = tidy_text_substitution("TOTAL_MASS"), title="Total Seed Weight over Generations") 
+
+c <- ggplot() + 
+      geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=GERMINATION)) + 
+      geom_line(data=gen_men, aes(x=Generation, y=GERMINATION), color="blue", linewidth=1) + 
+      theme_bw(base_size=18) +
+      labs(x = "Generation", y = tidy_text_substitution("GERMINATION"), title="Seed Germination over Generations") 
+
+d <- ggplot() + 
+      geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=FECUNDITY)) + 
+      geom_line(data=gen_men, aes(x=Generation, y=FECUNDITY), color="blue", linewidth=1) + 
+      theme_bw(base_size=18) +
+      labs(x = "Generation", y = tidy_text_substitution("FECUNDITY"), title="Genotype Fecundity over Generations") 
+
+e <- ggplot() + 
+      geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=FITNESS)) + 
+      geom_line(data=gen_men, aes(x=Generation, y=FITNESS), color="blue", linewidth=1) + 
+      theme_bw(base_size=18) +
+      labs(x = "Generation", y = tidy_text_substitution("FITNESS"), title="Genotype Fitness over Generations") 
+
+ggcombo <- ggarrange(a, b, c, d, e)
+ggsave("results/traits_over_generations_scatterplots.png", ggcombo, width = 20, height = 10)
