@@ -19,9 +19,18 @@ df <- fread("trait_BLUPs.tsv")
 
 # check correlations between traits 
 # remove highly correlated phenotypes from gwas
-# fitness / atlas-fitness / relative-fitness
-traits_df <- df %>% select(-c(Generation)) 
-x <- cor(traits_df, use="na.or.complete", method="spearman")
+traits_df <- df %>% select(-c(Genotype, SEED_WEIGHT_100))
+
+# save table of trait correlation values
+x_cor <- cor(traits_df, use="na.or.complete", method="spearman")
+x <- data.table(x_cor)
+x$TRAIT <- colnames(x)
+write_delim(tibble(x), "trait_correlations.tsv", "\t")
+
+dimnames(x_cor)[[1]] <- tidy_text_substitution(dimnames(x_cor)[[1]])
+dimnames(x_cor)[[2]] <- tidy_text_substitution(dimnames(x_cor)[[2]])
+
+
 png("trait_correlations.png")
 corrplot(x, method="color", type="upper", order="original", title="", mar=c(0,0,4,0), addCoef.col = "black")
 dev.off()
