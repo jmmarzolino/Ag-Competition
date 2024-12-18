@@ -14,14 +14,7 @@ library(corrplot)
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
 
-df <- fread("DERIVED_PHENOTYPES.tsv")
-df <- df %>% 
-        filter(Condition == "single") %>% 
-        select(-Condition) %>%
-        group_by(Genotype) %>%
-        summarise(across(where(is.numeric), mean)) %>%
-        ungroup() %>%
-        select(-c(Replicate, Genotype, Exp_year, SEED_COUNT))
+df <- fread("trait_BLUPs.tsv")
 
 
 # check correlations between traits 
