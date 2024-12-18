@@ -40,8 +40,10 @@ dev.off()
 
 ###########
 ## plot trait relationships w scatterplots
-png("all_trait_correlations.png", height=40, width=40, units="in", res=300)
-plot(df)
+colnames(traits_df) <- tidy_text_substitution(colnames(traits_df))
+
+png("all_trait_correlations.png", height=10, width=10, units="in", res=200)
+plot(traits_df)
 dev.off()
 
 
