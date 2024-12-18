@@ -48,6 +48,7 @@ dev.off()
 # to see more clearly if the relationship between traits are changing over generations
 # plot trait v. trait, colored & approx line by generation
 # and look to see if value range or relationship change much...
+df <- add_generation(df)
 
 # the lowest color value is too light, so adjust the color scale down one
 #display.brewer.pal(6, "Blues")
@@ -55,7 +56,7 @@ adjusted_blues <- brewer.pal(7, "Blues")[3:7]
 
 # flowering time plots
 df_ft <- df %>% 
-        pivot_longer(-c(FT, Generation), values_to = "VALUE", names_to="TRAIT")
+        pivot_longer(-c(FT, Genotype, Generation), values_to = "VALUE", names_to="TRAIT")
 df_ft$TRAIT <- tidy_text_substitution(df_ft$TRAIT)
 
 gee <- df_ft %>% 
@@ -81,7 +82,7 @@ ggsave("traits_vs_FT_by_generation.png", gee, width=14)
 
 # fitness plots
 df_fit <- df %>% 
-        pivot_longer(-c(FITNESS, Generation), values_to = "VALUE", names_to="TRAIT")
+        pivot_longer(-c(FITNESS, Genotype, Generation), values_to = "VALUE", names_to="TRAIT")
 df_fit$TRAIT <- tidy_text_substitution(df_fit$TRAIT)
 
 gee_wiz <- df_fit %>% 
