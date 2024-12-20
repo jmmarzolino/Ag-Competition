@@ -13,6 +13,9 @@ setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 #pheno <- fread("../../data/FITNESS.tsv")
 pheno <- fread("../../data/trait_BLUPs.tsv")
 
+## filter trait cols with 0 variance
+novar <- which(apply(pheno[2:ncol(pheno)], 2, var) == 0)
+pheno <- pheno %>% select(-c(names(novar)))
 
 # remove parent lines that won't be in gwas
 #pheno <- pheno %>% filter(Generation != 0) %>% select(-Generation)
@@ -21,9 +24,6 @@ pheno <- fread("../../data/trait_BLUPs.tsv")
 
 # scale the phenotypes
 pheno <- pheno %>% mutate(across(-c(Genotype), ~(scale(.) %>% as.vector)))
-
-# remove highly correlated phenotypes
-#pheno <- pheno %>% select(-contains(c(SEED_COUNT, RELATIVE_FITNESS, AT_REL_FITNESS))) 
 
 
 # record traits and corresponding col number
