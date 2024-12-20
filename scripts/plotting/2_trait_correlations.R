@@ -43,8 +43,34 @@ dev.off()
 colnames(traits_df) <- tidy_text_substitution(colnames(traits_df))
 
 png("all_trait_correlations.png", height=10, width=10, units="in", res=200)
-plot(traits_df)
+plot(traits_df, main="Parents & Progeny")
 dev.off()
+
+####
+df_scat <- add_generation(df)
+progeny <- df_scat %>% filter(Generation != 0) %>% select(-c(Generation, Genotype, SEED_WEIGHT_100))
+colnames(progeny) <- tidy_text_substitution(colnames(progeny))
+
+png("all_trait_correlations_progeny.png", height=10, width=10, units="in", res=200)
+plot(progeny, main="Progeny Only")
+dev.off()
+
+
+
+## try to fit a quadratic relationship on FT ~ FIT 
+g1 <- ggplot(traits_df, aes(x=`Flowering Time`, y=`Fitness`)) +
+        geom_point() +
+        geom_smooth(method="lm", formula = 'y ~ poly(x, 2)') +
+        theme_bw(base_size = 18)
+ggsave("ftxfit_quadratic.png", g1)
+# geom_smooth() method=
+#‘"lm"’, ‘"glm"’, ‘"gam"’, ‘"loess"’
+# or a function, e.g. ‘MASS::rlm’ or ‘mgcv::gam’, ‘stats::lm’,
+
+# check AIC of FIT ~ FT vs FIT ~ FT^2
+lm(`Fitness` ~ `Flowering Time`, data=traits_df) %>% AIC
+lm(`Fitness` ~ poly(`Flowering Time`,2), data=traits_df) %>% AIC
+
 
 
 # to see more clearly if the relationship between traits are changing over generations
