@@ -50,6 +50,12 @@ H2cal(data = pheno_scale
 #ggplot(pheno_scale, aes(fitted, resids, color=GERMINATION)) + geom_point() + geom_smooth() + geom_hline(yintercept=0)
 
 
+## Extract intercept + genotype data to re-scale data to original units
+### trait average + genotypes deviance from average
+inter <- summary(h2_ft$model)$coefficients[1, 1]
+h2_ft$blups$FT <- h2_ft$blups$FT + inter
+
+
 
 ################### TOTAL MASS
 h2_totmass <- 
@@ -71,7 +77,8 @@ H2cal(data = pheno_scale
 
 #lmer(TOTAL_MASS ~ 1 + Exp_year + FITNESS + Generation + Replicate + (1|Genotype) + (1|Genotype:Exp_year), pheno_scale)
 
-
+inter <- summary(h2_totmass$model)$coefficients[1, 1]
+h2_totmass$blups$TOTAL_MASS <- h2_totmass$blups$TOTAL_MASS + inter
 
 
 
@@ -89,6 +96,9 @@ H2cal(data = pheno_scale
           , summary = TRUE
           )
 
+inter <- summary(h2_sw100$model)$coefficients[1, 1]
+h2_sw100$blups$SEED_WEIGHT_100 <- h2_sw100$blups$SEED_WEIGHT_100 + inter
+
 
 
 
@@ -105,6 +115,9 @@ H2cal(data = pheno_scale
         , plot_diag = TRUE
         , outliers.rm = TRUE
         )
+
+inter <- summary(h2_germ$model)$coefficients[1, 1]
+h2_germ$blups$GERMINATION <- h2_germ$blups$GERMINATION + inter
 
 
 
@@ -127,7 +140,8 @@ H2cal(data = pheno_scale
 
 #ggplot(pheno_scale, aes(fitted, resids)) + geom_point() + geom_smooth() + geom_hline(yintercept=0)
 
-
+inter <- summary(h2_fec$model)$coefficients[1, 1]
+h2_fec$blups$FECUNDITY <- h2_fec$blups$FECUNDITY + inter
 
 
 
@@ -145,27 +159,20 @@ H2cal(data = pheno_scale
         , outliers.rm = TRUE
         )
 
+inter <- summary(h2_fit$model)$coefficients[1, 1]
+h2_fit$blups$FITNESS <- h2_fit$blups$FITNESS + inter
 
 
 dev.off()
 
 
 H2_table <- tibble("trait" = colnames(pheno_scale)[5:ncol(pheno_scale)], 
-                    #"H2" = c(h2_ft$tabsmr$H2.c, h2_totmass$tabsmr$H2.c, h2_sw100$tabsmr$H2.c, h2_germ$tabsmr$H2.c, h2_fec$tabsmr$H2.c, h2_fit$tabsmr$H2.c),
-                    "H2_s" = c(h2_ft$tabsmr$H2.s, h2_totmass$tabsmr$H2.s, h2_sw100$tabsmr$H2.s, h2_germ$tabsmr$H2.s, h2_fec$tabsmr$H2.s, h2_fit$tabsmr$H2.s)
-                    )
+                    "H2_s" = c(h2_ft$tabsmr$H2.s, h2_totmass$tabsmr$H2.s, h2_sw100$tabsmr$H2.s, h2_germ$tabsmr$H2.s, h2_fec$tabsmr$H2.s, h2_fit$tabsmr$H2.s) )
 write_delim(H2_table, "trait_heritability.tsv", "\t")
 
 
 
-# Creating BLUP dataframe
-mod <- summary(h2_ft$model)
-inter <- mod$coefficients[1, 1]
-yr_effect <- mod$coefficients[2, 1]
-
-ft = intercept + exp-year + genotype + geno*exp-year
-inter + yr_effect + h2_ft$blups$FT
-
+# combine BLUP dataframes
 blup_output <- full_join(h2_ft$blups, h2_totmass$blups)
 blup_output <- full_join(blup_output, h2_sw100$blups)
 blup_output <- full_join(blup_output, h2_germ$blups)
