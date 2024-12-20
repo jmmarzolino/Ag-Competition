@@ -76,42 +76,39 @@ sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gw
 # and gwas with all the traits
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_multivariate_association.sh
 
-
-## plot results
+# plot results
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/4_manhattan_plot.R
 
 
+## clump gwas results to potentially find sig sites or narrow identified regions
 
-
-
-
-
-
-
-
-
-
-
-
-
-####
-# format all_traits.bim
+# format all_traits.bim for clumping gwas regions
 # change 2nd col "." to chr#_pos##
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6a_format_chr_pos.R
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6b_clump_sig_regions.sh
-sbatch --array=1-$ARRAY_LIM /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6b_clump_indv_regions.sh
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6c_clump_man.R
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5a_format_chr_pos.R
+
+# clump gwas results
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5b_clump_sig_regions.sh
+sbatch --array=1-$ARRAY_LIM /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5b_clump_indv_regions.sh
+
+# plot results
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_clump_man.R
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ####
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7_count_sig_regions.R
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7_sig_sites_over_traits.R
-
-
-## plot those gwas results with vertically aligned manhattan plots for each category
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7_plot_trait_categories.R
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7_plot_trait_categories_sigtraits.R
-## plot common gwas sites with upset plots - within and across categories
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7_upset.R
 
 
 # list sites in vcf file
