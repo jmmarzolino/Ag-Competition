@@ -72,36 +72,115 @@ for(i in collist){
 ## only flowering time has unequal variance between generations
 
 
-### Not normal distributions &| not equal variance btwn trait-groups
-# seed-weight-100, germination, fecundity, ft
-### Kruskal Wallis and Dunn Tests
-print('100 seed weight')
-kruskal.test(SEED_WEIGHT_100_blup ~ Generation, df)
-dunn.test(df$SEED_WEIGHT_100_blup, df$Generation)
-
-print('germination')
-kruskal.test(GERMINATION_blup ~ Generation, df)
-dunn.test(df$GERMINATION_blup, df$Generation)
-
-print('flowering time')
-kruskal.test(FT_blup ~ Generation, df)
-dunn.test(df$FT_blup, df$Generation)
 
 
-# normally distributed traits & equal trait-group variance
-# total mass, seed-count, fitness
-### AVOVA/Tukey Post-hoc
-print('total mass')
-lil <- aov(TOTAL_MASS_blup ~ as.factor(Generation), df)
-summary(lil)
-TukeyHSD(lil)
 
-print('fecundity')
-lil <- aov(FECUNDITY_blup ~ as.factor(Generation), df)
-summary(lil)
-TukeyHSD(lil)
+#### signif changes in generation mean
+df$Generation <- as.factor(df$Generation)
+levels(df$Generation)
 
-print('fitness')
-lil <- aov(FITNESS_blup ~ as.factor(Generation), df)
-summary(lil)
-TukeyHSD(lil)
+
+# is there a difference between using anova & kruskal test on these phenotypes?
+for(m in 2:ncol(df)) {
+  print(colnames(df[,m]))
+  kruskal.test(unlist(df[,m]) ~ Generation, df) %>% print
+
+  aov(unlist(df[,m]) ~ as.factor(Generation), df) %>% summary %>% print
+}
+
+
+
+
+
+
+### limit statistics of signif mean differences to blup phenotypes
+df <- df %>% select(c(contains("blup"), Generation))
+trait_list <- colnames(df)[1:4]
+
+## do phenotypes signif.ly change from parents to F18?
+## do phenotypes signif.ly change from F18 compared to F58?
+
+# set up storing results
+signif_tab <- tibble("trait"=trait_list, "P_F18"=as.numeric(NA), "F18_F58"=as.numeric(NA)) 
+
+## first, test for significant result w Kruskal-wallis test
+
+for(i in 1:length(signif_tab$trait)){
+  # filter to only relevant generations
+  tmp1 <- df %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 0)
+  tmp2 <- df %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 58)
+
+  res1 <- kruskal.test(unlist(tmp1[,1]) ~ Generation, tmp1)
+  res2 <- kruskal.test(unlist(tmp2[,1]) ~ Generation, tmp2)
+  signif_tab[i, 2] <- res1$p.value
+  signif_tab[i, 3] <- res2$p.value
+}
+
+
+
+## for traits w signif K-W p-val, run posthoc test & store results
+signif_tab_KW <- signif_tab %>% pivot_longer(cols=c(P_F18, F18_F58), names_to="generations_compared", values_to="Kruskal_pval")
+signif_tab_KW$Kruskal_sig <- signif_tab_KW$Kruskal_pval < 0.05
+
+
+
+# set up storing posthoc test results
+signif_tab$P_F18_meandiff <- as.numeric(NA) 
+signif_tab$F18_F58_meandiff <- as.numeric(NA) 
+signif_tab$P_F18_pval <- as.numeric(NA) 
+signif_tab$F18_F58_pval <- as.numeric(NA) 
+
+
+
+# one posthoc test for each trait that requires it
+smth <- signif_tab_KW[which(signif_tab_KW$Kruskal_sig), 1:2]
+
+trt <- unique(unlist(smth[,1]))
+
+for( j in 1:length(trt))  {
+
+    test_trt <- trt[j]
+    test_trt_df <- df %>% select(c(all_of(test_trt), Generation))
+
+    rownum <- which(signif_tab$trait == test_trt)
+
+    dunres <- dunn.test(unlist(test_trt_df[,1]), test_trt_df$Generation)
+
+    # extract posthoc values via position in posthoc table
+    #dunres$comparisons[1]
+    p18_meandiff <- -1*(dunres$Z[1])
+    p18_pval <- dunres$P[1]
+    #dunres$comparisons[8]
+    f1858_meandiff <- -1*(dunres$Z[8])
+    f1858_pval <- dunres$P[8]
+
+    # store results in table
+    signif_tab[rownum, 4] <- p18_meandiff
+    signif_tab[rownum, 5] <- f1858_meandiff
+    signif_tab[rownum, 6] <- p18_pval
+    signif_tab[rownum, 7] <- f1858_pval
+
+}
+
+
+## format table by pivoting 
+signif_tab2 <- signif_tab %>% pivot_longer(cols=c(P_F18, F18_F58), names_to="generations_compared", values_to="Kruskal_pval")
+
+signif_tab2$Kruskal_sig <- signif_tab2$Kruskal_pval < 0.05
+
+
+tmp <- signif_tab2 %>% 
+  pivot_longer(cols=c(P_F18_meandiff, F18_F58_meandiff), names_to="gensmeandiff", values_to="mean_difference") %>%
+  pivot_longer(cols=c(P_F18_pval, F18_F58_pval), names_to="genspostpval", values_to="Dunn_posthoc_pval")
+
+tmp$gensmeandiff <- gsub("_meandiff", "", tmp$gensmeandiff)
+tmp$genspostpval <- gsub("_pval", "", tmp$genspostpval)
+
+tmp <- tmp %>% filter(generations_compared == gensmeandiff & gensmeandiff == genspostpval) %>% select(-c(gensmeandiff, genspostpval))
+
+
+
+write_delim(tmp, "blups_anova_posthoc_results.tsv", "\t")
+
+
+
