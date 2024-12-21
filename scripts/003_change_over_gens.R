@@ -12,13 +12,22 @@ library(data.table)
 library(lme4)
 library(car)
 library(dunn.test)
-#install_packages("lmeTest")
-#library(lmeTest)
 
 
-# read in data
-df <- fread("data/trait_BLUPs.tsv")
+# read in filtered but un-transformed data
+df <- fread("DERIVED_PHENOTYPES.tsv")
+df <- df %>% 
+        filter(Condition == "single") %>% select(-c(Condition, Replicate, SEED_COUNT)) %>%
+        group_by(Genotype, Exp_year) %>% summarise(across(where(is.numeric), mean)) %>%
+        ungroup() %>% select(-Exp_year) %>% 
+        group_by(Genotype) %>% summarise(across(where(is.numeric), mean)) %>%
+        ungroup() 
+
+dfb <- fread("trait_BLUPs.tsv")
+df <- full_join(df, dfb, by=c('Genotype'), suffix=c("", "_blup"))
 df <- add_generation(df)
+df <- df %>% select(c('Generation', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'GERMINATION', 'FECUNDITY', 'FITNESS', 'FT_blup', 'TOTAL_MASS_blup', 'GERMINATION_blup', 'SEED_WEIGHT_100_blup', 'FECUNDITY_blup', 'FITNESS_blup'))
+
 
 ## BASE STATISTICS
 # summarise mean & variance
@@ -28,6 +37,10 @@ x <- df %>%
 write_delim(x, "generations_trait_avg_var.tsv", "\t")
 # write table out with generations' trait summary statistics
 
+
+# filter traits with no variance
+variant_phenos <- names(which(apply(X=df[,2:ncol(df)], 2, var) > 0))
+df <- df %>% select(c(Generation, all_of(variant_phenos)))
 
 
 # set up for normality and variance equity tests
