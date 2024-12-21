@@ -31,8 +31,8 @@ write_delim(x, "generations_trait_avg_var.tsv", "\t")
 
 
 # set up for normality and variance equity tests
-collist <- paste0(c('FT', 'TOTAL_MASS', 'GERMINATION','SEED_WEIGHT_100', 'FECUNDITY', 'FITNESS'), "_blup")
-generationlist <- c(0, 18, 28, 50, 58)
+collist <- colnames(df)[2:ncol(df)]
+generationlist <- x$Generation
 
 
 pdf("../results/normality_test.pdf")
@@ -44,19 +44,24 @@ normality_table <- tibble("Generation"=generationlist)
 # and visualize w qq-plot
 for(i in collist) {
 
-  print(i)
-  tmp <- df %>% select(c(Genotype, Generation, all_of(i))) %>% tibble
+  #print(i)
+  tmp <- df %>% select(c(Generation, all_of(i))) %>% tibble
+  # empty list for p-values
+  val <- c()
 
   for(g in generationlist) {
 
-    print(g)
+    #print(g)
     tmp_gen <- tmp %>% filter(Generation == g)
-    s <- shapiro.test(tmp_gen[,3][[1]])
-    print(s)
-
-    qqnorm(tmp_gen[,3][[1]], main = paste0("Generation ", i))
-    qqline(tmp_gen[,3][[1]])
+    s <- shapiro.test(tmp_gen[,2][[1]])
+    
+    # add p-val to list
+    val <- c(val, s$p.value)
+    qqnorm(tmp_gen[,2][[1]], main = paste0(i, ": ", "Generation ", g))
+    qqline(tmp_gen[,2][[1]])
   }
+
+  normality_table <- cbind(normality_table, val)
 }
 
 dev.off()
