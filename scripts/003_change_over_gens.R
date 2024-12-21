@@ -4,7 +4,7 @@
 #SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/003_change_over_gens.stdout
 #SBATCH -p koeniglab
 
-setwd("/rhome/jmarz001/bigdata/Ag-Competition")
+setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 source("scripts/CUSTOM_FNS.R")
 
 library(tidyverse)
@@ -25,9 +25,8 @@ df <- add_generation(df)
 x <- df %>% 
     group_by(Generation) %>% 
     summarise(across(where(is.numeric), list(mean=mean, var=var), .names="{.col}_{.fn}")) 
-print(x)
-write_delim(x, "data/generations_trait_avg_var.tsv", "\t")
-# write table out with generation/condition trait averages / summary statistics
+write_delim(x, "generations_trait_avg_var.tsv", "\t")
+# write table out with generations' trait summary statistics
 
 
 
@@ -36,7 +35,9 @@ collist <- paste0(c('FT', 'TOTAL_MASS', 'GERMINATION','SEED_WEIGHT_100', 'FECUND
 generationlist <- c(0, 18, 28, 50, 58)
 
 
-pdf("results/normality_test.pdf")
+pdf("../results/normality_test.pdf")
+
+normality_table <- tibble("Generation"=generationlist)
 
 # test for normal distributions 
 # w shapiro test
@@ -60,7 +61,11 @@ for(i in collist) {
 
 dev.off()
 
-
+colnames(normality_table)[2:ncol(normality_table)] <- paste0(collist, "_normality_pval")
+write_delim(normality_table, "trait_and_blup_normality_pvals.tsv", "\t")
+normality_table %>% reframe(across(where(is.numeric), \(x) x < 0.05)) %>% print
+normality_table %>% reframe(across(where(is.numeric), \(x) x < 0.05)) %>% colSums %>% print
+## germination has the least normal distribution(s), which is expected since it's a 0-1 decimal that is ideally near 1, not really continuously distributed trait
 
 
 # test for equality of variance between groups before anova
