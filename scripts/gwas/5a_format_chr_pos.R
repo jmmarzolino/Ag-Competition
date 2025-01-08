@@ -25,11 +25,8 @@ write_delim(bim, "all_traits.bim", "\t", col_names=F)
 ############################################################
 ### Read gwas results (ASSOC files), extract 4 columns, write out
 
-# assocation files list made w this command in previously run plotting script (5_plot_AllDerivedTraits_GWAS.R)
-#system("ls *assoc.txt > association_files.txt")
 # read list of assoc files to run over
-assoc_files_list <- read_delim("association_files_traits.txt", "\t", col_names=T)
-colnames(assoc_files_list) <- c("trait_name", "trait_num", "assoc_files")#, "clump_order")
+assoc_files_list <- read_delim("trait_name_to_col_numbers.tsv")
 
 assoc_files_list <- assoc_files_list[order(as.character(assoc_files_list$trait_num)),]
 assoc_files_list$clump_order <- 1:nrow(assoc_files_list)
@@ -53,5 +50,5 @@ format_assoc <- function(filename){
 
 
 # set variables
-lst <- assoc_files_list$files
+lst <- assoc_files_list$file
 lapply(lst, format_assoc)
