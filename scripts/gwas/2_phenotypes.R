@@ -34,16 +34,15 @@ trait_n <- tibble(trait_names, trait_num, file)
 write_delim(trait_n, "trait_name_to_col_numbers.tsv")
 
 
-## make genotypes match between genotype and phenotype files
+## join phenotype and genotype file based on common genotypes
 plink_file <- fread("all_traits.fam")
-# remove any existing &or'no phenotype' tag from fam file
+# remove any existing &/or 'no phenotype' tag from fam file
 plink_file <- plink_file[,1:5]
 
 # find union of genotype numbers between the two data sets
 # & keep only overlapping genotypes
 joined <- inner_join(plink_file, pheno, by=c('V2'='Genotype'))
-#left_join
 
-#### over-write formatted genotype and phenotype .fam file
+### over-write formatted genotype and phenotype .fam file
 ## format = famID / indvID / <phenotype / cols /...>
 write_delim(joined, "all_traits.fam", " ", col_names=F)

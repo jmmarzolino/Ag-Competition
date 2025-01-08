@@ -19,9 +19,9 @@ module load vcftools/0.1.16-18
 # remove indels for gemma
 vcftools --gzvcf PROGENY.vcf.gz --remove-indels --not-chr chrUn --recode --recode-INFO-all --out AG
 
+# list genotypes in raw vcf as basis for plink phenotype file
 vcftools --vcf AG.recode.vcf --extract-FORMAT-info GT
 head -n1 out.GT.FORMAT | cut -f3- | sed 's/\t/\n/g' | awk '{$1=$1}{print $1" "$1}' > progeny_geno_pheno_list
-
 
 # create plink format files from vcf (bed, bim, fam)
 module load plink/1.90b6.25
@@ -35,8 +35,7 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/2_phenotypes.R
 cut -d\  -f1 all_traits.fam | awk '{$1=$1}{print $1" "$1}' > common_progeny_geno_pheno_list
 
 
-
-# filter vcf again to variant sites in retained progeny
+# filter vcf to variant sites in retained progeny
 # re-create plink files w filtered progeny list
 vcftools --gzvcf PROGENY.vcf.gz --remove-indels --not-chr chrUn --recode --recode-INFO-all --keep common_progeny_geno_pheno_list --maf 0.002 --out AG
 # minor allele freq set to 1/(2*208 seq'd indvs) = 0.0024
@@ -45,19 +44,16 @@ vcftools --gzvcf PROGENY.vcf.gz --remove-indels --not-chr chrUn --recode --recod
 #Output nucleotide diversity at a list of positions
 vcftools --vcf MAF_filt.recode.vcf --freq
 
-###
 # create plink format files from vcf (bed, bim, fam)
 plink --vcf AG.recode.vcf --double-id --allow-no-sex --allow-extra-chr --keep common_progeny_geno_pheno_list -indiv-sort file common_progeny_geno_pheno_list --make-bed --out all_traits
 mv all_traits.log all_traits_bed2.log
 
-
-#### add phenotypes to .fam file
+# add phenotypes to .fam file
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/2_phenotypes.R
 
-
+# make pca covar file
 plink --vcf AG.recode.vcf --double-id --allow-no-sex --allow-extra-chr --keep common_progeny_geno_pheno_list --pca 5 --out all_traits
 mv all_traits.log all_traits_pca.log
-# --distance square
 # cut only eigenvec values from file; ensure proper formatting of value-tab-value (awk reconstitutes all fields)
 cut -d" " -f3-23 all_traits.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\t"$0}' > pca.txt
 
@@ -67,6 +63,7 @@ module load gemma/0.98.5
 #-miss 1 -notsnp
 
 
+# GWAS
 # set number of univariate gwas to run based on
 # the number of traits in trait-gwas number file
 ARRAY_LIM=$(tail -n +2 trait_name_to_col_numbers.tsv | wc -l | cut -d\  -f1)
