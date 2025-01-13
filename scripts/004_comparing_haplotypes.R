@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 #SBATCH --mem=30G
 #SBATCH --time=02:00:00
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/Comparing_Haplotypes.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/004_comparing_haplotypes.stdout
 #SBATCH -p koeniglab
 
 library(tidyverse)
