@@ -118,9 +118,6 @@ df3 <- df3 %>%
     mutate(FECUNDITY = SEED_COUNT / Plants) %>% 
     select(-c(Plants)) %>% 
     mutate(FITNESS = GERMINATION * FECUNDITY) 
-#
-
-
 
 
 
