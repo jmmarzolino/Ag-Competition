@@ -6,6 +6,7 @@
 
 library(tidyverse)
 library(inti)
+library(data.table)
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
