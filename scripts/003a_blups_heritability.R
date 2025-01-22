@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 #SBATCH --mem=50G
 #SBATCH --time=02:00:00
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/003a_H2_BLUPs.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/003a_blups_heritability.stdout
 #SBATCH -p koeniglab
 
 library(tidyverse)
