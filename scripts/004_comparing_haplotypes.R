@@ -119,7 +119,7 @@ print("F58")
 sum(f58_hap_join[which(is.na(f58_hap_join$FT)), ]$fraction)
 
 # weighted trait averages table
-gens <- paste0("F", c(18, 28, 50, 58))
+gens <- c(18, 28, 50, 58)
 trait <- colnames(f18_hap_join)[2:7]
 wta <- tibble("generation" = sort(rep(gens, 6)), "trait"=rep(trait, 4), "value"=as.numeric(NA))
 
@@ -127,7 +127,7 @@ wta <- tibble("generation" = sort(rep(gens, 6)), "trait"=rep(trait, 4), "value"=
 for(j in c('f18_hap_join', 'f28_hap_join', 'f50_hap_join', 'f58_hap_join')){
   print(j)
   x <- get(j)
-  gn <- gsub("(F\\d+)_.*", "\\1", toupper(j))
+  gn <- as.numeric(gsub("F(\\d+)_.*", "\\1", toupper(j)))
 
   for(i in c(2:7)){
     print(colnames(x)[i])
@@ -139,6 +139,5 @@ for(j in c('f18_hap_join', 'f28_hap_join', 'f50_hap_join', 'f58_hap_join')){
 }
 
 
-
-
-
+wta2 <- wta %>% pivot_wider(names_from="trait") 
+write_delim(wta2, "weighted_generation_trait_avgs.tsv", "\t")
