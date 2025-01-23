@@ -17,7 +17,7 @@ cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
 
 module load vcftools/0.1.16-18
 # remove indels for gemma
-vcftools --gzvcf PROGENY.vcf.gz --remove-indels --not-chr chrUn --recode --recode-INFO-all --out AG
+vcftools --gzvcf imputed.vcf.gz --remove-indels --not-chr chrUn --recode --recode-INFO-all --out AG
 
 # list genotypes in raw vcf as basis for plink phenotype file
 vcftools --vcf AG.recode.vcf --extract-FORMAT-info GT
@@ -37,7 +37,7 @@ cut -d\  -f1 all_traits.fam | awk '{$1=$1}{print $1" "$1}' > common_progeny_geno
 
 # filter vcf to variant sites in retained progeny
 # re-create plink files w filtered progeny list
-vcftools --gzvcf PROGENY.vcf.gz --remove-indels --not-chr chrUn --recode --recode-INFO-all --keep common_progeny_geno_pheno_list --maf 0.002 --out AG
+vcftools --gzvcf imputed.vcf.gz --remove-indels --not-chr chrUn --recode --recode-INFO-all --keep common_progeny_geno_pheno_list --maf 0.002 --out AG
 # minor allele freq set to 1/(2*208 seq'd indvs) = 0.0024
 # so maf filter will only remove freqs of 0
 
