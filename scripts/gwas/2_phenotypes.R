@@ -23,7 +23,7 @@ pheno <- pheno %>% select(-c(names(novar)))
 #pheno <- pheno %>% filter(Condition != "mixed") %>% select(-Condition)
 
 # scale the phenotypes
-pheno <- pheno %>% mutate(across(-c(Genotype), ~(scale(.) %>% as.vector)))
+#pheno <- pheno %>% mutate(across(-c(Genotype), ~(scale(.) %>% as.vector)))
 
 
 # record traits and corresponding col number
