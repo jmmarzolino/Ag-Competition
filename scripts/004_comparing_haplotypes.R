@@ -11,7 +11,6 @@ library(data.table)
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
 hap <- fread("hap_assign.txt")
-#df <- fread("FITNESS.tsv")
 df <- fread("trait_BLUPs.tsv")
 
 hap$Haplotype <- as.factor(hap$Haplotype)
