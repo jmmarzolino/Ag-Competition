@@ -77,14 +77,12 @@ hap_trait_avg <- hap_join %>% group_by(Haplotype) %>% summarise(across(where(is.
 
 
 # join haplotype, generation frequency, and haplotype phenotypes
-f18_hap_join <- full_join(f18_hap_trait_avg, f18_hap_table)
-f28_hap_join <- full_join(f28_hap_trait_avg, f28_hap_table)
-f50_hap_join <- full_join(f50_hap_trait_avg, f50_hap_table)
-f58_hap_join <- full_join(f58_hap_trait_avg, f58_hap_table)
+f18_hap_join <- right_join(hap_trait_avg, f18_hap_table, by="Haplotype")
+f28_hap_join <- right_join(hap_trait_avg, f28_hap_table, by="Haplotype")
+f50_hap_join <- right_join(hap_trait_avg, f50_hap_table, by="Haplotype")
+f58_hap_join <- right_join(hap_trait_avg, f58_hap_table, by="Haplotype")
 
 
-
-hap <- add_generation(hap)
 
 
 # how many haplotypes that were present in the generations' sampling
@@ -132,28 +130,4 @@ for(j in c('f18_hap_join', 'f28_hap_join', 'f50_hap_join', 'f58_hap_join')){
 
 
 wta2 <- wta %>% pivot_wider(names_from="trait") 
-write_delim(wta2, "weighted_generation_trait_avgs.tsv", "\t")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# subset data by generation
-f18 <- hap_join[grep("^1_\\d+", hap_join$Genotype)]
-f28 <- hap_join[grep("^2_\\d+", hap_join$Genotype)]
-f50 <- hap_join[grep("^3_\\d+", hap_join$Genotype)]
-f58 <- hap_join[grep("^7_\\d+", hap_join$Genotype)]
+write_delim(wta2, "weighted_generation_trait_avgs_AvgdOverAllHaps.tsv", "\t")
