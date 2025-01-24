@@ -33,6 +33,20 @@ ggsave("../results/trait_avg_over_gens_hap_weighted.png", g, width = 16, height 
 
 
 
+#### plot weighted averages using all available haplotypes
+df <- read_delim("weighted_generation_trait_avgs_AvgdOverAllHaps.tsv")
+
+# format data longways
+df_lng <- df %>% pivot_longer(cols=colnames(df)[2:7], names_to="trait", values_to="value")
+df_lng$trait <- tidy_text_substitution(df_lng$trait)
+
+
+g <- ggplot(df_lng, aes(x= generation, y = value)) +
+      geom_point() + geom_line() +
+      facet_wrap(~trait, scales="free_y") + 
+      labs(title = "Trait Average over Generations", subtitle="Haplotype-Frequency Weighted, Haplotype Values Averaged Over Generations", x="Generation", y="") +
+      theme_bw(base_size = 16) 
+ggsave("../results/trait_avg_over_gens_hap_weighted_AvgdOverAllHaps.png", g, width = 16, height = 12)
 
 
 
