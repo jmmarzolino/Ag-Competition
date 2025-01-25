@@ -12,15 +12,13 @@ library(data.table)
 library(lme4)
 library(car)
 library(dunn.test)
-
-library(tidyverse)
 library(ggpubr)
-library(data.table)
 
-setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
-source("../scripts/CUSTOM_FNS.R")
+
+### statistically test for trait changes between generations
+# with phenotypes sampled to more accurately represent their proportion in the orignal population
+
 hap <- fread("hap_assign.txt")
-#df <- fread("FITNESS.tsv")
 df <- fread("trait_BLUPs.tsv")
 
 
@@ -39,13 +37,11 @@ colnames(f18_hap_table) <- c("Haplotype", "Frequency")
 f18_hap_table$fraction <- f18_hap_table$Frequency / sum(f18_hap_table$Frequency)
 f18_hap_table <- f18_hap_table %>% filter(Frequency > 0)
 
-
 f28_hap <- hap[grep("^2_\\d+", hap$Genotype),]
 f28_hap_table <- data.frame(table(f28_hap$Haplotype))
 colnames(f28_hap_table) <- c("Haplotype", "Frequency")
 f28_hap_table$fraction <- f28_hap_table$Frequency / sum(f28_hap_table$Frequency)
 f28_hap_table <- f28_hap_table %>% filter(Frequency > 0)
-
 
 f50_hap <- hap[grep("^3_\\d+", hap$Genotype),]
 f50_hap_table <- data.frame(table(f50_hap$Haplotype))
@@ -53,15 +49,13 @@ colnames(f50_hap_table) <- c("Haplotype", "Frequency")
 f50_hap_table$fraction <- f50_hap_table$Frequency / sum(f50_hap_table$Frequency)
 f50_hap_table <- f50_hap_table %>% filter(Frequency > 0)
 
-
 f58_hap <- hap[grep("^7_\\d+", hap$Genotype),]
 f58_hap_table <- data.frame(table(f58_hap$Haplotype))
 colnames(f58_hap_table) <- c("Haplotype", "Frequency")
 f58_hap_table$fraction <- f58_hap_table$Frequency / sum(f58_hap_table$Frequency)
 f58_hap_table <- f58_hap_table %>% filter(Frequency > 0)
 
-
-## join phenotype data & haplotypes
+# combine genotype, phenotype, and haplotype
 hap_join <- inner_join(hap, df, by = "Genotype")
 
 
@@ -76,22 +70,45 @@ f28_hap_join <- right_join(hap_trait_avg, f28_hap_table, by="Haplotype")
 f50_hap_join <- right_join(hap_trait_avg, f50_hap_table, by="Haplotype")
 f58_hap_join <- right_join(hap_trait_avg, f58_hap_table, by="Haplotype")
 
-# add col indicating phenotype's generation
-f18_hap_join$Generation <- 18
-f28_hap_join$Generation <- 28
-f50_hap_join$Generation <- 50
-f58_hap_join$Generation <- 58
 
 # copy rows to reflect their generation frequency number
 
 for(j in c("f18_hap_join", "f28_hap_join", "f50_hap_join", "f58_hap_join")) {
-  
+  x <- get(j)
+  out_df <- tibble(.rows=sum(x$Frequency))
+  for(i in c(2, 5:7)) {
+    p <- rep((x[,i][[1]]), x$Frequency)
+    out_df <- cbind(out_df, p)
+  }
+  colnames(out_df) <- colnames(x)[c(2,5:7)]
+  assign(paste0(j, "_poprepd"), out_df)
 }
 
-for(i in c(2, 5:7)) {
-  rep((x[,i][[1]]), x$Frequency) %>% print
-}
-apply(x[,c(2,5:7)], 2, rep(x, x$Frequency))
+
+# add col indicating phenotype's generation
+f18_hap_join_poprepd$Generation <- 18
+f28_hap_join_poprepd$Generation <- 28
+f50_hap_join_poprepd$Generation <- 50
+f58_hap_join_poprepd$Generation <- 58
+
+
+x1 <- rbind(f18_hap_join_poprepd, f28_hap_join_poprepd)
+x2 <- rbind(f50_hap_join_poprepd, f58_hap_join_poprepd)
+joined_happops <- rbind(x1,x2)
+
+
+
+aov(unlist(joined_happops[,1]) ~ as.factor(Generation), joined_happops) %>% summary %>% print
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -101,7 +118,7 @@ apply(x[,c(2,5:7)], 2, rep(x, x$Frequency))
 x <- df %>% 
     group_by(Generation) %>% 
     summarise(across(where(is.numeric), list(mean=mean, var=var), .names="{.col}_{.fn}")) 
-write_delim(x, "generations_trait_avg_var.tsv", "\t")
+write_delim(x, "happop_gens_trait_avg_var.tsv", "\t")
 # write table out with generations' trait summary statistics
 
 
