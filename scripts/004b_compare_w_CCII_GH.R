@@ -11,4 +11,8 @@ library(data.table)
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
 
-df <- fread("")
+df <- fread("Prog_pheno.txt")
+prt <- fread("Parents_pheno.txt")
+
+ag <- trait_BLUPs.tsv
+"hap_assign.txt"
