@@ -16,8 +16,8 @@ pheno <- read_delim("DERIVED_PHENOTYPES.tsv")
 
 pheno <- pheno %>% 
     filter(Condition == "single") %>% 
-    select(c(Genotype, Generation, Replicate, Exp_year, FT, TOTAL_MASS, GERMINATION, SEED_WEIGHT_100, FECUNDITY, FITNESS)) %>% 
-    mutate(across(-c(Genotype, Generation, Replicate, GERMINATION), ~(scale(.) %>% as.vector)))
+    select(c(Genotype, Generation, Replicate, Exp_year, FT, TOTAL_MASS, GERMINATION, SEED_WEIGHT_100, FECUNDITY, FITNESS)) #%>% 
+    #mutate(across(-c(Genotype, Generation, Replicate, GERMINATION), ~(scale(.) %>% as.vector)))
 
 
 ## extract blups & H2 for each trait & model
