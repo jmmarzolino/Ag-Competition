@@ -5,6 +5,8 @@
 #SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/001_format_raw_data.stdout
 #SBATCH -p koeniglab
 
+
+# format raw data sources, join the two years of data, and check for basic errors or missing data
 library(tidyverse)
 library(ggpubr)
 
