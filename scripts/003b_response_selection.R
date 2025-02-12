@@ -23,7 +23,7 @@ df <- df %>%
 dfb <- fread("trait_BLUPs.tsv")
 df <- full_join(df, dfb, by=c('Genotype'), suffix=c("", "_blup"))
 df <- add_generation(df)
-df <- df %>% select(c('Generation', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'GERMINATION', 'FECUNDITY', 'FITNESS', 'FT_blup', 'TOTAL_MASS_blup', 'GERMINATION_blup', 'SEED_WEIGHT_100_blup', 'FECUNDITY_blup', 'FITNESS_blup'))
+df <- df %>% select(c('Generation', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Plants', 'FECUNDITY', 'MASS_PER_PLANT', 'FT_blup', 'TOTAL_MASS_blup', 'Plants_blup', 'SEED_WEIGHT_100_blup', 'FECUNDITY_blup', 'MASS_PER_PLANT_blup'))
 
 
 
@@ -34,7 +34,7 @@ responses_scaled <- pheno_scaled %>% group_by(Genotype) %>%
       summarise(across(where(is.numeric), \(x) mean(x, na.rm = T))) %>% 
       ungroup() %>%
       group_by(Generation) %>% 
-      summarise(across(.cols = c(FT, TOTAL_MASS, GERMINATION, SEED_WEIGHT_100, FECUNDITY, FITNESS), \(x) mean(x, na.rm = T))) %>% 
+      summarise(across(.cols = c(FT, TOTAL_MASS, Plants, SEED_WEIGHT_100, FECUNDITY, MASS_PER_PLANT), \(x) mean(x, na.rm = T))) %>% 
       ungroup()
 
 P_18 <-  (responses_scaled[2,] - responses_scaled[1,])/(18-0)

@@ -13,7 +13,7 @@ df <- fread("data/FITNESS.tsv")
 
 
 
-collist <- c('FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'GERMINATION', 'SEED_COUNT', 'FECUNDITY',  'FITNESS', 'RELATIVE_FITNESS', 'AT_REL_FITNESS')
+collist <- c('FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Plants', 'SEED_COUNT', 'FECUNDITY',  'FITNESS', 'RELATIVE_FITNESS', 'AT_REL_FITNESS')
 
 for(trait in collist) {
 
@@ -27,6 +27,6 @@ for(trait in collist) {
 
 }
 
-g_all <- ggarrange(g_FT, g_TOTAL_MASS, g_SEED_WEIGHT_100, g_GERMINATION, g_SEED_COUNT, g_FECUNDITY, g_FITNESS, g_RELATIVE_FITNESS, g_AT_REL_FITNESS, ncol=3, nrow=3)
+g_all <- ggarrange(g_FT, g_TOTAL_MASS, g_SEED_WEIGHT_100, g_Plants, g_SEED_COUNT, g_FECUNDITY, g_FITNESS, g_RELATIVE_FITNESS, g_AT_REL_FITNESS, ncol=3, nrow=3)
 
 ggsave("results/barplot_trait_vals_per_genotype.png", g_all, height=20, width=20)

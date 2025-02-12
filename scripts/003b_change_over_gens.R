@@ -26,7 +26,7 @@ df <- df %>%
 dfb <- fread("trait_BLUPs.tsv")
 df <- full_join(df, dfb, by=c('Genotype'), suffix=c("", "_blup"))
 df <- add_generation(df)
-df <- df %>% select(c('Generation', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'GERMINATION', 'FECUNDITY', 'FITNESS', 'FT_blup', 'TOTAL_MASS_blup', 'GERMINATION_blup', 'SEED_WEIGHT_100_blup', 'FECUNDITY_blup', 'FITNESS_blup'))
+df <- df %>% select(c('Generation', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Plants', 'FECUNDITY', 'MASS_PER_PLANT', 'FT_blup', 'TOTAL_MASS_blup', 'Plants_blup', 'SEED_WEIGHT_100_blup', 'FECUNDITY_blup', 'MASS_PER_PLANT_blup'))
 
 
 ## BASE STATISTICS

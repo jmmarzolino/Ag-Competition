@@ -20,6 +20,7 @@ tidy_text_substitution <- function(x) {
   x <- gsub("SEED_WEIGHT_100", "100-Seed Weight", x)
   x <- gsub("FECUNDITY", "Fecundity", x)
   x <- gsub("FITNESS", "Fitness", x)
+  x <- gsub("MASS_PER_PLANT", "Mass per Plant", x)
   
   return(x)
   }

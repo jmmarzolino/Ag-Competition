@@ -132,10 +132,10 @@ b <- ggplot(tmp) +
       labs(x = "Generation", y = tidy_text_substitution("TOTAL_MASS"), title="Total Seed Weight over Generations") 
 
 c <- ggplot() + 
-      geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=GERMINATION)) + 
-      geom_line(data=gen_men, aes(x=Generation, y=GERMINATION), color="blue", linewidth=1) + 
+      geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=Plants)) + 
+      geom_line(data=gen_men, aes(x=Generation, y=Plants), color="blue", linewidth=1) + 
       theme_bw(base_size=18) +
-      labs(x = "Generation", y = tidy_text_substitution("GERMINATION"), title="Seed Germination over Generations") 
+      labs(x = "Generation", y = tidy_text_substitution("Plants"), title="Seed Germination over Generations") 
 
 d <- ggplot() + 
       geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=FECUNDITY)) + 
