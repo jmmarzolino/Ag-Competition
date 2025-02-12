@@ -11,12 +11,14 @@ library(data.table)
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
 hap <- fread("hap_assign.txt")
+#df <- fread("FITNESS.tsv")
 df <- fread("trait_BLUPs.tsv")
 
 hap$Haplotype <- as.factor(hap$Haplotype)
 
 
 
+# how common was each haplotype in the 4 sampled generations?
 ## calculate haplotype frequency per generation
 f18_hap <- hap[grep("^1_\\d+", hap$Genotype),]
 f18_hap_table <- data.frame(table(f18_hap$Haplotype))
@@ -54,8 +56,6 @@ f58_hap_table <- f58_hap_table %>% filter(Frequency > 0)
 df$Genotype <- gsub("(\\d+_\\d+)_\\d", "\\1", df$Genotype)
 grep("\\d+_\\d+_\\d+", df$Genotype)
 
-setdiff(df$Genotype, hap$Genotype)
-# parents aren't in haplotype file
 hap_join <- inner_join(hap, df, by = "Genotype")
 # check for missing genotype-haplotype match in table
 which(is.na(hap_join$Haplotype))
@@ -70,26 +70,16 @@ sort(table(hap_join$Haplotype), decreasing=T) %>% table
 
 ## calculate generations' trait averages weighted by haplotype
 
-# subset data by generation
-f18 <- hap_join[grep("^1_\\d+", hap_join$Genotype)]
-f28 <- hap_join[grep("^2_\\d+", hap_join$Genotype)]
-f50 <- hap_join[grep("^3_\\d+", hap_join$Genotype)]
-f58 <- hap_join[grep("^7_\\d+", hap_join$Genotype)]
-
 
 # average phenotype for each haplotype
-f18_hap_trait_avg <- f18 %>% group_by(Haplotype) %>% summarise(across(where(is.numeric), mean))
-f28_hap_trait_avg <- f28 %>% group_by(Haplotype) %>% summarise(across(where(is.numeric), mean))
-f50_hap_trait_avg <- f50 %>% group_by(Haplotype) %>% summarise(across(where(is.numeric), mean))
-f58_hap_trait_avg <- f58 %>% group_by(Haplotype) %>% summarise(across(where(is.numeric), mean))
+hap_trait_avg <- hap_join %>% group_by(Haplotype) %>% summarise(across(where(is.numeric), mean)) 
 
 
 # join haplotype, generation frequency, and haplotype phenotypes
-f18_hap_join <- full_join(f18_hap_trait_avg, f18_hap_table)
-f28_hap_join <- full_join(f28_hap_trait_avg, f28_hap_table)
-f50_hap_join <- full_join(f50_hap_trait_avg, f50_hap_table)
-f58_hap_join <- full_join(f58_hap_trait_avg, f58_hap_table)
-
+f18_hap_join <- right_join(hap_trait_avg, f18_hap_table, by="Haplotype")
+f28_hap_join <- right_join(hap_trait_avg, f28_hap_table, by="Haplotype")
+f50_hap_join <- right_join(hap_trait_avg, f50_hap_table, by="Haplotype")
+f58_hap_join <- right_join(hap_trait_avg, f58_hap_table, by="Haplotype")
 
 
 
