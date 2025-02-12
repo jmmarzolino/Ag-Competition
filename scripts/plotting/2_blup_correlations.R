@@ -81,31 +81,31 @@ gee <- df_ft %>%
 ggsave("blups_vs_FT_by_generation.png", gee, width=14)
 
 
-# fitness plots
-df_fit <- df %>% 
-        pivot_longer(-c(FITNESS_blup, Generation), values_to = "VALUE", names_to="TRAIT")
-df_fit$TRAIT <- tidy_text_substitution(df_fit$TRAIT)
+# mass per plant plots
+df_massper <- df %>% 
+        pivot_longer(-c(MASS_PER_PLANT_blup, Generation), values_to = "VALUE", names_to="TRAIT")
+df_massper$TRAIT <- tidy_text_substitution(df_massper$TRAIT)
 
-gee_wiz <- df_fit %>% 
-        ggplot(aes(x=FITNESS_blup, y=VALUE)) + 
+gee_wiz <- df_massper %>% 
+        ggplot(aes(x=MASS_PER_PLANT_blup, y=VALUE)) + 
           geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
           geom_smooth() +
           scale_color_manual(values=adjusted_blues) + 
           facet_wrap(~TRAIT, scales="free_y") +
-          labs(x="Fitness BLUP", y="", color="Generation") +
+          labs(x="Mass Per Plant BLUP", y="", color="Generation") +
           theme_bw()
-ggsave("blups_vs_FIT.png", gee_wiz, width=14)
+ggsave("blups_vs_MASS_PER_PLANT.png", gee_wiz, width=14)
 
 
-gee_wiz <- df_fit %>% 
-        ggplot(aes(x=FITNESS_blup, y=VALUE, group=Generation)) + 
+gee_wiz <- df_massper %>% 
+        ggplot(aes(x=MASS_PER_PLANT_blup, y=VALUE, group=Generation)) + 
           geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
           geom_smooth(aes(color=as.factor(Generation))) +
           scale_color_manual(values=adjusted_blues) + 
           facet_wrap(~TRAIT, scales="free_y") +
-          labs(x="Fitness BLUP", y="", color="Generation") +
+          labs(x="Mass Per Plant  BLUP", y="", color="Generation") +
           theme_bw()
-ggsave("blups_vs_FIT_by_generation.png", gee_wiz, width=14)
+ggsave("blups_vs_MASS_PER_PLANT_by_generation.png", gee_wiz, width=14)
 
 
 

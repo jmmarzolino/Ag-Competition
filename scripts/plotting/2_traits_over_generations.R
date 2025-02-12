@@ -144,10 +144,10 @@ d <- ggplot() +
       labs(x = "Generation", y = tidy_text_substitution("FECUNDITY"), title="Genotype Fecundity over Generations") 
 
 e <- ggplot() + 
-      geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=FITNESS)) + 
-      geom_line(data=gen_men, aes(x=Generation, y=FITNESS), color="blue", linewidth=1) + 
+      geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=MASS_PER_PLANT)) + 
+      geom_line(data=gen_men, aes(x=Generation, y=MASS_PER_PLANT), color="blue", linewidth=1) + 
       theme_bw(base_size=18) +
-      labs(x = "Generation", y = tidy_text_substitution("FITNESS"), title="Genotype Fitness over Generations") 
+      labs(x = "Generation", y = tidy_text_substitution("MASS_PER_PLANT"), title="Genotype Mass per Plant over Generations") 
 
 ggcombo <- ggarrange(a, b, c, d, e)
 ggsave("results/traits_over_generations_scatterplots.png", ggcombo, width = 20, height = 10)

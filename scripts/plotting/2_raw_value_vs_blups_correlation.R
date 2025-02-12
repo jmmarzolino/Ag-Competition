@@ -23,7 +23,7 @@ cor(test$SEED_WEIGHT_100, test$SEED_WEIGHT_100_blup)
 cor(test$TOTAL_MASS, test$TOTAL_MASS_blup)
 cor(test$Plants, test$Plants_blup)
 cor(test$FECUNDITY, test$FECUNDITY_blup)
-cor(test$FITNESS, test$FITNESS_blup)
+cor(test$MASS_PER_PLANT, test$MASS_PER_PLANT_blup)
 
 ## all traits have high correlation from averged genotype trait values w genotype's blup values
 
