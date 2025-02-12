@@ -160,8 +160,9 @@ H2cal(data = pheno
 dev.off()
 
 
-H2_table <- tibble("trait" = colnames(pheno)[5:ncol(pheno)], 
-                    "H2_s" = c(h2_ft$tabsmr$H2.s, h2_totmass$tabsmr$H2.s, h2_sw100$tabsmr$H2.s, h2_plants$tabsmr$H2.s, h2_fec$tabsmr$H2.s) )
+H2_table <- tibble("trait" = c("FT", "TOTAL_MASS", "SEED_WEIGHT_100", "MASS_PER_PLANT", "Plants", "FECUNDITY"), 
+                    "H2_s" = c(h2_ft$tabsmr$H2.s, h2_totmass$tabsmr$H2.s, h2_sw100$tabsmr$H2.s, h2_massper$tabsmr$H2.s,  h2_plants$tabsmr$H2.s, 
+                    h2_fec$tabsmr$H2.s) )
 write_delim(H2_table, "trait_heritability.tsv", "\t")
 
 
@@ -169,9 +170,9 @@ write_delim(H2_table, "trait_heritability.tsv", "\t")
 # combine BLUP dataframes
 blup_output <- full_join(h2_ft$blups, h2_totmass$blups)
 blup_output <- full_join(blup_output, h2_sw100$blups)
+blup_output <- full_join(blup_output, h2_massper$blups)
 blup_output <- full_join(blup_output, h2_plants$blups)
 blup_output <- full_join(blup_output, h2_fec$blups)
-blup_output <- full_join(blup_output, h2_fit$blups)
 
 write_delim(blup_output, "trait_BLUPs.tsv", "\t")
 
