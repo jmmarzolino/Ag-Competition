@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 #SBATCH --mem=30G
 #SBATCH --time=02:00:00
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/004_comparing_haplotypes.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/004_comparing_haplotypes_TraitsAvgdOverAllHaps.stdout
 #SBATCH -p koeniglab
 
 library(tidyverse)
@@ -13,7 +13,6 @@ source("../scripts/CUSTOM_FNS.R")
 hap <- fread("hap_assign.txt")
 #df <- fread("FITNESS.tsv")
 df <- fread("trait_BLUPs.tsv")
-
 
 hap$Haplotype <- as.factor(hap$Haplotype)
 
