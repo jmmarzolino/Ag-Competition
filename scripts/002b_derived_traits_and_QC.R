@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 #SBATCH --mem=30G
 #SBATCH --time=02:00:00
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/002_derived_traits_and_QC.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/002b_derived_traits_and_QC.stdout
 #SBATCH -p short
 
 ## filter outliers, calcualte derived-trait values (ie. fitness), & filter extreme derived-trait values & low plant-number plots
@@ -17,7 +17,6 @@ source("scripts/CUSTOM_FNS.R")
 df <- read_delim("data/JOINED_PHENOTYPES.tsv")
 # remove any rows without genotype
 df <- df %>% 
-    filter(!is.na(Genotype)) %>%
     filter(Condition=="single") %>%
     select(-c(BED, ROW, Condition)) %>%
     select(c(Genotype, Exp_year, Replicate, Plants, FT, TOTAL_MASS, SEED_WEIGHT_100))
@@ -26,11 +25,19 @@ df <- df %>%
 up_bnds <- df %>% 
   group_by(Exp_year) %>% 
   summarise(across(-c(Genotype, Replicate), \(x) median(x, na.rm=T) + (2* IQR(x, na.rm=T))))
+
+  df %>% 
+  group_by(Exp_year, Replicate) %>% 
+  summarise(across(-c(Genotype), \(x) median(x, na.rm=T) + (2* IQR(x, na.rm=T))))
+
+
 lw_bnds <- df %>% 
   group_by(Exp_year) %>% 
   summarise(across(-c(Genotype, Replicate), \(x) median(x, na.rm=T) - (2* IQR(x, na.rm=T))))
   
-
+df %>% 
+  group_by(Exp_year, Replicate) %>% 
+  summarise(across(-c(Genotype), \(x) median(x, na.rm=T) - (2* IQR(x, na.rm=T))))
 
 # filter for outlier values
 
@@ -82,15 +89,81 @@ dev.off()
 # re-join data from the two years of experiment
 df2 <- full_join(ayear_2022, ayear_2023)
 
-dim(df)
-dim(df2)
-
-print("percent of rows removed w outlier filtering")
-((nrow(df)-nrow(df2))/nrow(df))*100
-
-
 # any rows that are entirely NA?
 df2[which(rowSums(is.na(df2))>4),]
+
+
+
+
+
+
+
+#############################################
+# fecundity
+## fecundity = seed produced per plot
+# fec is also our proxy for fitness then
+## total seed weight / seed-weight-100/100
+
+df3 <- df2 %>% 
+    mutate(MASS_PER_PLANT = TOTAL_MASS/Plants) %>% 
+    mutate(SEED_COUNT = TOTAL_MASS / (SEED_WEIGHT_100/100)) %>%
+    mutate(FECUNDITY = SEED_COUNT / Plants) 
+
+write_delim(df3, "data/DERIVED_PHENOTYPES.tsv", "\t")
+
+
+
+
+
+
+
+
+
+
+
+ggplot(df3) + geom_histogram(aes(FECUNDITY))
+
+ df3 %>% select(c(Exp_year, Replicate, FECUNDITY)) %>% group_by(Exp_year) %>% summarise(across(-c(Replicate), \(x) median(x, na.rm=T) - (2* IQR(x, na.rm=T))))
+df3 %>% select(c(Exp_year, Replicate, FECUNDITY)) %>% group_by(Exp_year) %>% summarise(across(-c(Replicate), \(x) median(x, na.rm=T) + (2* IQR(x, na.rm=T))))
+
+#problem w fecundity....
+#values over 600...
+df3[which(df3$FECUNDITY > 400),] 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -107,15 +180,12 @@ df_tm <- df2 %>% select(c(Genotype, Exp_year, Replicate, Plants, TOTAL_MASS)) %>
   mutate("mass_per_plant"=TOTAL_MASS/Plants) %>% select(-c(Plants, TOTAL_MASS)) 
 
 
-
-
 up_bnds <- df_tm %>% 
   group_by(Exp_year) %>% 
   summarise(across(-c(Genotype, Replicate), \(x) median(x, na.rm=T) + (2* IQR(x, na.rm=T))))
 lw_bnds <- df_tm %>% 
   group_by(Exp_year) %>% 
   summarise(across(-c(Genotype, Replicate), \(x) median(x, na.rm=T) - (2* IQR(x, na.rm=T))))
-
 
 
 for(year in c(2022,2023)) {
@@ -156,13 +226,12 @@ for(year in c(2022,2023)) {
 
 
 # re-join data from the two years of experiment
-df_tm <- full_join(ayear_2022, ayear_2023)
+join_tm <- full_join(ayear_2022, ayear_2023)
   
-  
-df_tm2 <- df_tm %>% select(c(Genotype, Exp_year, Replicate, Plants, TOTAL_MASS)) %>% 
-  mutate("mass_per_plant"=TOTAL_MASS/Plants) %>% select(-c(Plants, TOTAL_MASS)) %>% 
-  pivot_wider(names_from=Replicate, names_prefix = "REP_", values_from='mass_per_plant')
-df_tm2 %>% group_by(Exp_year) %>% summarise('correlation'=cor(REP_1, REP_2, use="pairwise.complete.obs"))
+join_tm %>% 
+  pivot_wider(names_from=Replicate, names_prefix = "REP_", values_from='mass_per_plant') %>% group_by(Exp_year) %>% summarise('correlation'=cor(REP_1, REP_2, use="pairwise.complete.obs"))
+
+
 
 
 ## filter large differences
@@ -183,19 +252,9 @@ up_bnds <- df_tm2 %>%
 
 
 
-
-
 df_tm[which(df_tm$Exp_year==2022 & abs(df_tm$diff) > 15),]
 df_tm[which(df_tm$Exp_year==2023 & abs(df_tm$diff) > 15),] 
 # and that'll only remove 1 & 4 values (respective to year)
-
-
-
-
-
-
-
-
 
 
 
@@ -226,8 +285,6 @@ df2[which(Genotype %in% geno_list & Exp_year == 2022), which(colnames(df2=="TOTA
 
 
 
-
-
 #### 100-seed mass
 df_sw <- df2 %>% select(c(Genotype, Exp_year, Replicate, SEED_WEIGHT_100))
 
@@ -248,74 +305,3 @@ ggplot(df_sw) +
 # I don't think I'll filter that any further
 
 
-
-
-
-
-
-
-
-
-
-
-# calculate derived phenotypes
-## germination = (plants/10) 
-over_sown <- df %>% filter(Plants > 10)
-# for plots have 11 or 12 seeds planted, 
-# assume max number planted is the same
-over_sown$GERMINATION <- 1
-# plants / 11 or 12 will be 100% germination
-
-df2 <- df %>% filter(Plants <= 10)
-df2 <- df2 %>% mutate(GERMINATION = Plants / 10)
-
-df3 <- full_join(df2, over_sown) 
-#, by=c('Genotype', 'Condition', 'Exp_year', 'Plants', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'GERMINATION'))
-
-
-
-# fecundity
-## fecundity = seed produced per plot
-## total seed weight / seed-weight-100/100
-## fitness = germination * fecundity
-
-df3 <- df3 %>% 
-    mutate(SEED_COUNT = TOTAL_MASS / (SEED_WEIGHT_100/100)) %>%
-    mutate(FECUNDITY = SEED_COUNT / Plants) %>% 
-    select(-c(Plants)) %>% 
-    mutate(FITNESS = GERMINATION * FECUNDITY) 
-
-
-
-#problem w fecundity!
-#values over 500 up to 2500
-df3[which(df3$FECUNDITY > 1000),] 
-# 20 rows w extreme fecundity, all w germination of 0.1-0.2
-
-## for the MOST part, rows w outlier fecundity have germination between 1-5 out of 10 seeds (0.1 - 0.5)
-# one occurance of high germination 0.9
-df3[which(df3$FECUNDITY > 500),] -> x
-summary(x$GERMINATION)
-summary(df3$GERMINATION)
-# so fecundity cutoff of 500 is probably too low on its own
-
-# either ... filter outlier fecundity values that have germination below 50%...
-# or filter all low germination values
-# or filter all outlier fecundity values...
-# the 0.9 germination row does have a huge total weight, like double any others in the set
-
-# how many rows removed if we filter out low germination?
-df3 %>% filter(GERMINATION < 0.3 )
-(xy <- df3 %>% filter(GERMINATION < 0.3 ) %>% nrow)
-xy / nrow(df3)
-# removes about 2% of plots
-
-(yy <- df3 %>% filter(GERMINATION <= 0.3 ) %>% nrow)
-yy / nrow(df3)
-# only 3% fitlered if lower suvival threshhold to 0.3 
-
-#upper <- median(df3$FECUNDITY) + 2*IQR(df3$FECUNDITY)
-#df3 <- df3 %>% filter(FECUNDITY <= upper)
-
-df3 <- df3 %>% filter(GERMINATION > 0.2 & FECUNDITY < 750) 
-write_delim(df3, "data/DERIVED_PHENOTYPES.tsv", "\t")
