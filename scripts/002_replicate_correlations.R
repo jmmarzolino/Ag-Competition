@@ -13,66 +13,28 @@ library(ggrepel)
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 # load data
 df <- fread("JOINED_PHENOTYPES.tsv")
-
-df1 <- df %>% filter(Exp_year==2022)
-df2 <- df %>% filter(Exp_year==2023)
-
-# subset data
-single1 <- df1 %>%
-  filter(Condition=="single") %>%
-  pivot_wider(id_cols=Genotype, names_from=Replicate, values_from=c(TOTAL_MASS, SEED_WEIGHT_100, FT))
-  
-single2 <- df2 %>%
-  filter(Condition=="single") %>%
-  pivot_wider(id_cols=Genotype, names_from=Replicate, values_from=c(TOTAL_MASS, SEED_WEIGHT_100, FT)) 
-
-mix1 <- df1 %>%
-  filter(Condition=="mixed") %>%
-  pivot_wider(id_cols=Genotype, names_from=Replicate, values_from=c(TOTAL_MASS, SEED_WEIGHT_100, FT))
-  
-mix2 <- df2 %>%
-  filter(Condition=="mixed") %>%
-  pivot_wider(id_cols=Genotype, names_from=Replicate, values_from=c(TOTAL_MASS, SEED_WEIGHT_100, FT)) 
-
-
-
-# calculate correlation across replicates
-print("Trait Correlations Per Year")
-for(i in c('single1', 'single2', 'mix1', 'mix2')){
-  print(i)
-  i <- get(i)
-  print("Total Mass")
-  print(cor(i$TOTAL_MASS_1, i$TOTAL_MASS_2, use="pairwise.complete.obs"))
-  print("100 Seed Weight")
-  print(cor(i$SEED_WEIGHT_100_1, i$SEED_WEIGHT_100_2, use="pairwise.complete.obs"))
-  print("Flowering Time")
-  print(cor(i$FT_1, i$FT_2, use="pairwise.complete.obs"))
-}
+df <- df %>%
+  select(-c(BED, ROW)) %>%
+  mutate("MASS_PER_PLANT"=TOTAL_MASS/Plants) 
 
 # correlation options
-#method=c("pearson", "spearman")
-#use=c( ‘"everything"’,
-#          ‘"all.obs"’, ‘"complete.obs"’, ‘"na.or.complete"’, or
-#          ‘"pairwise.complete.obs"’.
-#)
+#method=c("pearson", "spearman", "kendall")
+#use=c( ‘"everything"’, ‘"all.obs"’, ‘"complete.obs"’, ‘"na.or.complete"’, ‘"pairwise.complete.obs"’)
 
 replicate_df <- df %>%
-  select(-c(Plants, BED, ROW)) %>%
-  #filter(Condition=="single") %>%
-  pivot_longer(cols=c(FT, TOTAL_MASS, SEED_WEIGHT_100), names_to='PHENOTYPE', values_to="VALUE") %>%
+  pivot_longer(cols=c(FT, TOTAL_MASS, SEED_WEIGHT_100, MASS_PER_PLANT), names_to='PHENOTYPE', values_to="VALUE") %>%
   pivot_wider(names_from=Replicate, names_prefix="REP_", values_from='VALUE')
 
 # another way of summarizing trait replicate correlations by year, condition, and phenotype
-replicate_df %>% group_by(Exp_year, Condition, PHENOTYPE) %>% summarise('correlation'=cor(REP_1, REP_2, use="pairwise.complete.obs"))
+replicate_df %>% group_by(Exp_year, Condition, PHENOTYPE) %>% summarise('correlation'=cor(REP_1, REP_2, use="pairwise.complete.obs", method="pearson"))
 
 
-#tm <- df %>%
- # filter(Plants>0 & !is.na(TOTAL_MASS) & !is.na(SEED_WEIGHT_100)) %>% 
- # select(-c(Plants, BED, ROW)) %>%
-  #filter(Condition=="single") %>%
-  #pivot_longer(cols=c(FT, TOTAL_MASS, SEED_WEIGHT_100), names_to='PHENOTYPE', values_to="VALUE") %>%
- # select(c(Genotype, Condition, Replicate, Exp_year, TOTAL_MASS)) %>% 
- # pivot_wider(names_from=Replicate, names_prefix="REP_", values_from='TOTAL_MASS')
+#replicate_df %>% group_by(Exp_year, Condition, PHENOTYPE) %>% summarise('correlation'=cor(REP_1, REP_2, use="pairwise.complete.obs", method="spearman"))
+#replicate_df %>% group_by(Exp_year, Condition, PHENOTYPE) %>% summarise('correlation'=cor(REP_1, REP_2, use="pairwise.complete.obs", method="kendall"))
+
+
+
+
 
 
 # Creating a function to graph correlations between replicates
@@ -82,7 +44,7 @@ replicate_df %>% group_by(Exp_year, Condition, PHENOTYPE) %>% summarise('correla
 graph_correlation <- function(x=df, y='TOTAL_MASS'){
  x %>%
   filter(Plants>0 & !is.na(TOTAL_MASS) & !is.na(SEED_WEIGHT_100)) %>% 
-  select(-c(Plants, BED, ROW)) %>%
+  select(-c(Plants)) %>%
   select(c('Genotype', 'Condition', 'Replicate', 'Exp_year', all_of(y))) %>% 
   pivot_wider(names_from=Replicate, names_prefix="REP_", values_from=y) %>%
   ggplot(aes(REP_1, REP_2), add = "reg.line") +
@@ -98,15 +60,18 @@ graph_correlation <- function(x=df, y='TOTAL_MASS'){
 
 
 c1 <- graph_correlation(df) 
+c1a <- graph_correlation(df, y='MASS_PER_PLANT') 
 c2 <- graph_correlation(df, y='SEED_WEIGHT_100') 
 c3 <- graph_correlation(df, y='FT') 
 
 ggsave("../results/replicate_correlations_total_mass.png", c1, width = 12, height = 12, dpi=300)
+ggsave("../results/replicate_correlations_mass_per_plant.png", c1a, width = 12, height = 12, dpi=300)
+
 ggsave("../results/replicate_correlations_seed_weight_100.png", c2, width = 12, height = 12, dpi=300)
 ggsave("../results/replicate_correlations_FT.png", c3, width = 12, height = 12, dpi=300)
 
-gc <- ggarrange(c1, c2, c3)
-ggsave("../results/replicate_correlations_all.png", gc)
+gc <- ggarrange(c1, c1a, c2, c3)
+ggsave("../results/replicate_correlations_all.png", gc, width=24, height=24)
 
 
 
@@ -116,10 +81,10 @@ ggsave("../results/replicate_correlations_all.png", gc)
 # Residual Plotting
 
 ## scale data
-scaled <- df %>% select(-c(Plants, BED, ROW)) 
-scaled$FT <- scale(scaled$FT)[,1]
-scaled$TOTAL_MASS <- scale(scaled$TOTAL_MASS)[,1]
-scaled$SEED_WEIGHT_100 <- scale(scaled$SEED_WEIGHT_100)[,1]
+scaled <- df %>% select(-c(Plants)) 
+#scaled$FT <- scale(scaled$FT)[,1]
+#scaled$TOTAL_MASS <- scale(scaled$TOTAL_MASS)[,1]
+#scaled$SEED_WEIGHT_100 <- scale(scaled$SEED_WEIGHT_100)[,1]
 
 
 plot_residuals <- function(scaled, y='TOTAL_MASS', condition="single", year=2022) {
@@ -166,7 +131,7 @@ plot_residuals <- function(scaled, y='TOTAL_MASS', condition="single", year=2022
 }
 
 
-y=c('TOTAL_MASS', 'FT', 'SEED_WEIGHT_100')
+y=c('TOTAL_MASS', 'MASS_PER_PLANT', 'FT', 'SEED_WEIGHT_100')
 
 for(i in 1:3){
     p1 <- plot_residuals(scaled, y=y[i], condition="single", year=2022)
