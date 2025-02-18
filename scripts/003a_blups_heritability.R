@@ -22,7 +22,7 @@ pheno <- read_delim("DERIVED_PHENOTYPES.tsv")
 # init pdf to store plot outputs
 pdf("heritability_model_fits.pdf", width=20, height=10)
 
-################### FLOWERING TIME
+
 h2_ft <- 
 H2cal(data = pheno
           , trait = "FT"
@@ -36,7 +36,6 @@ H2cal(data = pheno
           , outliers.rm = TRUE
           , summary = TRUE
           )
-
 
 h2_totmass <- 
 H2cal(data = pheno
@@ -59,8 +58,8 @@ H2cal(data = pheno
           , rep.n = 2
           , year.n = 2
           , year.name = "Exp_year"
-          , fixed.model = "0 + (1|Exp_year) + Plants + (1|Replicate) + Genotype + (1|Genotype:Exp_year)"
-          , random.model = "1 + (1|Exp_year) + Plants + (1|Replicate)  + (1|Genotype) + (1|Genotype:Exp_year)"
+          , fixed.model = "0 + (1|Exp_year) + (1|Replicate) + Genotype + (1|Genotype:Exp_year)"
+          , random.model = "1 + (1|Exp_year) + (1|Replicate)  + (1|Genotype) + (1|Genotype:Exp_year)"
           , plot_diag = TRUE
           , outliers.rm = TRUE
           , summary = TRUE
@@ -74,15 +73,15 @@ H2cal(data = pheno
           , rep.n = 2
           , year.n = 2
           , year.name = "Exp_year"
-          , fixed.model = "0 + TOTAL_MASS + (1|Exp_year) + Genotype + FT + (1|Genotype:Exp_year)"
-          , random.model = "1 + TOTAL_MASS + (1|Exp_year) + (1|Genotype) + FT + (1|Genotype:Exp_year)"
+          , fixed.model = "0 + (1|Exp_year) + Genotype + (1|Genotype:Exp_year)"
+          , random.model = "1 + (1|Exp_year) + (1|Genotype) + (1|Genotype:Exp_year)"
           , plot_diag = TRUE
           , outliers.rm = TRUE
           , summary = TRUE
           )
 
 
-## not fitable
+## not well fitable
 h2_plants <- 
 H2cal(data = pheno
         , trait = "Plants"
@@ -104,12 +103,11 @@ H2cal(data = pheno
           , rep.n = 2
           , year.n = 2
           , year.name = "Exp_year"
-          , fixed.model = "0 + Plants + FT + Genotype + (1|Genotype:Exp_year)"
-          , random.model = "1 + Plants + FT + (1|Genotype) + (1|Genotype:Exp_year)"
+          , fixed.model = "0 + Genotype + (1|Exp_year) + (1|Genotype:Exp_year)"
+          , random.model = "1 + (1|Genotype) + (1|Exp_year) + (1|Genotype:Exp_year)"
           , plot_diag = TRUE
           , outliers.rm = TRUE
           )
-
 
 dev.off()
 
