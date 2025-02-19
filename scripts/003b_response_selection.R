@@ -14,7 +14,7 @@ source("../scripts/CUSTOM_FNS.R")
 # Loading Data
 df <- fread("DERIVED_PHENOTYPES.tsv")
 df <- df %>% 
-        filter(Condition == "single") %>% select(-c(Condition, Replicate, SEED_COUNT)) %>%
+        select(-c(Replicate, SEED_COUNT)) %>%
         group_by(Genotype, Exp_year) %>% summarise(across(where(is.numeric), mean)) %>%
         ungroup() %>% select(-Exp_year) %>% 
         group_by(Genotype) %>% summarise(across(where(is.numeric), mean)) %>%
