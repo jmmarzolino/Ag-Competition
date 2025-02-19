@@ -17,7 +17,6 @@ library(dunn.test)
 # read in filtered but un-transformed data
 df <- fread("DERIVED_PHENOTYPES.tsv")
 df <- df %>% 
-        filter(Condition == "single") %>% select(-c(Condition, Replicate, SEED_COUNT)) %>%
         group_by(Genotype, Exp_year) %>% summarise(across(where(is.numeric), mean)) %>%
         ungroup() %>% select(-Exp_year) %>% 
         group_by(Genotype) %>% summarise(across(where(is.numeric), mean)) %>%
@@ -39,8 +38,9 @@ write_delim(x, "generations_trait_avg_var.tsv", "\t")
 
 
 # filter traits with no variance
-variant_phenos <- names(which(apply(X=df[,2:ncol(df)], 2, var) > 0))
-df <- df %>% select(c(Generation, all_of(variant_phenos)))
+#variant_phenos <- names(which(apply(X=df[,2:ncol(df)], 2, var) > 0))\
+df %>% summarise(across(where(is.numeric), \(x) var(x, na.rm=T)))
+#df <- df %>% select(c(Generation, all_of(variant_phenos)))
 
 
 # set up for normality and variance equity tests
