@@ -149,3 +149,24 @@ sw_join %>% group_by(Exp_year, Condition) %>% reframe(across(where(is.numeric), 
 
 
 write_delim(sw_join, "JOINED_PHENOTYPES.tsv", "\t")
+
+
+## additionally, print the statistics for how many raw values there are, how many values were measured for each trait across years
+df <- fread("JOINED_PHENOTYPES.tsv")
+df <- df %>% filter(Condition=="single")
+
+
+df1 <- df %>% filter(Exp_year==2022)
+df2 <- df %>% filter(Exp_year==2023)
+
+print('number of rows per year')
+nrow(df1)
+nrow(df2)
+
+print("amount of missing data for the 3 measured traits")
+df %>% group_by(Exp_year) %>% reframe(across(c(FT, TOTAL_MASS, SEED_WEIGHT_100), \(x) sum(is.na(x))))
+
+print("percent of missing data per year")
+df1 %>% summarise(across(c(FT, TOTAL_MASS, SEED_WEIGHT_100), \(x) (sum(is.na(x))/508)*100))
+
+df2 %>% summarise(across(c(FT, TOTAL_MASS, SEED_WEIGHT_100), \(x) (sum(is.na(x))/508)*100))
