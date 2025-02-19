@@ -93,8 +93,22 @@ df2 <- full_join(ayear_2022, ayear_2023)
 df2[which(rowSums(is.na(df2))>4),]
 
 
+# how many values were removed from each trait with the outlier filtering?
+print("percent missing data for traits, after outlier filtering")
+df22 <- df2 %>% filter(Exp_year==2022)
+df23 <- df2 %>% filter(Exp_year==2023)
 
+print('number of rows per year')
+nrow(df22)
+nrow(df23)
 
+print("amount of missing data for the 3 measured traits")
+df2 %>% group_by(Exp_year) %>% reframe(across(c(Plants, FT, TOTAL_MASS, SEED_WEIGHT_100), \(x) sum(is.na(x))))
+
+print("percent of missing data per year")
+df22 %>% summarise(across(c(Plants, FT, TOTAL_MASS, SEED_WEIGHT_100), \(x) (sum(is.na(x))/508)*100))
+
+df23 %>% summarise(across(c(Plants, FT, TOTAL_MASS, SEED_WEIGHT_100), \(x) (sum(is.na(x))/510)*100))
 
 
 
@@ -110,6 +124,59 @@ df3 <- df2 %>%
     mutate(FECUNDITY = SEED_COUNT / Plants) 
 
 write_delim(df3, "data/DERIVED_PHENOTYPES.tsv", "\t")
+
+
+# how many values exist from each derived trait?
+print("percent missing data for derived traits")
+df22 <- df3 %>% filter(Exp_year==2022)
+df23 <- df3 %>% filter(Exp_year==2023)
+
+print('number of rows per year')
+nrow(df22)
+nrow(df23)
+
+print("amount of missing data for traits")
+df3 %>% group_by(Exp_year) %>% reframe(across(where(is.numeric), \(x) sum(is.na(x))))
+
+print("percent of missing data per year")
+df22 %>% summarise(across(where(is.numeric), \(x) (sum(is.na(x))/508)*100))
+
+df23 %>% summarise(across(where(is.numeric), \(x) (sum(is.na(x))/508)*100))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -129,44 +196,6 @@ df3 %>% select(c(Exp_year, Replicate, FECUNDITY)) %>% group_by(Exp_year) %>% sum
 #problem w fecundity....
 #values over 600...
 df3[which(df3$FECUNDITY > 400),] 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
