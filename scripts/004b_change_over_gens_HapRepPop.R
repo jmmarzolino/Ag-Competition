@@ -96,13 +96,14 @@ f58_hap_join_poprepd$Generation <- 58
 f0_hap_join_poprepd <- hap_trait_avg %>% select(-Haplotype)
 f0_hap_join_poprepd$Generation <- 0
 
-
-
+## join generations together
 x1 <- rbind(f18_hap_join_poprepd, f28_hap_join_poprepd)
 x2 <- rbind(f50_hap_join_poprepd, f58_hap_join_poprepd)
 joined_happops <- rbind(x1,x2)
 joined_happops <- rbind(joined_happops,f0_hap_join_poprepd)
 
+# write out haplotype-frequency-ajusted data
+write_delim(joined_happops, "trait_BLUPs_HapRepPop.tsv")
 
 ###################
 ## plot frequency of trait values after haplotype-frequency adjustment
