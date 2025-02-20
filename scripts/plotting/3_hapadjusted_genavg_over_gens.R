@@ -3,7 +3,7 @@
 #SBATCH --ntasks=1
 #SBATCH --mem=30G
 #SBATCH --time=02:00:00
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/plotting/4_hapadjusted_genavg_over_gens.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/plotting/3_hapadjusted_genavg_over_gens.stdout
 #SBATCH -p koeniglab
 
 library(tidyverse)
