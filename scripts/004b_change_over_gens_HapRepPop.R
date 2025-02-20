@@ -76,11 +76,11 @@ f58_hap_join <- right_join(hap_trait_avg, f58_hap_table, by="Haplotype")
 for(j in c("f18_hap_join", "f28_hap_join", "f50_hap_join", "f58_hap_join")) {
   x <- get(j)
   out_df <- tibble(.rows=sum(x$Frequency))
-  for(i in c(2, 5:7)) {
+  for(i in c(2:7)) {
     p <- rep((x[,i][[1]]), x$Frequency)
     out_df <- cbind(out_df, p)
   }
-  colnames(out_df) <- colnames(x)[c(2,5:7)]
+  colnames(out_df) <- colnames(x)[c(2:7)]
   assign(paste0(j, "_poprepd"), out_df)
 }
 
@@ -128,7 +128,7 @@ df <- df %>% select(c(Generation, all_of(variant_phenos)))
 
 
 # set up for normality and variance equity tests
-collist <- colnames(df)[2:ncol(df)]
+collist <- colnames(joined_happops)[1:6]
 generationlist <- x$Generation
 
 
