@@ -90,6 +90,12 @@ f18_hap_join_poprepd$Generation <- 18
 f28_hap_join_poprepd$Generation <- 28
 f50_hap_join_poprepd$Generation <- 50
 f58_hap_join_poprepd$Generation <- 58
+## represent parental generation phenotypes at frequency
+## with one entry for each haplotype
+#table(hap_trait_avg$Haplotype)
+f0_hap_join_poprepd <- hap_trait_avg %>% select(-Haplotype)
+f0_hap_join_poprepd$Generation <- 0
+
 
 
 x1 <- rbind(f18_hap_join_poprepd, f28_hap_join_poprepd)
@@ -112,18 +118,15 @@ ggsave("../results/haplotype_frequency_trait_vals_histogram_colgeneration.png", 
 
 ## BASE STATISTICS
 # summarise mean & variance
-x <- df %>% 
+x <- joined_happops %>% 
     group_by(Generation) %>% 
-    summarise(across(where(is.numeric), list(mean=mean, var=var), .names="{.col}_{.fn}")) 
+    summarise(across(where(is.numeric), list(mean= \(x) mean(x,na.rm=T), var=\(x) var(x, na.rm=T)), .names="{.col}_{.fn}")) 
 write_delim(x, "happop_gens_trait_avg_var.tsv", "\t")
 # write table out with generations' trait summary statistics
 
 
-# filter traits with no variance
-variant_phenos <- names(which(apply(X=df[,2:ncol(df)], 2, var) > 0))
-df <- df %>% select(c(Generation, all_of(variant_phenos)))
 
-
+#########################
 # set up for normality and variance equity tests
 collist <- colnames(joined_happops)[1:6]
 generationlist <- x$Generation
@@ -139,7 +142,7 @@ normality_table <- tibble("Generation"=generationlist)
 for(i in collist) {
 
   #print(i)
-  tmp <- df %>% select(c(Generation, all_of(i))) %>% tibble
+  tmp <- joined_happops %>% select(c(Generation, all_of(i))) %>% tibble
   # empty list for p-values
   val <- c()
 
@@ -161,58 +164,52 @@ for(i in collist) {
 dev.off()
 
 colnames(normality_table)[2:ncol(normality_table)] <- paste0(collist, "_normality_pval")
-write_delim(normality_table, "trait_and_blup_normality_pvals.tsv", "\t")
+write_delim(normality_table, "blup_normality_pvals.tsv", "\t")
 normality_table %>% reframe(across(where(is.numeric), \(x) x < 0.05)) %>% print
 normality_table %>% reframe(across(where(is.numeric), \(x) x < 0.05)) %>% colSums %>% print
 ## germination has the least normal distribution(s), which is expected since it's a 0-1 decimal that is ideally near 1, not really continuously distributed trait
 
-
+#######
 # test for equality of variance between groups before anova
 # w Levene test
 for(i in collist){
   print(i)
-  leveneTest(get(i) ~ as.factor(Generation), df) %>% print
+  leveneTest(get(i) ~ as.factor(Generation), joined_happops) %>% print
 }
-## only flowering time has unequal variance between generations
+## all traits have (at least one) sig diff in variance btwn generations
 
 
 
 
-
+#####################
 #### signif changes in generation mean
-df$Generation <- as.factor(df$Generation)
-levels(df$Generation)
+joined_happops$Generation <- as.factor(joined_happops$Generation)
+levels(joined_happops$Generation)
 
-
+######
 # is there a difference between using anova & kruskal test on these phenotypes?
-for(m in 2:ncol(df)) {
-  print(colnames(df[,m]))
-  kruskal.test(unlist(df[,m]) ~ Generation, df) %>% print
+for(m in 1:6) {
+  print(colnames(joined_happops)[m])
+  kruskal.test(unlist(joined_happops[,m]) ~ Generation, joined_happops) %>% print
 
-  aov(unlist(df[,m]) ~ as.factor(Generation), df) %>% summary %>% print
+  aov(unlist(joined_happops[,m]) ~ as.factor(Generation), joined_happops) %>% summary %>% print
 }
 
-
-
-
-
-
-### limit statistics of signif mean differences to blup phenotypes
-df <- df %>% select(c(contains("blup"), Generation))
-trait_list <- colnames(df)[1:4]
-
+#####
 ## do phenotypes signif.ly change from parents to F18?
 ## do phenotypes signif.ly change from F18 compared to F58?
 
 # set up storing results
+trait_list <- colnames(joined_happops)[1:6]
+
 signif_tab <- tibble("trait"=trait_list, "P_F18"=as.numeric(NA), "F18_F58"=as.numeric(NA)) 
 
 ## first, test for significant result w Kruskal-wallis test
 
 for(i in 1:length(signif_tab$trait)){
   # filter to only relevant generations
-  tmp1 <- df %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 0)
-  tmp2 <- df %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 58)
+  tmp1 <- joined_happops %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 0)
+  tmp2 <- joined_happops %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 58)
 
   res1 <- kruskal.test(unlist(tmp1[,1]) ~ Generation, tmp1)
   res2 <- kruskal.test(unlist(tmp2[,1]) ~ Generation, tmp2)
@@ -244,11 +241,11 @@ trt <- unique(unlist(smth[,1]))
 for( j in 1:length(trt))  {
 
     test_trt <- trt[j]
-    test_trt_df <- df %>% select(c(all_of(test_trt), Generation))
+    test_trt_joined_happops <- joined_happops %>% select(c(all_of(test_trt), Generation))
 
     rownum <- which(signif_tab$trait == test_trt)
 
-    dunres <- dunn.test(unlist(test_trt_df[,1]), test_trt_df$Generation)
+    dunres <- dunn.test(unlist(test_trt_joined_happops[,1]), test_trt_joined_happops$Generation)
 
     # extract posthoc values via position in posthoc table
     #dunres$comparisons[1]
