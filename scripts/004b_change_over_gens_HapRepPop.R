@@ -95,22 +95,19 @@ f58_hap_join_poprepd$Generation <- 58
 x1 <- rbind(f18_hap_join_poprepd, f28_hap_join_poprepd)
 x2 <- rbind(f50_hap_join_poprepd, f58_hap_join_poprepd)
 joined_happops <- rbind(x1,x2)
+joined_happops <- rbind(joined_happops,f0_hap_join_poprepd)
 
 
+###################
+## plot frequency of trait values after haplotype-frequency adjustment
+tmp <- joined_happops %>% pivot_longer(cols=c(-Generation), names_to="trait", values_to="value") 
+tmp$Generation <- as.factor(tmp$Generation)
 
-aov(unlist(joined_happops[,1]) ~ as.factor(Generation), joined_happops) %>% summary %>% print
+g1 <- ggplot(tmp, aes(x=value, group=Generation)) + geom_histogram() + facet_wrap(~trait, scales="free_x")
+ggsave("../results/haplotype_frequency_trait_vals_histogram.png", g1)
 
-
-
-
-
-
-
-
-
-
-
-
+g2 <- ggplot(tmp, aes(x=value, group=Generation, fill=as.factor(Generation))) + geom_histogram() + facet_wrap(~trait, scales="free_x")
+ggsave("../results/haplotype_frequency_trait_vals_histogram_colgeneration.png", g2)
 
 
 ## BASE STATISTICS
