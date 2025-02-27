@@ -202,8 +202,8 @@ tmp$genspostpval <- gsub("_pval", "", tmp$genspostpval)
 tmp <- tmp %>% filter(generations_compared == gensmeandiff & gensmeandiff == genspostpval) %>% select(-c(gensmeandiff, genspostpval))
 
 
+# mark significant dunn p-values based on adjusted alpha value
+tmp$Dunn_posthoc_sig <- tmp$Dunn_posthoc_pval < (0.05 / 2)
 
 write_delim(tmp, "blups_anova_posthoc_results.tsv", "\t")
-
-
 

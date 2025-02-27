@@ -133,7 +133,7 @@ collist <- colnames(joined_happops)[1:6]
 generationlist <- x$Generation
 
 
-pdf("../results/normality_test.pdf")
+pdf("../results/happop_normality_test.pdf")
 
 normality_table <- tibble("Generation"=generationlist)
 
@@ -165,7 +165,7 @@ for(i in collist) {
 dev.off()
 
 colnames(normality_table)[2:ncol(normality_table)] <- paste0(collist, "_normality_pval")
-write_delim(normality_table, "blup_normality_pvals.tsv", "\t")
+write_delim(normality_table, "happop_blup_normality_pvals.tsv", "\t")
 normality_table %>% reframe(across(where(is.numeric), \(x) x < 0.05)) %>% print
 normality_table %>% reframe(across(where(is.numeric), \(x) x < 0.05)) %>% colSums %>% print
 ## germination has the least normal distribution(s), which is expected since it's a 0-1 decimal that is ideally near 1, not really continuously distributed trait
@@ -281,8 +281,8 @@ tmp$genspostpval <- gsub("_pval", "", tmp$genspostpval)
 tmp <- tmp %>% filter(generations_compared == gensmeandiff & gensmeandiff == genspostpval) %>% select(-c(gensmeandiff, genspostpval))
 
 
+# mark significant dunn p-values based on adjusted alpha value
+tmp$Dunn_posthoc_sig <- tmp$Dunn_posthoc_pval < (0.05 / 2)
 
-write_delim(tmp, "blups_anova_posthoc_results.tsv", "\t")
-
-
+write_delim(tmp, "happop_blups_anova_posthoc_results.tsv", "\t")
 
