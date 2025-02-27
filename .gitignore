@@ -54,3 +54,5 @@ data/*
 
 *.Rproj
 .lintr
+scripts/.lme_fn_notes.txt
+scripts/.tmp_modeling.R
