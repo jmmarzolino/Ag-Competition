@@ -26,4 +26,4 @@ PHENO_NAME="ASSOC_${COL}"
 # test univariate linear model & univariate linear MIXED model
 /rhome/jmarz001/software/gemma0.98.5 -bfile "$GENO" -c "$PCS" -lm 4 -n $SLURM_ARRAY_TASK_ID -outdir . -o $PHENO_NAME -debug
 
-#/rhome/jmarz001/software/gemma0.98.5 -bfile "$GENO" -k "$KINSHIP" -c "$PCS" -lmm 4 -n $SLURM_ARRAY_TASK_ID -outdir . -o ${PHENO_NAME}_lmm -debug
+/rhome/jmarz001/software/gemma0.98.5 -bfile "$GENO" -k "$KINSHIP" -c "$PCS" -lmm 4 -n $SLURM_ARRAY_TASK_ID -outdir . -o ${PHENO_NAME}_lmm -debug
