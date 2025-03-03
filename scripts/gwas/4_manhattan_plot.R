@@ -19,8 +19,9 @@ phenotype_names <- read_delim("trait_name_to_col_numbers.tsv", col_names=T)
 
 addPlot <- function(FileName){
   # look up file name in df that connects trait name and file
-  AssocTraitName <- as.character(phenotype_names[grep(FileName, phenotype_names$file), 1])
-  
+  file_base <- gsub("(ASSOC_\\d+).*(\\.assoc\\.txt)", "\\1\\2", FileName)
+  AssocTraitName <- as.character(phenotype_names[grep(file_base, phenotype_names$file), 1])
+
   # convert computer-style trait names to human-readable
   AssocTraitName <- tidy_text_substitution(AssocTraitName)
   # put line breaks into long trait names so they're readable
