@@ -84,7 +84,6 @@ addPlot <- function(FileName){
 # set variables
 #df <- read.table(args[1])
 lst <- phenotype_names$file
-
 test <- lapply(lst, addPlot)
 
 pdf("GWAS_manhattan.pdf")
