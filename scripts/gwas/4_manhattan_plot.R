@@ -89,3 +89,10 @@ test <- lapply(lst, addPlot)
 pdf("GWAS_manhattan.pdf")
 marrangeGrob(grobs=test, nrow=3, ncol=1)
 dev.off()
+
+lst_lmm <- phenotype_names$file_lmm
+test_lmm <- lapply(lst_lmm, addPlot)
+
+pdf("GWAS_manhattan_lmm.pdf")
+marrangeGrob(grobs=test_lmm, nrow=3, ncol=1)
+dev.off()
