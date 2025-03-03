@@ -3,6 +3,7 @@
 #SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_univariate_association_array.stdout
 #SBATCH --ntasks=2
 #SBATCH --mem=80gb
+#SBATCH --time=2:00:00
 #SBATCH -p koeniglab
 
 # GEMMA 0.98
