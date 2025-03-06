@@ -50,5 +50,5 @@ format_assoc <- function(filename){
 
 
 # set variables
-lst <- assoc_files_list$file
+lst <- c(assoc_files_list$file, assoc_files_list$file_lmm)
 lapply(lst, format_assoc)
