@@ -21,6 +21,11 @@ vcftools --gzvcf imputed.vcf.gz --remove-indels --not-chr chrUn --recode --recod
 
 # list genotypes in raw vcf as basis for plink phenotype file
 vcftools --vcf AG.recode.vcf --extract-FORMAT-info GT
+
+# take list of genotypes from first line
+# cut cols 3+ (excludes CHR & POS cols)
+# sed: search for \t, replace w \n, globally. changes tab-delim col list of genotypes to one col of genos in rows
+# awk: copy first col, print col \s col. replicates genotype list into two matching columns for plink
 head -n1 out.GT.FORMAT | cut -f3- | sed 's/\t/\n/g' | awk '{$1=$1}{print $1" "$1}' > progeny_geno_pheno_list
 
 # create plink format files from vcf (bed, bim, fam)
@@ -55,7 +60,9 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/2_phenotypes.R
 plink --vcf AG.recode.vcf --double-id --allow-no-sex --allow-extra-chr --keep common_progeny_geno_pheno_list --pca 5 --out all_traits
 mv all_traits.log all_traits_pca.log
 # cut only eigenvec values from file; ensure proper formatting of value-tab-value (awk reconstitutes all fields)
-cut -d" " -f3-23 all_traits.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\t"$0}' > pca.txt
+cut -d" " -f3- all_traits_pca.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\t"$0}' > pca.txt
+# awk prints col of "1" \t eigenvecs
+# command removes genotype IDs from first two cols, replaces w one col of 1 gemma can use (1 in first col indicates non-missing/included data I believe)
 
 # Relatedness Matrix
 module load gemma/0.98.5
