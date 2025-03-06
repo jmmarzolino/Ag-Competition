@@ -38,6 +38,7 @@ H2cal(data = pheno
           , summary = TRUE
           )
 
+
 h2_totmass <- 
 H2cal(data = pheno
           , trait = "TOTAL_MASS"
@@ -51,6 +52,7 @@ H2cal(data = pheno
           , outliers.rm = TRUE
           , summary = TRUE
           )
+
 
 h2_massper <- 
 H2cal(data = pheno
@@ -128,3 +130,9 @@ blup_output <- full_join(blup_output, h2_fec$blups)
 
 write_delim(blup_output, "trait_BLUPs.tsv", "\t")
 
+
+#lmer(SEED_WEIGHT_100 ~ 1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year), pheno) %>% plot
+#mod <-  lmer(SEED_WEIGHT_100 ~ 1 + (1|Genotype) + Exp_year+ (1|Genotype:Exp_year), pheno)
+# yr <- pheno[as.numeric(names(fitted(mod))), 2]
+#mod_tb <- tibble("year"=as.factor(yr$Exp_year), "residuals"=resid(mod), "fitted"=fitted(mod))
+#ggplot(mod_tb, aes(fitted, residuals, color=year)) + geom_point() + geom_smooth() + geom_hline(yintercept=0)
