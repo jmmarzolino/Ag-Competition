@@ -16,11 +16,15 @@ cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
 #############################################################################
 
 module load vcftools/0.1.16-18
-# remove indels for gemma
-vcftools --gzvcf imputed.vcf.gz --remove-indels --not-chr chrUn --recode --recode-INFO-all --out AG
+# remove indels for gemma & filter to variant sites
+vcftools --gzvcf imputed.vcf.gz --remove-indels --maf 0.002 --not-chr chrUn --recode --recode-INFO-all --out AG
+# minor allele freq set to 1/(2*208 seq'd indvs) = 0.0024
+# so maf filter will only remove freqs of 0
 
 # list genotypes in raw vcf as basis for plink phenotype file
 vcftools --vcf AG.recode.vcf --extract-FORMAT-info GT
+#Output nucleotide diversity at a list of positions
+vcftools --vcf MAF_filt.recode.vcf --freq
 
 # take list of genotypes from first line
 # cut cols 3+ (excludes CHR & POS cols)
@@ -31,38 +35,18 @@ head -n1 out.GT.FORMAT | cut -f3- | sed 's/\t/\n/g' | awk '{$1=$1}{print $1" "$1
 # create plink format files from vcf (bed, bim, fam)
 module load plink/1.90b6.25
 plink --vcf AG.recode.vcf --double-id --allow-no-sex --allow-extra-chr --keep progeny_geno_pheno_list -indiv-sort file progeny_geno_pheno_list --make-bed --out all_traits
-mv all_traits.log all_traits_bed.log
-
 
 #### add phenotypes to .fam file
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/2_phenotypes.R
-# and filter vcf file to individuals in phenotype data
-cut -d\  -f1 all_traits.fam | awk '{$1=$1}{print $1" "$1}' > common_progeny_geno_pheno_list
 
-
-# filter vcf to variant sites in retained progeny
-# re-create plink files w filtered progeny list
-vcftools --gzvcf imputed.vcf.gz --remove-indels --not-chr chrUn --recode --recode-INFO-all --keep common_progeny_geno_pheno_list --maf 0.002 --out AG
-# minor allele freq set to 1/(2*208 seq'd indvs) = 0.0024
-# so maf filter will only remove freqs of 0
-
-#Output nucleotide diversity at a list of positions
-vcftools --vcf MAF_filt.recode.vcf --freq
-
-# create plink format files from vcf (bed, bim, fam)
-plink --vcf AG.recode.vcf --double-id --allow-no-sex --allow-extra-chr --keep common_progeny_geno_pheno_list -indiv-sort file common_progeny_geno_pheno_list --make-bed --out all_traits
-mv all_traits.log all_traits_bed2.log
-
-# add phenotypes to .fam file
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/2_phenotypes.R
 
 # make pca covar file
-plink --vcf AG.recode.vcf --double-id --allow-no-sex --allow-extra-chr --keep common_progeny_geno_pheno_list --pca 5 --out all_traits
-mv all_traits.log all_traits_pca.log
+plink --vcf AG.recode.vcf --double-id --allow-no-sex --allow-extra-chr --pca 10 --out all_traits_pca
 # cut only eigenvec values from file; ensure proper formatting of value-tab-value (awk reconstitutes all fields)
 cut -d" " -f3- all_traits_pca.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\t"$0}' > pca.txt
 # awk prints col of "1" \t eigenvecs
 # command removes genotype IDs from first two cols, replaces w one col of 1 gemma can use (1 in first col indicates non-missing/included data I believe)
+
 
 # Relatedness Matrix
 module load gemma/0.98.5
@@ -96,6 +80,10 @@ sbatch --array=1-$ARRAY_LIM /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/
 
 # plot results
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_clump_man.R
+
+
+
+
 
 
 
