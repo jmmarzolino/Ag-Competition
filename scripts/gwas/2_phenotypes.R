@@ -31,7 +31,8 @@ pheno <- pheno %>% filter(Generation != 0) %>% select(-Generation)
 trait_names <- colnames(pheno)[2:ncol(pheno)]
 trait_num <- 6:(length(trait_names)+5)
 file <- paste0("ASSOC_", trait_num, ".assoc.txt")
-trait_n <- tibble(trait_names, trait_num, file)
+file_lmm <- paste0("ASSOC_", trait_num, "_lmm.assoc.txt")
+trait_n <- tibble(trait_names, trait_num, file, file_lmm)
 write_delim(trait_n, "trait_name_to_col_numbers.tsv")
 
 
