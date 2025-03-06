@@ -9,6 +9,7 @@ library(tidyverse)
 library(data.table)
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
+source("../../scripts/CUSTOM_FNS.R")
 # read in phenotypes file
 #pheno <- fread("../../data/FITNESS.tsv")
 pheno <- fread("../../data/trait_BLUPs.tsv")
@@ -18,9 +19,8 @@ novar <- which(apply(pheno[2:ncol(pheno)], 2, var) == 0)
 pheno <- pheno %>% select(-c(names(novar)))
 
 # remove parent lines that won't be in gwas
-#pheno <- pheno %>% filter(Generation != 0) %>% select(-Generation)
-# filter out 'mixed' condition plots
-#pheno <- pheno %>% filter(Condition != "mixed") %>% select(-Condition)
+pheno <- add_generation(pheno)
+pheno <- pheno %>% filter(Generation != 0) %>% select(-Generation)
 
 # scale the phenotypes
 #pheno <- pheno %>% mutate(across(-c(Genotype), ~(scale(.) %>% as.vector)))
