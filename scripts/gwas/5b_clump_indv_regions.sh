@@ -8,7 +8,7 @@
 cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
 module load plink/1.90b6.25
 
-ASSOC_FILE=$(cut -f3 association_files_traits.txt | tail -n+2 | head -n $SLURM_ARRAY_TASK_ID | tail -n1)
+ASSOC_FILE=$(cut -f1 all_assoc_files.txt | head -n $SLURM_ARRAY_TASK_ID | tail -n1)
 OUT=$(basename $ASSOC_FILE | cut -d. -f1-2)
 ASSOC_TMP=$(echo ""$OUT".tmp")
 
