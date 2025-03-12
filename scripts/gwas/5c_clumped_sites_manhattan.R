@@ -11,7 +11,7 @@ setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/results/gwas")
 library(pacman)
 p_load(tidyverse, data.table, ggsci, Cairo, qqman)
 
-clump <- fread("plink.clumped")
+clump <- fread("plink_clump.clumped")
 clump2 <- clump[,1:11]
 clump2$NUM_CHR <- as.numeric(gsub("chr(\\d)H", "\\1", clump2$CHR))
 
@@ -20,6 +20,15 @@ manhattan(clump2, chr="NUM_CHR", bp="BP", p="P", col=c("dark blue", "dodger blue
 dev.off()
 
 
+
+########## lmm model results
+clump <- fread("plink_clump_lmm.clumped")
+clump2 <- clump[,1:11]
+clump2$NUM_CHR <- as.numeric(gsub("chr(\\d)H", "\\1", clump2$CHR))
+
+png("all_clumps_manhattan_lmm.png")
+manhattan(clump2, chr="NUM_CHR", bp="BP", p="P", col=c("dark blue", "dodger blue"))
+dev.off()
 
 #suggestiveline: Where to draw a "suggestive" line. Default -log10(1e-5). Set to FALSE to disable.
 
