@@ -23,7 +23,7 @@ addPlot <- function(FileName){
     clump2$NUM_CHR <- as.numeric(gsub("chr(\\d)H", "\\1", clump2$CHR))
 
     # cut assoc-file-name number for use in output file name
-    i <- gsub("ASSOC_(\\d).assoc.clumped", "\\1", FileName)
+    i <- gsub("ASSOC_(.*).assoc.clumped", "\\1", FileName)
     # name output 
     OUTNAME <- paste0("indv_clumps_manhattan_", i, ".png")
 
