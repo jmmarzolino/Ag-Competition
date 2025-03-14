@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
-#SBATCH --mem=50G
-#SBATCH --time=02:00:00
+#SBATCH --mem=32G
+#SBATCH --time=01:00:00
 #SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/004b_change_over_gens_HapRepPop.stdout
 #SBATCH -p koeniglab
 
@@ -17,97 +17,12 @@ library(ggpubr)
 
 ### statistically test for trait changes between generations
 # with phenotypes sampled to more accurately represent their proportion in the orignal population
+hap <- fread("trait_BLUPs_HapRepPop.tsv")
 
-hap <- fread("hap_assign.txt")
-df <- fread("trait_BLUPs.tsv")
-
-
-hap$Haplotype <- as.factor(hap$Haplotype)
-# cut 3-digit genotype codes down to 2 digits
-# to match family lines
-df$Genotype <- gsub("(\\d+_\\d+)_\\d", "\\1", df$Genotype)
-grep("\\d+_\\d+_\\d+", df$Genotype)
-
-
-# how common was each haplotype in the 4 sampled generations?
-## calculate haplotype frequency per generation
-f18_hap <- hap[grep("^1_\\d+", hap$Genotype),]
-f18_hap_table <- data.frame(table(f18_hap$Haplotype))
-colnames(f18_hap_table) <- c("Haplotype", "Frequency")
-f18_hap_table$fraction <- f18_hap_table$Frequency / sum(f18_hap_table$Frequency)
-f18_hap_table <- f18_hap_table %>% filter(Frequency > 0)
-
-f28_hap <- hap[grep("^2_\\d+", hap$Genotype),]
-f28_hap_table <- data.frame(table(f28_hap$Haplotype))
-colnames(f28_hap_table) <- c("Haplotype", "Frequency")
-f28_hap_table$fraction <- f28_hap_table$Frequency / sum(f28_hap_table$Frequency)
-f28_hap_table <- f28_hap_table %>% filter(Frequency > 0)
-
-f50_hap <- hap[grep("^3_\\d+", hap$Genotype),]
-f50_hap_table <- data.frame(table(f50_hap$Haplotype))
-colnames(f50_hap_table) <- c("Haplotype", "Frequency")
-f50_hap_table$fraction <- f50_hap_table$Frequency / sum(f50_hap_table$Frequency)
-f50_hap_table <- f50_hap_table %>% filter(Frequency > 0)
-
-f58_hap <- hap[grep("^7_\\d+", hap$Genotype),]
-f58_hap_table <- data.frame(table(f58_hap$Haplotype))
-colnames(f58_hap_table) <- c("Haplotype", "Frequency")
-f58_hap_table$fraction <- f58_hap_table$Frequency / sum(f58_hap_table$Frequency)
-f58_hap_table <- f58_hap_table %>% filter(Frequency > 0)
-
-# combine genotype, phenotype, and haplotype
-hap_join <- inner_join(hap, df, by = "Genotype")
-
-
-## calculate generations' trait averages weighted by haplotype
-
-# average phenotype for each haplotype
-hap_trait_avg <- hap_join %>% group_by(Haplotype) %>% summarise(across(where(is.numeric), mean)) 
-
-# join haplotype, generation frequency, and haplotype phenotypes
-f18_hap_join <- right_join(hap_trait_avg, f18_hap_table, by="Haplotype")
-f28_hap_join <- right_join(hap_trait_avg, f28_hap_table, by="Haplotype")
-f50_hap_join <- right_join(hap_trait_avg, f50_hap_table, by="Haplotype")
-f58_hap_join <- right_join(hap_trait_avg, f58_hap_table, by="Haplotype")
-
-
-# copy rows to reflect their generation frequency number
-
-for(j in c("f18_hap_join", "f28_hap_join", "f50_hap_join", "f58_hap_join")) {
-  x <- get(j)
-  out_df <- tibble(.rows=sum(x$Frequency))
-  for(i in c(2:7)) {
-    p <- rep((x[,i][[1]]), x$Frequency)
-    out_df <- cbind(out_df, p)
-  }
-  colnames(out_df) <- colnames(x)[c(2:7)]
-  assign(paste0(j, "_poprepd"), out_df)
-}
-
-
-# add col indicating phenotype's generation
-f18_hap_join_poprepd$Generation <- 18
-f28_hap_join_poprepd$Generation <- 28
-f50_hap_join_poprepd$Generation <- 50
-f58_hap_join_poprepd$Generation <- 58
-## represent parental generation phenotypes at frequency
-## with one entry for each haplotype
-#table(hap_trait_avg$Haplotype)
-f0_hap_join_poprepd <- hap_trait_avg %>% select(-Haplotype)
-f0_hap_join_poprepd$Generation <- 0
-
-## join generations together
-x1 <- rbind(f18_hap_join_poprepd, f28_hap_join_poprepd)
-x2 <- rbind(f50_hap_join_poprepd, f58_hap_join_poprepd)
-joined_happops <- rbind(x1,x2)
-joined_happops <- rbind(joined_happops,f0_hap_join_poprepd)
-
-# write out haplotype-frequency-ajusted data
-write_delim(joined_happops, "trait_BLUPs_HapRepPop.tsv")
 
 ###################
 ## plot frequency of trait values after haplotype-frequency adjustment
-tmp <- joined_happops %>% pivot_longer(cols=c(-Generation), names_to="trait", values_to="value") 
+tmp <- hap %>% pivot_longer(cols=c(-Generation), names_to="trait", values_to="value") 
 tmp$Generation <- as.factor(tmp$Generation)
 
 g1 <- ggplot(tmp, aes(x=value, group=Generation)) + geom_histogram() + facet_wrap(~trait, scales="free_x")
@@ -119,7 +34,7 @@ ggsave("../results/haplotype_frequency_trait_vals_histogram_colgeneration.png", 
 
 ## BASE STATISTICS
 # summarise mean & variance
-x <- joined_happops %>% 
+x <- hap %>% 
     group_by(Generation) %>% 
     summarise(across(where(is.numeric), list(mean= \(x) mean(x,na.rm=T), var=\(x) var(x, na.rm=T)), .names="{.col}_{.fn}")) 
 write_delim(x, "happop_gens_trait_avg_var.tsv", "\t")
@@ -129,7 +44,7 @@ write_delim(x, "happop_gens_trait_avg_var.tsv", "\t")
 
 #########################
 # set up for normality and variance equity tests
-collist <- colnames(joined_happops)[1:6]
+collist <- colnames(hap)[1:6]
 generationlist <- x$Generation
 
 
@@ -143,7 +58,7 @@ normality_table <- tibble("Generation"=generationlist)
 for(i in collist) {
 
   #print(i)
-  tmp <- joined_happops %>% select(c(Generation, all_of(i))) %>% tibble
+  tmp <- hap %>% select(c(Generation, all_of(i))) %>% tibble
   # empty list for p-values
   val <- c()
 
@@ -175,7 +90,7 @@ normality_table %>% reframe(across(where(is.numeric), \(x) x < 0.05)) %>% colSum
 # w Levene test
 for(i in collist){
   print(i)
-  leveneTest(get(i) ~ as.factor(Generation), joined_happops) %>% print
+  leveneTest(get(i) ~ as.factor(Generation), hap) %>% print
 }
 ## all traits have (at least one) sig diff in variance btwn generations
 
@@ -184,16 +99,16 @@ for(i in collist){
 
 #####################
 #### signif changes in generation mean
-joined_happops$Generation <- as.factor(joined_happops$Generation)
-levels(joined_happops$Generation)
+hap$Generation <- as.factor(hap$Generation)
+levels(hap$Generation)
 
 ######
 # is there a difference between using anova & kruskal test on these phenotypes?
 for(m in 1:6) {
-  print(colnames(joined_happops)[m])
-  kruskal.test(unlist(joined_happops[,m]) ~ Generation, joined_happops) %>% print
+  print(colnames(hap)[m])
+  kruskal.test(unlist(hap[,m]) ~ Generation, hap) %>% print
 
-  aov(unlist(joined_happops[,m]) ~ as.factor(Generation), joined_happops) %>% summary %>% print
+  aov(unlist(hap[,m]) ~ as.factor(Generation), hap) %>% summary %>% print
 }
 
 #####
@@ -201,7 +116,7 @@ for(m in 1:6) {
 ## do phenotypes signif.ly change from F18 compared to F58?
 
 # set up storing results
-trait_list <- colnames(joined_happops)[1:6]
+trait_list <- colnames(hap)[1:6]
 
 signif_tab <- tibble("trait"=trait_list, "P_F18"=as.numeric(NA), "F18_F58"=as.numeric(NA)) 
 
@@ -209,8 +124,8 @@ signif_tab <- tibble("trait"=trait_list, "P_F18"=as.numeric(NA), "F18_F58"=as.nu
 
 for(i in 1:length(signif_tab$trait)){
   # filter to only relevant generations
-  tmp1 <- joined_happops %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 0)
-  tmp2 <- joined_happops %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 58)
+  tmp1 <- hap %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 0)
+  tmp2 <- hap %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 58)
 
   res1 <- kruskal.test(unlist(tmp1[,1]) ~ Generation, tmp1)
   res2 <- kruskal.test(unlist(tmp2[,1]) ~ Generation, tmp2)
@@ -242,7 +157,7 @@ trt <- unique(unlist(smth[,1]))
 for( j in 1:length(trt))  {
 
     test_trt <- trt[j]
-    test_trt_joined_happops <- joined_happops %>% select(c(all_of(test_trt), Generation))
+    test_trt_joined_happops <- hap %>% select(c(all_of(test_trt), Generation))
 
     rownum <- which(signif_tab$trait == test_trt)
 
@@ -285,4 +200,3 @@ tmp <- tmp %>% filter(generations_compared == gensmeandiff & gensmeandiff == gen
 tmp$Dunn_posthoc_sig <- tmp$Dunn_posthoc_pval < (0.05 / 2)
 
 write_delim(tmp, "happop_blups_anova_posthoc_results.tsv", "\t")
-
