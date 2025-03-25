@@ -155,8 +155,6 @@ signif_tab_KW$Kruskal_sig <- signif_tab_KW$Kruskal_pval < 0.05
 
 
 # set up storing posthoc test results
-signif_tab$P_F18_meandiff <- as.numeric(NA) 
-signif_tab$F18_F58_meandiff <- as.numeric(NA) 
 signif_tab$P_F18_pval <- as.numeric(NA) 
 signif_tab$F18_F58_pval <- as.numeric(NA) 
 
@@ -164,7 +162,6 @@ signif_tab$F18_F58_pval <- as.numeric(NA)
 
 # one posthoc test for each trait that requires it
 smth <- signif_tab_KW[which(signif_tab_KW$Kruskal_sig), 1:2]
-
 trt <- unique(unlist(smth[,1]))
 
 for( j in 1:length(trt))  {
@@ -178,24 +175,32 @@ for( j in 1:length(trt))  {
 
     # extract posthoc values via position in posthoc table
     #dunres$comparisons[1]
-    p18_meandiff <- -1*(dunres$Z[1])
     p18_pval <- dunres$P[1]
     #dunres$comparisons[8]
-    f1858_meandiff <- -1*(dunres$Z[8])
     f1858_pval <- dunres$P[8]
 
     # store results in table
-    signif_tab[rownum, 4] <- p18_meandiff
-    signif_tab[rownum, 5] <- f1858_meandiff
-    signif_tab[rownum, 6] <- p18_pval
-    signif_tab[rownum, 7] <- f1858_pval
-
+    signif_tab[rownum, 4] <- p18_pval
+    signif_tab[rownum, 5] <- f1858_pval
 }
 
 
+# claculate trait change between generations of interest
+x2 <- df %>% 
+    group_by(Generation) %>% 
+    summarise(across(where(is.numeric), \(x) mean(x, na.rm=T))) 
+x3 <- rbind(x2[2,]-x2[1,], x2[5,]-x2[2,])
+
+x4 <- data.frame(t(x3))[-1,]
+x4c <- rownames(x4)
+x4 <- tibble(x4c, x4)
+colnames(x4) <- c("trait", "P_F18_meandiff", "F18_F58_meandiff")
+
+# and join with p-val table
+signif_tab <- full_join(signif_tab, x4, by="trait")
+
 ## format table by pivoting 
 signif_tab2 <- signif_tab %>% pivot_longer(cols=c(P_F18, F18_F58), names_to="generations_compared", values_to="Kruskal_pval")
-
 signif_tab2$Kruskal_sig <- signif_tab2$Kruskal_pval < 0.05
 
 
