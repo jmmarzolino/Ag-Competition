@@ -25,7 +25,8 @@ df <- df %>%
 dfb <- fread("trait_BLUPs.tsv")
 df <- full_join(df, dfb, by=c('Genotype'), suffix=c("", "_blup"))
 df <- add_generation(df)
-df <- df %>% select(c('Generation', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Plants', 'FECUNDITY', 'MASS_PER_PLANT', 'FT_blup', 'TOTAL_MASS_blup', 'Plants_blup', 'SEED_WEIGHT_100_blup', 'FECUNDITY_blup', 'MASS_PER_PLANT_blup'))
+df <- df %>% select(c('Generation', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Plants', 'FECUNDITY', 'MASS_PER_PLANT', 
+  'FT_blup', 'TOTAL_MASS_blup', 'Plants_blup', 'SEED_WEIGHT_100_blup', 'FECUNDITY_blup', 'MASS_PER_PLANT_blup'))
 
 
 ## BASE STATISTICS
@@ -83,7 +84,9 @@ colnames(normality_table)[2:ncol(normality_table)] <- paste0(collist, "_normalit
 write_delim(normality_table, "trait_and_blup_normality_pvals.tsv", "\t")
 normality_table %>% reframe(across(where(is.numeric), \(x) x < 0.05)) %>% print
 normality_table %>% reframe(across(where(is.numeric), \(x) x < 0.05)) %>% colSums %>% print
-## germination has the least normal distribution(s), which is expected since it's a 0-1 decimal that is ideally near 1, not really continuously distributed trait
+## germination has the least normal distribution(s), 
+#which is expected since it's a 0-1 decimal that is ideally near 1, 
+#not really continuously distributed trait
 
 
 # test for equality of variance between groups before anova
@@ -93,7 +96,7 @@ for(i in collist){
   leveneTest(get(i) ~ as.factor(Generation), df) %>% print
 }
 ## only flowering time has unequal variance between generations
-
+## ^not entirely
 
 
 
