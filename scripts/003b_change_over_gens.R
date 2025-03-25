@@ -121,7 +121,7 @@ for(m in 2:ncol(df)) {
 
 ### limit statistics of signif mean differences to blup phenotypes
 df <- df %>% select(c(contains("blup"), Generation))
-trait_list <- colnames(df)[1:4]
+trait_list <- colnames(df)[1:ncol(df)-1]
 
 ## do phenotypes signif.ly change from parents to F18?
 ## do phenotypes signif.ly change from F18 compared to F58?
