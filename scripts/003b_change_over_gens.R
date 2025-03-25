@@ -37,6 +37,10 @@ x <- df %>%
 write_delim(x, "generations_trait_avg_var.tsv", "\t")
 # write table out with generations' trait summary statistics
 
+# summary table of change in mean & var between generations
+y <- rbind(x[2,] - x[1,], x[3,] - x[2,], x[4,] - x[3,], x[5,] - x[4,])
+y$timespan <- c("P-F18", "F18-F28", "F28-F50", "F50-F58")
+write_delim(y, "trait_mean_var_change_btwn_gens.tsv")
 
 # filter traits with no variance
 #variant_phenos <- names(which(apply(X=df[,2:ncol(df)], 2, var) > 0))\
