@@ -32,7 +32,7 @@ df <- df %>% select(c('Generation', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Plan
 # summarise mean & variance
 x <- df %>% 
     group_by(Generation) %>% 
-    summarise(across(where(is.numeric), list(mean=mean, var=var), .names="{.col}_{.fn}")) 
+    summarise(across(where(is.numeric), list(mean=\(x) mean(x, na.rm=T), var= \(y) var(y, na.rm=T)), .names="{.col}_{.fn}")) 
 write_delim(x, "generations_trait_avg_var.tsv", "\t")
 # write table out with generations' trait summary statistics
 
