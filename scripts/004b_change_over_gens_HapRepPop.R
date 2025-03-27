@@ -44,7 +44,7 @@ write_delim(x, "happop_gens_trait_avg_var.tsv", "\t")
 
 #########################
 # set up for normality and variance equity tests
-collist <- colnames(hap)[1:6]
+collist <- colnames(hap)[1:ncol(hap)-1]
 generationlist <- x$Generation
 
 
@@ -97,8 +97,68 @@ for(i in collist){
 
 
 
+
+
+#############  Variance Change   #########
+x2 <- hap %>% 
+    group_by(Generation) %>% 
+    summarise(across(where(is.numeric), \(x) var(x, na.rm=T))) 
+x3 <- rbind(x2[2,]-x2[1,], x2[5,]-x2[2,])
+
+x4 <- data.frame(t(x3))[-1,]
+x4c <- rownames(x4)
+x4 <- tibble(x4c, x4)
+colnames(x4) <- c("trait", "P_F18_vardiff", "F18_F58_vardiff")
+
+
+##########   are var differences significant?   #########
+var_tab <- tibble("trait"=collist, "all_gens"=as.numeric(NA), "P_F18"=as.numeric(NA), "F18_F58"=as.numeric(NA)) 
+# and store change in var & tests p-vals
+
+# w Levene test
+for(i in collist){
+  #print(i)
+  k <- leveneTest(get(i) ~ as.factor(Generation), hap)$`Pr(>F)`[1]
+  tmp1 <- hap %>% filter(Generation == 0 | Generation == 18)
+  tmp2 <- hap %>% filter(Generation == 18 | Generation == 58)
+  m <- leveneTest(get(i) ~ as.factor(Generation), tmp1)$`Pr(>F)`[1]
+  n <- leveneTest(get(i) ~ as.factor(Generation), tmp2)$`Pr(>F)`[1]
+
+  # save values to table in correct trait-row
+  var_tab[which(var_tab$trait == i), 2] <- k
+  var_tab[which(var_tab$trait == i), 3] <- m
+  var_tab[which(var_tab$trait == i), 4] <- n
+}
+
+
+# join var change table with p-val table
+var_tab_sig <- full_join(var_tab, x4, by="trait")
+# save a copy of variance change + significance
+write_delim(var_tab_sig, "happop_traits_var_change_sig_test.tsv", "\t")
+# remove 'all_gens' comparison test before spivoting, for clarity
+var_tab_sig <- var_tab_sig %>% select(-all_gens)
+
+## format table w pivot
+var_tab_sig <- var_tab_sig %>% pivot_longer(cols=c(P_F18, F18_F58), names_to="generations_compared", values_to="Levene_pval")
+var_tab_sig$Levene_sig <- var_tab_sig$Levene_pval < 0.05
+
+
+tmp <- var_tab_sig %>% 
+  pivot_longer(cols=c(P_F18_vardiff, F18_F58_vardiff), names_to="gensvardiff", values_to="var_difference") 
+
+tmp$gensvardiff <- gsub("_vardiff", "", tmp$gensvardiff)
+tmp <- tmp %>% filter(generations_compared == gensvardiff) %>% select(-c(gensvardiff))
+
+write_delim(tmp, "happop_traits_var_diff_btwn_gens_sig.tsv", "\t")
+
+
+
+
+
+
 #####################
 #### signif changes in generation mean
+hap <- tibble(hap)
 hap$Generation <- as.factor(hap$Generation)
 levels(hap$Generation)
 
@@ -116,9 +176,7 @@ for(m in 1:6) {
 ## do phenotypes signif.ly change from F18 compared to F58?
 
 # set up storing results
-trait_list <- colnames(hap)[1:6]
-
-signif_tab <- tibble("trait"=trait_list, "P_F18"=as.numeric(NA), "F18_F58"=as.numeric(NA)) 
+signif_tab <- tibble("trait"=collist, "P_F18"=as.numeric(NA), "F18_F58"=as.numeric(NA)) 
 
 ## first, test for significant result w Kruskal-wallis test
 
