@@ -14,47 +14,17 @@ library(car)
 library(dunn.test)
 
 
-# read in filtered but un-transformed data
-df <- fread("DERIVED_PHENOTYPES.tsv")
-df <- df %>% 
-        group_by(Genotype, Exp_year) %>% summarise(across(where(is.numeric), mean)) %>%
-        ungroup() %>% select(-Exp_year) %>% 
-        group_by(Genotype) %>% summarise(across(where(is.numeric), mean)) %>%
-        ungroup() 
-
-dfb <- fread("trait_BLUPs.tsv")
-df <- full_join(df, dfb, by=c('Genotype'), suffix=c("", "_blup"))
+df <- fread("trait_BLUPs.tsv")
 df <- add_generation(df)
-df <- df %>% select(c('Generation', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Plants', 'FECUNDITY', 'MASS_PER_PLANT', 
-  'FT_blup', 'TOTAL_MASS_blup', 'Plants_blup', 'SEED_WEIGHT_100_blup', 'FECUNDITY_blup', 'MASS_PER_PLANT_blup'))
+df <- df %>% select(-Genotype)
 
 
-## BASE STATISTICS
-# summarise mean & variance
-x <- df %>% 
-    group_by(Generation) %>% 
-    summarise(across(where(is.numeric), list(mean=\(x) mean(x, na.rm=T), var= \(y) var(y, na.rm=T)), .names="{.col}_{.fn}")) 
-write_delim(x, "generations_trait_avg_var.tsv", "\t")
-# write table out with generations' trait summary statistics
 
-# summary table of change in mean & var between generations
-y <- rbind(x[2,] - x[1,], x[3,] - x[2,], x[4,] - x[3,], x[5,] - x[4,])
-y$timespan <- c("P-F18", "F18-F28", "F28-F50", "F50-F58")
-write_delim(y, "trait_mean_var_change_btwn_gens.tsv")
-
-# filter traits with no variance
-#variant_phenos <- names(which(apply(X=df[,2:ncol(df)], 2, var) > 0))\
-df %>% summarise(across(where(is.numeric), \(x) var(x, na.rm=T)))
-#df <- df %>% select(c(Generation, all_of(variant_phenos)))
-
-
-# set up for normality and variance equity tests
-collist <- colnames(df)[2:ncol(df)]
-generationlist <- x$Generation
-
+################## Test for normality and equity variance  ##############
+collist <- colnames(df)[1:ncol(df)-1]
+generationlist <- unique(df$Generation)
 
 pdf("../results/normality_test.pdf")
-
 normality_table <- tibble("Generation"=generationlist)
 
 # test for normal distributions 
@@ -93,26 +63,84 @@ normality_table %>% reframe(across(where(is.numeric), \(x) x < 0.05)) %>% colSum
 #not really continuously distributed trait
 
 
-# test for equality of variance between groups before anova
+
+
+#########   summarise mean & variance per generation #########
+x <- df %>% 
+    group_by(Generation) %>% 
+    summarise(across(where(is.numeric), list(mean=\(x) mean(x, na.rm=T), var= \(y) var(y, na.rm=T)), .names="{.col}_{.fn}")) 
+write_delim(x, "generations_trait_avg_var.tsv", "\t")
+# write table out with generations' trait summary statistics
+
+
+
+#############  Variance Change   #########
+x2 <- df %>% 
+    group_by(Generation) %>% 
+    summarise(across(where(is.numeric), \(x) var(x, na.rm=T))) 
+x3 <- rbind(x2[2,]-x2[1,], x2[5,]-x2[2,])
+
+x4 <- data.frame(t(x3))[-1,]
+x4c <- rownames(x4)
+x4 <- tibble(x4c, x4)
+colnames(x4) <- c("trait", "P_F18_vardiff", "F18_F58_vardiff")
+
+
+##########   are var differences significant?   #########
+var_tab <- tibble("trait"=collist, "all_gens"=as.numeric(NA), "P_F18"=as.numeric(NA), "F18_F58"=as.numeric(NA)) 
+# and store change in var & tests p-vals
+
 # w Levene test
 for(i in collist){
-  print(i)
-  leveneTest(get(i) ~ as.factor(Generation), df) %>% print
+  #print(i)
+  k <- leveneTest(get(i) ~ as.factor(Generation), df)$`Pr(>F)`[1]
+  tmp1 <- df %>% filter(Generation == 0 | Generation == 18)
+  tmp2 <- df %>% filter(Generation == 18 | Generation == 58)
+  m <- leveneTest(get(i) ~ as.factor(Generation), tmp1)$`Pr(>F)`[1]
+  n <- leveneTest(get(i) ~ as.factor(Generation), tmp2)$`Pr(>F)`[1]
+
+  # save values to table in correct trait-row
+  var_tab[which(var_tab$trait == i), 2] <- k
+  var_tab[which(var_tab$trait == i), 3] <- m
+  var_tab[which(var_tab$trait == i), 4] <- n
 }
-## only flowering time has unequal variance between generations
-## ^not entirely
+
+
+# join var change table with p-val table
+var_tab_sig <- full_join(var_tab, x4, by="trait")
+# save a copy of variance change + significance
+write_delim(var_tab_sig, "traits_var_change_sig_test.tsv", "\t")
+# remove 'all_gens' comparison test before spivoting, for clarity
+var_tab_sig <- var_tab_sig %>% select(-all_gens)
+
+## format table w pivot
+var_tab_sig <- var_tab_sig %>% pivot_longer(cols=c(P_F18, F18_F58), names_to="generations_compared", values_to="Levene_pval")
+var_tab_sig$Levene_sig <- var_tab_sig$Levene_pval < 0.05
+
+
+tmp <- var_tab_sig %>% 
+  pivot_longer(cols=c(P_F18_vardiff, F18_F58_vardiff), names_to="gensvardiff", values_to="var_difference") 
+
+tmp$gensvardiff <- gsub("_vardiff", "", tmp$gensvardiff)
+tmp <- tmp %>% filter(generations_compared == gensvardiff) %>% select(-c(gensvardiff))
+
+write_delim(tmp, "traits_var_diff_btwn_gens_sig.tsv", "\t")
 
 
 
 
-#### signif changes in generation mean
+
+
+
+
+###########  signif changes in generation mean   ##################
+df <- tibble(df)
 df$Generation <- as.factor(df$Generation)
 levels(df$Generation)
 
-
 # is there a difference between using anova & kruskal test on these phenotypes?
-for(m in 2:ncol(df)) {
-  print(colnames(df[,m]))
+for(m in 1:(ncol(df)-1)) {
+  print(colnames(df)[m])
   kruskal.test(unlist(df[,m]) ~ Generation, df) %>% print
 
   aov(unlist(df[,m]) ~ as.factor(Generation), df) %>% summary %>% print
@@ -120,18 +148,11 @@ for(m in 2:ncol(df)) {
 
 
 
-
-
-
-### limit statistics of signif mean differences to blup phenotypes
-df <- df %>% select(c(contains("blup"), Generation))
-trait_list <- colnames(df)[1:ncol(df)-1]
-
 ## do phenotypes signif.ly change from parents to F18?
 ## do phenotypes signif.ly change from F18 compared to F58?
 
 # set up storing results
-signif_tab <- tibble("trait"=trait_list, "P_F18"=as.numeric(NA), "F18_F58"=as.numeric(NA)) 
+signif_tab <- tibble("trait"=collist, "P_F18"=as.numeric(NA), "F18_F58"=as.numeric(NA)) 
 
 ## first, test for significant result w Kruskal-wallis test
 
@@ -147,18 +168,14 @@ for(i in 1:length(signif_tab$trait)){
 }
 
 
-
+##################
 ## for traits w signif K-W p-val, run posthoc test & store results
 signif_tab_KW <- signif_tab %>% pivot_longer(cols=c(P_F18, F18_F58), names_to="generations_compared", values_to="Kruskal_pval")
 signif_tab_KW$Kruskal_sig <- signif_tab_KW$Kruskal_pval < 0.05
 
-
-
 # set up storing posthoc test results
 signif_tab$P_F18_pval <- as.numeric(NA) 
 signif_tab$F18_F58_pval <- as.numeric(NA) 
-
-
 
 # one posthoc test for each trait that requires it
 smth <- signif_tab_KW[which(signif_tab_KW$Kruskal_sig), 1:2]
