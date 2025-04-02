@@ -52,7 +52,10 @@ vignettes/*.pdf
 *.tsv
 data/*
 
+# Specific directories and files
 *.Rproj
 .lintr
 scripts/.lme_fn_notes.txt
 scripts/.tmp_modeling.R
+scripts/plotting/MK_plot_scripts
+scripts/plotting/MK_plot_scripts/*
