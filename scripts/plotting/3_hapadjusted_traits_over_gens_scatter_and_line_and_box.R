@@ -10,41 +10,20 @@ library(tidyverse)
 
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
-df <- read_delim("")
+df <- read_delim("trait_BLUPs_HapRepPop.tsv")
 
-## plot weighted trait averages over generations
 
-# format data longways
-df_lng <- df %>% pivot_longer(cols=colnames(df)[2:7], names_to="trait", values_to="value")
-df_lng$trait <- tidy_text_substitution(df_lng$trait)
 
-g <- ggplot(df_lng, aes(x= generation, y = value)) +
-      geom_point() + geom_line() +
-      facet_wrap(~trait, scales="free_y") + 
-      labs(title = "Trait Average over Generations", subtitle="Haplotype-Frequency Weighted", x="Generation", y="") +
-      theme_bw(base_size = 16) 
-ggsave("../results/trait_avg_over_gens_hap_weighted.png", g, width = 16, height = 12)
 
 
 # This script plots scatterplots with linear regressions for each trait in the single subpopulation, as well as distributions for these traits
 
-library(tidyverse)
-library(ggpubr)
-library(ggplot2)
-library(RColorBrewer)
 
-setwd("/bigdata/koeniglab/jmarz001/Ag-Competition")
-source("scripts/CUSTOM_FNS.R")
-df <- read_delim("data/trait_BLUPs.tsv")
-df <- add_generation(df)
 
-# filter trait w/out any variance
-df <- df %>% select(-SEED_WEIGHT_100)
 
 # add column for parent or progeny marker
 df$pgroup <- "Parents"
 df[which(df$Generation != 0), which(colnames(df) == "pgroup")] <- "Progeny"
-#df <- df %>% filter(Generation != 50)
 #df$Generation <- as.factor(df$Generation)
 
 # the lowest color value is too light, so adjust the color scale down one
