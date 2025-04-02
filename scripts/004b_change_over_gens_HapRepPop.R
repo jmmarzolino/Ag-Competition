@@ -37,7 +37,7 @@ ggsave("../results/haplotype_frequency_trait_vals_histogram_colgeneration.png", 
 #########################
 # set up for normality and variance equity tests
 collist <- colnames(hap)[1:ncol(hap)-1]
-generationlist <- x$Generation
+generationlist <- unique(hap$Generation)
 
 pdf("../results/happop_normality_test.pdf")
 normality_table <- tibble("Generation"=generationlist)
