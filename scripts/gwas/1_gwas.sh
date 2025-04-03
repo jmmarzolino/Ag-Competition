@@ -17,14 +17,15 @@ cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
 
 module load vcftools/0.1.16-18
 # remove indels for gemma & filter to variant sites
-vcftools --gzvcf imputed.vcf.gz --remove-indels --maf 0.002 --not-chr chrUn --recode --recode-INFO-all --out AG
+vcftools --gzvcf imputed.vcf.gz --remove-indels --not-chr chrUn --recode --recode-INFO-all --out imputed_filter
 # minor allele freq set to 1/(2*208 seq'd indvs) = 0.0024
 # so maf filter will only remove freqs of 0
+#--maf 0.002
 
 # list genotypes in raw vcf as basis for plink phenotype file
-vcftools --vcf AG.recode.vcf --extract-FORMAT-info GT
+vcftools --vcf imputed_filter.recode.vcf --extract-FORMAT-info GT
 #Output nucleotide diversity at a list of positions
-vcftools --vcf MAF_filt.recode.vcf --freq
+vcftools --vcf imputed_filter.recode.vcf --freq
 
 # take list of genotypes from first line
 # cut cols 3+ (excludes CHR & POS cols)
@@ -34,14 +35,31 @@ head -n1 out.GT.FORMAT | cut -f3- | sed 's/\t/\n/g' | awk '{$1=$1}{print $1" "$1
 
 # create plink format files from vcf (bed, bim, fam)
 module load plink/1.90b6.25
-plink --vcf AG.recode.vcf --double-id --allow-no-sex --allow-extra-chr --keep progeny_geno_pheno_list -indiv-sort file progeny_geno_pheno_list --make-bed --out all_traits
+plink --allow-extra-chr \
+--allow-no-sex \
+--double-id \
+--maf 0.01 \
+--keep progeny_geno_pheno_list \
+--indiv-sort f progeny_geno_pheno_list \
+--make-bed \
+--out all_traits \
+--set-missing-var-ids @:#$1,$2 \
+--vcf imputed_filter.recode.vcf
+
+#~/bigdata/TMP/TEST_JILL_GWAS
+# not previously included
+#--maf .01 \ 
+#--set-missing-var-ids @:#$1,$2 \
+#--indiv-sort f riverside.fam \ #previous syntax/args were slightly diff, ie. -indv-sort file vs. --indv-sort f
+#--vcf imputed_filter.vcf.gz # unclear what vcf he used & how it was filtered
+
 
 #### add phenotypes to .fam file
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/2_phenotypes.R
 
 
 # make pca covar file
-plink --vcf AG.recode.vcf --double-id --allow-no-sex --allow-extra-chr --pca 10 --out all_traits_pca
+plink --vcf imputed_filter.recode.vcf --double-id --allow-no-sex --allow-extra-chr --pca 10 --out all_traits_pca
 # cut only eigenvec values from file; ensure proper formatting of value-tab-value (awk reconstitutes all fields)
 cut -d" " -f3- all_traits_pca.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\t"$0}' > pca.txt
 # awk prints col of "1" \t eigenvecs
