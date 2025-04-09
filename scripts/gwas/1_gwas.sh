@@ -98,7 +98,7 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5b_clump_sig_regions.
 sbatch --array=1-$ARRAY_LIM /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5b_clump_indv_regions.sh
 
 # plot results
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_clump_man.R
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_clumped_indv_sites_manhattan.R
 
 
 
