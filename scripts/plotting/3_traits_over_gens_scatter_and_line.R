@@ -17,49 +17,11 @@ source("scripts/CUSTOM_FNS.R")
 df <- read_delim("data/trait_BLUPs.tsv")
 df <- add_generation(df)
 
-# filter trait w/out any variance
-df <- df %>% select(-SEED_WEIGHT_100)
-
-# add column for parent or progeny marker
-df$pgroup <- "Parents"
-df[which(df$Generation != 0), which(colnames(df) == "pgroup")] <- "Progeny"
-#df <- df %>% filter(Generation != 50)
-#df$Generation <- as.factor(df$Generation)
-
-# the lowest color value is too light, so adjust the color scale down one
-#display.brewer.pal(6, "Blues")
-adjusted_blues <- brewer.pal(7, "Blues")[3:7]
+#comparing trait values over generations
+## scatter- & box- plots 
 
 
-
-## boxplots comparing traits over generations
-#a <- ggplot(df_long, aes(y=VALUE, x=Generation, group=Generation)) +
-#      facet_wrap(~TRAIT, scales="free") +
-#      geom_boxplot(width=0.5, outliers=F) +
-#      geom_jitter(width=0.2) +
-#      theme_bw(base_size=20) +
-#      labs(x = "Generation", y = "") 
-#ggsave("results/traits_over_generations_scatterplot.png", a, width = 14, height = 10)
-
-# when using boxplot & jitter ....      
-# some points are doubled b/c they're plotted as part of jitter & boxplot-outliers
-# you can color boxplot outliers, or not include them (outliers=T/F, outlier.color/shape/size/alpha...)
-
-
-# dot plot with generation-fit line
-#t <- ggplot(df_long, aes(y=VALUE, x=Generation)) +
-#      geom_jitter() +
-#      geom_smooth(method="lm") + stat_regline_equation() +
-#      theme_bw(base_size=20) +
-#      facet_wrap(~TRAIT, scales="free")+
-#      labs(x = "Generation", y = "") 
-#ggsave("results/traits_over_generations_scatterplot_w_trendline.png", t)
-
-
-
-
-
-# line for generation means...
+# table for generation means
 gen_men <- df %>%
             group_by(Generation) %>%
             summarise(across(where(is.numeric), mean)) 
