@@ -62,12 +62,21 @@ write_delim(responses_joined, "/bigdata/koeniglab/jmarz001/Ag-Competition/result
 
 rts_df2 <- resp_join_sd %>% pivot_longer(cols=-c(Generation), names_to='trait', values_to='response')
 
+# tidy trait name text before plotting
+rts_df2$trait <- tidy_text_substitution(rts_df2$trait)
+# and tidy generation text
+rts_df2$Generation <- gsub("Parents_to_F18_sd", "Parents to F18", rts_df2$Generation)
+rts_df2$Generation <- gsub("F18_to_F58_sd", "F18 to F58", rts_df2$Generation)
+
+
 a2 <- ggplot(rts_df2, aes(Generation, response)) +
   geom_point() +
   geom_hline(aes(yintercept=0), color="grey") +
   facet_wrap(~trait) +
   labs(title="Scaled Response between generations", subtitle="average change per generation in standard deviations") +
-  theme_bw()
+  theme_bw(base_size = 14) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/response.png", a2)
 
 a3 <- ggplot(rts_df2, aes(Generation, response, group=trait, color=trait)) +
@@ -95,6 +104,12 @@ rts <- resp_join_sd %>% pivot_longer(cols=-c(Generation), names_to='trait', valu
 herit_response <- full_join(herit, rts)
 herit_response$selection_est <- herit_response$response / herit_response$H2
 
+# tidy trait name text before plotting
+herit_response$trait <- tidy_text_substitution(herit_response$trait)
+# and tidy generation text
+herit_response$Generation <- gsub("Parents_to_F18_sd", "Parents to F18", herit_response$Generation)
+herit_response$Generation <- gsub("F18_to_F58_sd", "F18 to F58", herit_response$Generation)
+
 
 a <- ggplot(herit_response, aes(Generation, selection_est)) +
   geom_point() +
@@ -106,14 +121,14 @@ a <- ggplot(herit_response, aes(Generation, selection_est)) +
 
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection_facet.png", a)
 
-a2 <- ggplot(herit_response, aes(Generation, selection_est)) +  
-  geom_point() +
-  geom_hline(aes(yintercept=0), color="gray") +
-  facet_wrap(~trait, scales="free_y") +
-  labs(y="selection estimate", x="time span") +
-  theme_bw(base_size = 14) +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection_facet_freescale.png", a2)
+#a2 <- ggplot(herit_response, aes(Generation, selection_est)) +  
+ # geom_point() +
+ # geom_hline(aes(yintercept=0), color="gray") +
+ # facet_wrap(~trait, scales="free_y") +
+ # labs(y="selection estimate", x="time span") +
+ # theme_bw(base_size = 14) +
+ # theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+#ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection_facet_freescale.png", a2)
 
 
 a3 <- ggplot(herit_response, aes(Generation, selection_est, color=trait, group=trait)) +
