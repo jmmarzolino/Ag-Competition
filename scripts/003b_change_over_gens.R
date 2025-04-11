@@ -68,7 +68,7 @@ normality_table %>% reframe(across(where(is.numeric), \(x) x < 0.05)) %>% colSum
 #########   summarise mean & variance per generation #########
 x <- df %>% 
     group_by(Generation) %>% 
-    summarise(across(where(is.numeric), list(mean=\(x) mean(x, na.rm=T), var= \(y) var(y, na.rm=T)), .names="{.col}_{.fn}")) 
+    summarise(across(where(is.numeric), list(mean=\(x) mean(x, na.rm=T), median=\(z) median(z, na.rm=T), sd= \(y) sd(y, na.rm=T)), .names="{.col}_{.fn}")) 
 write_delim(x, "generations_trait_avg_var.tsv", "\t")
 # write table out with generations' trait summary statistics
 
@@ -77,7 +77,7 @@ write_delim(x, "generations_trait_avg_var.tsv", "\t")
 #############  Variance Change   #########
 x2 <- df %>% 
     group_by(Generation) %>% 
-    summarise(across(where(is.numeric), \(x) var(x, na.rm=T))) 
+    summarise(across(where(is.numeric), \(x) sd(x, na.rm=T))) 
 x3 <- rbind(x2[2,]-x2[1,], x2[5,]-x2[2,])
 
 x4 <- data.frame(t(x3))[-1,]
