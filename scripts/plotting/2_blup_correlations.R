@@ -43,7 +43,6 @@ dev.off()
 
 
 
-
 ########## plot trait correlations for each generation in turn
 pdf("blup_correlations_per_generation.pdf")
 # check correlations between traits for each generation
@@ -109,6 +108,18 @@ df_ft <- df_gen %>%
         pivot_longer(-c(FT, Generation), values_to = "VALUE", names_to="TRAIT")
 df_ft$TRAIT <- tidy_text_substitution(df_ft$TRAIT)
 
+
+gee <- df_ft %>% 
+        ggplot(aes(x=FT, y=VALUE,)) + 
+          geom_point(alpha=0.7) + 
+          geom_smooth() +
+          scale_color_manual(values=adjusted_blues) + 
+          facet_wrap(~TRAIT, scales="free_y") +
+          labs(x="Flowering Time BLUP", y="", color="Generation") +
+          theme_bw()
+ggsave("blups_vs_FT.png", gee, width=14)
+
+
 gee <- df_ft %>% 
         ggplot(aes(x=FT, y=VALUE,)) + 
           geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
@@ -117,7 +128,7 @@ gee <- df_ft %>%
           facet_wrap(~TRAIT, scales="free_y") +
           labs(x="Flowering Time BLUP", y="", color="Generation") +
           theme_bw()
-ggsave("blups_vs_FT.png", gee, width=14)
+ggsave("blups_vs_FT_color_gen.png", gee, width=14)
 
 gee <- df_ft %>% 
         ggplot(aes(x=FT, y=VALUE, group=as.factor(Generation))) + 
@@ -137,13 +148,24 @@ df_massper$TRAIT <- tidy_text_substitution(df_massper$TRAIT)
 
 gee_wiz <- df_massper %>% 
         ggplot(aes(x=MASS_PER_PLANT, y=VALUE)) + 
-          geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
+          geom_point(alpha=0.7) + 
           geom_smooth() +
           scale_color_manual(values=adjusted_blues) + 
           facet_wrap(~TRAIT, scales="free_y") +
           labs(x="Mass Per Plant BLUP", y="", color="Generation") +
           theme_bw()
 ggsave("blups_vs_MASS_PER_PLANT.png", gee_wiz, width=14)
+
+
+gee_wiz <- df_massper %>% 
+        ggplot(aes(x=MASS_PER_PLANT, y=VALUE)) + 
+          geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
+          geom_smooth() +
+          scale_color_manual(values=adjusted_blues) + 
+          facet_wrap(~TRAIT, scales="free_y") +
+          labs(x="Mass Per Plant BLUP", y="", color="Generation") +
+          theme_bw()
+ggsave("blups_vs_MASS_PER_PLANT_color_gen.png", gee_wiz, width=14)
 
 
 gee_wiz <- df_massper %>% 
@@ -165,13 +187,23 @@ df_tm$TRAIT <- tidy_text_substitution(df_tm$TRAIT)
 
 golly <- df_tm %>% 
         ggplot(aes(x=TOTAL_MASS, y=VALUE)) + 
-          geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
+          geom_point(alpha=0.7) + 
           geom_smooth() +
           scale_color_manual(values=adjusted_blues) + 
           facet_wrap(~TRAIT, scales="free_y") +
           labs(x="Total Mass BLUP", y="", color="Generation") +
           theme_bw()
 ggsave("blups_vs_TOTALMASS.png", golly, width=14)
+
+golly <- df_tm %>% 
+        ggplot(aes(x=TOTAL_MASS, y=VALUE)) + 
+          geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
+          geom_smooth() +
+          scale_color_manual(values=adjusted_blues) + 
+          facet_wrap(~TRAIT, scales="free_y") +
+          labs(x="Total Mass BLUP", y="", color="Generation") +
+          theme_bw()
+ggsave("blups_vs_TOTALMASS_color_gen.png", golly, width=14)
 
 golly <- df_tm %>% 
         ggplot(aes(x=TOTAL_MASS, y=VALUE, group=Generation)) + 
@@ -189,6 +221,17 @@ df_sw <- df_gen %>%
         pivot_longer(-c(SEED_WEIGHT_100, Generation), values_to = "VALUE", names_to="TRAIT")
 df_sw$TRAIT <- tidy_text_substitution(df_sw$TRAIT)
 
+
+golly <- df_sw %>% 
+        ggplot(aes(x=SEED_WEIGHT_100, y=VALUE)) + 
+          geom_point(alpha=0.7) + 
+          geom_smooth() +
+          scale_color_manual(values=adjusted_blues) + 
+          facet_wrap(~TRAIT, scales="free_y") +
+          labs(x="100-Seed Weight BLUP", y="", color="Generation") +
+          theme_bw()
+ggsave("blups_vs_100sw.png", golly, width=14)
+
 golly <- df_sw %>% 
         ggplot(aes(x=SEED_WEIGHT_100, y=VALUE)) + 
           geom_point(aes(color=as.factor(Generation)), alpha=0.7) + 
@@ -197,7 +240,7 @@ golly <- df_sw %>%
           facet_wrap(~TRAIT, scales="free_y") +
           labs(x="100-Seed Weight BLUP", y="", color="Generation") +
           theme_bw()
-ggsave("blups_vs_100sw.png", golly, width=14)
+ggsave("blups_vs_100sw_color_gen.png", golly, width=14)
 
 golly <- df_sw %>% 
         ggplot(aes(x=SEED_WEIGHT_100, y=VALUE, group=Generation)) + 
@@ -217,6 +260,15 @@ df_fec <- df_gen %>%
         pivot_longer(-c(FECUNDITY, Generation), values_to = "VALUE", names_to="TRAIT")
 df_fec$TRAIT <- tidy_text_substitution(df_fec$TRAIT)
 
+gee_wiz <- df_fec %>% 
+        ggplot(aes(x=FECUNDITY, y=VALUE)) + 
+          geom_point(alpha=0.7) + 
+          geom_smooth() +
+          scale_color_manual(values=adjusted_blues) + 
+          facet_wrap(~TRAIT, scales="free_y") +
+          labs(x="Mass per Plant", y="", color="Generation") +
+          theme_bw()
+ggsave("traits_vs_FEC.png", gee_wiz, width=14)
 
 gee_wiz <- df_fec %>% 
         ggplot(aes(x=FECUNDITY, y=VALUE)) + 
@@ -226,7 +278,7 @@ gee_wiz <- df_fec %>%
           facet_wrap(~TRAIT, scales="free_y") +
           labs(x="Mass per Plant", y="", color="Generation") +
           theme_bw()
-ggsave("traits_vs_FEC.png", gee_wiz, width=14)
+ggsave("traits_vs_FEC_color_gen.png", gee_wiz, width=14)
 
 
 gee_wiz <- df_fec %>% 
