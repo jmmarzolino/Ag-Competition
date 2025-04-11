@@ -1,3 +1,17 @@
+# the lowest color value is too light, so adjust the color scale down one
+#display.brewer.pal(6, "Blues")
+#adjusted_blues <- brewer.pal(7, "Blues")[3:7]
+
+
+
+# when using boxplot & jitter ....      
+# some points may be doubled b/c they're plotted as part of jitter & boxplot-outliers
+# you can color boxplot outliers, or not include them (outliers=T/F, outlier.color/shape/size/alpha...)
+
+
+
+
+
  # {plink} --clump has two main applications:
 #    To report the top X single SNP results from a genome-wide scan in terms of a smaller number of clumps of correlated SNPs (i.e. to assess how many independent loci are associated, for example)
 #    To provide a quick way to combine sets of results from two or more studies, when the studies might also be genotyped on different marker sets
