@@ -32,7 +32,7 @@ df_long_mean <- df_long[grep("mean", df_long$TRAIT), ]
 df_long_var <- df_long[grep("sd", df_long$TRAIT), ]
 
 df_long_mean$TRAIT <- gsub("_mean", "", df_long_mean$TRAIT)
-df_long_var$TRAIT <- gsub("_var", "", df_long_var$TRAIT)
+df_long_var$TRAIT <- gsub("_sd", "", df_long_var$TRAIT)
 
 
 # the lowest color value is too light, so adjust the color scale down one
@@ -54,3 +54,43 @@ a <- ggplot(df_long_var, aes(y=VALUE, x=Generation)) +
       labs(x = "Generation", y = "") 
 ggsave("results/trait_var_over_generations.png", a, width = 14, height = 10)
 
+
+
+################ same plots, using scaled phenotypes
+### PLOTTING
+## arrange data for facet plotting
+
+df <- fread("data/generations_trait_avg_var_IN_SD.tsv")
+
+df_long <- df %>% pivot_longer(cols=-c('Generation'), values_to="VALUE", names_to="TRAIT")
+# substitute trait names w/ tidy text versions
+df_long$TRAIT <- tidy_text_substitution(df_long$TRAIT)
+
+# split data into mean and var
+df_long_mean <- df_long[grep("mean", df_long$TRAIT), ]
+df_long_var <- df_long[grep("sd", df_long$TRAIT), ]
+
+df_long_mean$TRAIT <- gsub("_mean", "", df_long_mean$TRAIT)
+df_long_var$TRAIT <- gsub("_sd", "", df_long_var$TRAIT)
+
+
+a <- ggplot(df_long_mean, aes(y=VALUE, x=Generation)) +
+      geom_point() + geom_line() + 
+      facet_wrap(~TRAIT) +
+      theme_bw(base_size=20) +
+      labs(x = "Generation", y = "") 
+ggsave("results/trait_avgs_over_generations_IN_SD.png", a, width = 14, height = 10)
+
+a <- ggplot(df_long_var, aes(y=VALUE, x=Generation)) +
+      geom_point() + geom_line() + 
+      facet_wrap(~TRAIT) +
+      theme_bw(base_size=20) +
+      labs(x = "Generation", y = "") 
+ggsave("results/trait_var_over_generations_IN_SD.png", a, width = 14, height = 10)
+
+
+
+## plot Vg as a proportion of Vt over generations
+# import table of genetic variance
+# and table of total variance
+# plot
