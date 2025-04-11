@@ -17,14 +17,9 @@ source("scripts/CUSTOM_FNS.R")
 df <- read_delim("data/trait_BLUPs.tsv")
 df <- add_generation(df)
 
-# filter trait w/out any variance
-df <- df %>% select(-SEED_WEIGHT_100)
-
 # add column for parent or progeny marker
 df$pgroup <- "Parents"
 df[which(df$Generation != 0), which(colnames(df) == "pgroup")] <- "Progeny"
-#df <- df %>% filter(Generation != 50)
-#df$Generation <- as.factor(df$Generation)
 
 # the lowest color value is too light, so adjust the color scale down one
 #display.brewer.pal(6, "Blues")
@@ -41,11 +36,12 @@ df_long$TRAIT <- tidy_text_substitution(df_long$TRAIT)
 
 # plot trait distributions
 g <- ggplot(df_long, aes(VALUE)) +
-  geom_density(color="#084594", linewidth=1) +
+  geom_density(linewidth=1) +
   facet_wrap(~TRAIT, scales="free") +  
   labs(x="", y="density") +
-  theme_bw(base_size=20) #+
-  #stat_summary(fun = median, geom = "vline", orientation = "y", aes(xintercept = after_stat(x), y = 0), color="#eca50b", linewidth=1) 
+  theme_bw(base_size=20) +
+  stat_summary(fun = median, geom = "vline", orientation = "y", aes(xintercept = after_stat(x), y = 0), color="dodgerblue3", linewidth=1) +
+  stat_summary(fun = mean, geom = "vline", orientation = "y", aes(xintercept = after_stat(x), y = 0), color="dodgerblue", linewidth=1) 
 ggsave("results/trait_distributions.png", g, width=12)
 
 
@@ -56,8 +52,8 @@ g <- ggplot(df_long, aes(VALUE, group=Generation, color=as.factor(Generation))) 
   facet_wrap(~TRAIT, scales="free") +
   theme_bw(base_size=20) +
   labs(x="", y="density") +
-  stat_summary(fun = median, geom = "vline", orientation = "y", aes(xintercept = after_stat(x), y = 0), linewidth=1) 
-ggsave("results/trait_distributions_Wgeneration.png", g, width=16)
+  stat_summary(fun = mean, geom = "vline", orientation = "y", aes(xintercept = after_stat(x), y = 0), linewidth=1) 
+ggsave("results/trait_distributions_Wgeneration.png", g, width=20)
 
 
 # density lines for parents and progeny groups
@@ -67,6 +63,6 @@ g <- ggplot(df_long, aes(VALUE, group=pgroup, color=as.factor(pgroup))) +
   facet_wrap(~TRAIT, scales="free") +
   theme_bw(base_size=20) +
   labs(x="", y="density") +
-  stat_summary(fun = median, geom = "vline", orientation = "y", aes(xintercept = after_stat(x), y = 0), linewidth=1) 
-ggsave("results/trait_distributions_Wparentprogeny.png", g, width=16)
+  stat_summary(fun = mean, geom = "vline", orientation = "y", aes(xintercept = after_stat(x), y = 0), linewidth=1) 
+ggsave("results/trait_distributions_Wparentprogeny.png", g, width=20)
 
