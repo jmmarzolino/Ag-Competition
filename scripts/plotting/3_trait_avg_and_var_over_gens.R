@@ -29,7 +29,7 @@ df_long$TRAIT <- tidy_text_substitution(df_long$TRAIT)
 
 # split data into mean and var
 df_long_mean <- df_long[grep("mean", df_long$TRAIT), ]
-df_long_var <- df_long[grep("var", df_long$TRAIT), ]
+df_long_var <- df_long[grep("sd", df_long$TRAIT), ]
 
 df_long_mean$TRAIT <- gsub("_mean", "", df_long_mean$TRAIT)
 df_long_var$TRAIT <- gsub("_var", "", df_long_var$TRAIT)
