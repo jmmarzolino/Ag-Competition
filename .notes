@@ -3,6 +3,12 @@
 #adjusted_blues <- brewer.pal(7, "Blues")[3:7]
 
 
+#scale_color_npg()
+#scale_color_bmj
+#scale_color_jco
+#scale_color_igv
+#scale_color_frontiers
+
 
 # when using boxplot & jitter ....      
 # some points may be doubled b/c they're plotted as part of jitter & boxplot-outliers
