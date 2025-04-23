@@ -29,39 +29,38 @@ gen_men <- df %>%
 
 ## strip plots for each trait
 a <- ggplot() + 
-      geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=FT)) + 
-      geom_boxplot(data=df, aes(x=Generation, group=as.factor(Generation), y=FT), outliers=F, fill = NA) +
+      geom_jitter(data=df, aes(x=Generation, y=FT), alpha=0.7) + 
       geom_line(data=gen_men, aes(x=Generation, y=FT), color="dodgerblue3", linewidth=1) + 
       theme_bw(base_size=16) +
       labs(x = "Generation", y = tidy_text_substitution("FT"), title="Flowering Time over Generations") 
 
 b <- ggplot(df) + 
-      geom_jitter(aes(x=Generation, y=TOTAL_MASS)) +
-      geom_boxplot(data=df, aes(x=Generation, group=as.factor(Generation), y=TOTAL_MASS), outliers=F, fill = NA) +
+      geom_jitter(aes(x=Generation, y=TOTAL_MASS), alpha=0.7) +
       geom_line(data=gen_men, aes(x=Generation, y=TOTAL_MASS), color="dodgerblue3", linewidth=1) + 
       theme_bw(base_size=16) +
       labs(x = "Generation", y = tidy_text_substitution("TOTAL_MASS"), title="Total Seed Weight over Generations") 
 
 c <- ggplot() + 
-      geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=Plants)) + 
-      geom_boxplot(data=df, aes(x=Generation, group=as.factor(Generation), y=Plants), outliers=F, fill = NA) +
+      geom_jitter(data=df, aes(x=Generation, y=Plants), alpha=0.7) + 
       geom_line(data=gen_men, aes(x=Generation, y=Plants), color="dodgerblue3", linewidth=1) + 
       theme_bw(base_size=16) +
       labs(x = "Generation", y = tidy_text_substitution("Plants"), title="Seed Germination over Generations") 
 
 d <- ggplot() + 
-      geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=FECUNDITY)) + 
-      geom_boxplot(data=df, aes(x=Generation, group=as.factor(Generation), y=FECUNDITY), outliers=F, fill = NA) +
+      geom_jitter(data=df, aes(x=Generation,y=FECUNDITY), alpha=0.7) + 
       geom_line(data=gen_men, aes(x=Generation, y=FECUNDITY), color="dodgerblue3", linewidth=1) + 
       theme_bw(base_size=16) +
       labs(x = "Generation", y = tidy_text_substitution("FECUNDITY"), title="Genotype Fecundity over Generations") 
 
 e <- ggplot() + 
-      geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=MASS_PER_PLANT)) + 
-      geom_boxplot(data=df, aes(x=Generation, group=as.factor(Generation), y=MASS_PER_PLANT), outliers=F, fill = NA) +
+      geom_jitter(data=df, aes(x=Generation, y=MASS_PER_PLANT), alpha=0.7) + 
       geom_line(data=gen_men, aes(x=Generation, y=MASS_PER_PLANT), color="dodgerblue3", linewidth=1) + 
       theme_bw(base_size=16) +
       labs(x = "Generation", y = tidy_text_substitution("MASS_PER_PLANT"), title="Genotype Mass per Plant over Generations") 
 
-ggcombo <- ggarrange(a, b, c, d, e)
-ggsave("results/traits_over_generations_scatterplots.png", ggcombo, width = 20, height = 10)
+
+ggcombo <- ggarrange(a, b, c, d, e, ncol=3, nrow=2)
+h <- (7 * 2) + 2
+w <- (7 * 3) + 2
+
+ggsave("results/traits_over_generations_scatterplots.png", ggcombo, width = w, height = h)
