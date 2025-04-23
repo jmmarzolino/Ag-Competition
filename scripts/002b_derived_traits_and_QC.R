@@ -19,7 +19,11 @@ df <- read_delim("data/JOINED_PHENOTYPES.tsv")
 df <- df %>% 
     filter(Condition=="single") %>%
     select(-c(BED, ROW, Condition)) %>%
-    select(c(Genotype, Exp_year, Replicate, Germination, FT, TOTAL_MASS, SEED_WEIGHT_100))
+    select(c(Genotype, Exp_year, Replicate, Plants, FT, TOTAL_MASS, SEED_WEIGHT_100))
+
+# rename 'plants' column 'germination'
+colnames(df) <- c(Genotype, Exp_year, Replicate, Germination, FT, TOTAL_MASS, SEED_WEIGHT_100)
+
 
 # calculate upper and lower bounds for each trait, in each year separately
 up_bnds <- df %>% 
