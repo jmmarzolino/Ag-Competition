@@ -92,7 +92,7 @@ s <- ggplot(df, aes(y=SEED_WEIGHT_100, x=X100_seed_mass)) +
 
 ### print all together
 zzz <- ggarrange(g, m1, m2, f, s)
-ggsave(filename="results/cross_exp_scatter_cor.png", plot=zzz, height=18, width=24, units="in")
+ggsave(filename="results/cross_exp_scatter_cor.png", plot=zzz, height=(7*2)+2, width=(7*3)+2, units="in")
 
 
 
@@ -145,7 +145,7 @@ for(i in c(18, 28, 50, 58)) {
         labs(x = "100-Seed weight (greenhouse)", y = paste0(tidy_text_substitution("SEED_WEIGHT_100"), " (field)"), title="Comparing Yield across Environments", subtitle=paste0("Individuals from Generation ", i)) 
 
     zzz_gen <- ggarrange(g, m1, m2, f, s)
-    ggsave(filename=paste0("results/cross_exp_scatter_cor_gen", i, ".png"), plot=zzz_gen, height=18, width=24, units="in")
+    ggsave(filename=paste0("results/cross_exp_scatter_cor_gen", i, ".png"), plot=zzz_gen, height=(7*2)+2, width=(7*3)+2, units="in")
 }
 
 
@@ -195,7 +195,7 @@ d <- ggplot(tmp2, aes(y=value, x=experiment, color=Generation)) +
     labs(title="Comparing Experiments", subtitle="Flowering Time", y="Scaled Days to heading") 
 
 ggcombo <- ggarrange(a, b, c, d)
-ggsave("results/cross_exp_boxplot_FT.png", ggcombo, width = 20, height = 10)
+ggsave("results/cross_exp_boxplot_FT.png", ggcombo, width = (7*2)+4, height = (7*2)+2)
 
 
 
@@ -243,7 +243,7 @@ d <- ggplot(tmp2, aes(y=value, x=experiment, color=Generation)) +
     labs(title="Comparing Experiments", subtitle="Total Seed Mass", y="Scaled mass (g)") 
 
 ggcombo <- ggarrange(a, b, c, d)
-ggsave("results/cross_exp_boxplot_MASS.png", ggcombo, width = 20, height = 10)
+ggsave("results/cross_exp_boxplot_MASS.png", ggcombo, width = (7*2)+4, height = (7*2)+2)
 
 
 ##  Mass v. 2
@@ -286,7 +286,7 @@ d <- ggplot(tmp2, aes(y=value, x=experiment, color=Generation)) +
     labs(title="Comparing Experiments", subtitle="Per-plant Seed Mass", y="Scaled mass (g)") 
 
 ggcombo <- ggarrange(a, b, c, d)
-ggsave("results/cross_exp_boxplot_MASS2.png", ggcombo, width = 20, height = 10)
+ggsave("results/cross_exp_boxplot_MASS2.png", ggcombo, width = (7*2)+4, height = (7*2)+2)
 
 
 
@@ -328,7 +328,7 @@ d <- ggplot(tmp2, aes(y=value, x=experiment, color=Generation)) +
     labs(title="Comparing Experiments", subtitle="100-Seed Mass", y="Scaled mass for 100 seeds (g)") 
 
 ggcombo <- ggarrange(a, b, c, d)
-ggsave("results/cross_exp_boxplot_100sm.png", ggcombo, width = 20, height = 10)
+ggsave("results/cross_exp_boxplot_100sm.png", ggcombo, width = (7*2)+4, height = (7*2)+2)
 
 
 
@@ -371,4 +371,4 @@ d <- ggplot(tmp2, aes(y=value, x=experiment, color=Generation)) +
     labs(title="Comparing Experiments", subtitle="Estimated seed number", y="Scaled Seeds") 
 
 ggcombo <- ggarrange(a, b, c, d)
-ggsave("results/cross_exp_boxplot_fec.png", ggcombo, width = 20, height = 10)
+ggsave("results/cross_exp_boxplot_fec.png", ggcombo, width = (7*2)+4, height = (7*2)+2)

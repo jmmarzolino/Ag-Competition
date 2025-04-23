@@ -45,14 +45,14 @@ a <- ggplot(df_long_mean, aes(y=VALUE, x=Generation)) +
       facet_wrap(~TRAIT, scales="free") +
       theme_bw(base_size=20) +
       labs(x = "Generation", y = "") 
-ggsave("results/trait_avgs_over_generations.png", a, width = 14, height = 10)
+ggsave("results/trait_avgs_over_generations.png", a, width = (7*3)+2, height = (7*3)+2)
 
 a <- ggplot(df_long_var, aes(y=VALUE, x=Generation)) +
       geom_point() + geom_line() + 
       facet_wrap(~TRAIT, scales="free") +
       theme_bw(base_size=20) +
       labs(x = "Generation", y = "") 
-ggsave("results/trait_var_over_generations.png", a, width = 14, height = 10)
+ggsave("results/trait_var_over_generations.png", a, width = (7*3)+2, height = (7*3)+2)
 
 
 
@@ -79,14 +79,14 @@ a <- ggplot(df_long_mean, aes(y=VALUE, x=Generation)) +
       facet_wrap(~TRAIT) +
       theme_bw(base_size=20) +
       labs(x = "Generation", y = "") 
-ggsave("results/trait_avgs_over_generations_IN_SD.png", a, width = 14, height = 10)
+ggsave("results/trait_avgs_over_generations_IN_SD.png", a, width = (7*3)+2, height = (7*3)+2)
 
 a <- ggplot(df_long_var, aes(y=VALUE, x=Generation)) +
       geom_point() + geom_line() + 
       facet_wrap(~TRAIT) +
       theme_bw(base_size=20) +
       labs(x = "Generation", y = "") 
-ggsave("results/trait_var_over_generations_IN_SD.png", a, width = 14, height = 10)
+ggsave("results/trait_var_over_generations_IN_SD.png", a, width = (7*3)+2, height = (7*3)+2)
 
 
 
