@@ -38,7 +38,7 @@ df <- df %>%
 ag <- fread("trait_BLUPs.tsv")
 # remove parents from data
 ag$gen <- as.numeric(gsub("^(\\d+)_\\d+.*", "\\1", ag$Genotype))
-ag <- ag %>% filter(gen < 10) %>% select(-c(gen, Plants))
+ag <- ag %>% filter(gen < 10) %>% select(-c(gen, Germination))
 
 # format genotype IDs to 'family' groups, #_##, removing any third numbers
 ag$Genotype <- gsub("^(\\d+_\\d+).*", "\\1", ag$Genotype)

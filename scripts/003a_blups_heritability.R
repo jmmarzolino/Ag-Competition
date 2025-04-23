@@ -17,7 +17,7 @@ source("../scripts/CUSTOM_FNS.R")
 pheno <- read_delim("DERIVED_PHENOTYPES.tsv")
 #pheno <- pheno %>% 
 #    select(c(Genotype, Replicate, Exp_year, FT, TOTAL_MASS, SEED_WEIGHT_100, FECUNDITY)) #%>% 
-    #mutate(across(-c(Genotype, Generation, Replicate, Plants), ~(scale(.) %>% as.vector)))
+    #mutate(across(-c(Genotype, Generation, Replicate, Germination), ~(scale(.) %>% as.vector)))
 pheno$Exp_year <- as.factor(pheno$Exp_year)
 
 # init pdf to store plot outputs
@@ -87,7 +87,7 @@ H2cal(data = pheno
 ## not well fitable
 h2_plants <- 
 H2cal(data = pheno
-        , trait = "Plants"
+        , trait = "Germination"
         , gen.name = "Genotype"
         , rep.n = 2
         , year.n = 2
@@ -115,7 +115,7 @@ H2cal(data = pheno
 dev.off()
 
 
-H2_table <- tibble("trait" = c("FT", "TOTAL_MASS", "SEED_WEIGHT_100", "MASS_PER_PLANT", "Plants", "FECUNDITY"), 
+H2_table <- tibble("trait" = c("FT", "TOTAL_MASS", "SEED_WEIGHT_100", "MASS_PER_PLANT", "Germination", "FECUNDITY"), 
                     "H2_s" = c(h2_ft$tabsmr$H2.s, h2_totmass$tabsmr$H2.s, h2_sw100$tabsmr$H2.s, h2_massper$tabsmr$H2.s,  h2_plants$tabsmr$H2.s, 
                     h2_fec$tabsmr$H2.s) )
 write_delim(H2_table, "trait_heritability.tsv", "\t")

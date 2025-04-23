@@ -19,7 +19,7 @@ df <- read_delim("data/JOINED_PHENOTYPES.tsv")
 df <- df %>% 
     filter(Condition=="single") %>%
     select(-c(BED, ROW, Condition)) %>%
-    select(c(Genotype, Exp_year, Replicate, Plants, FT, TOTAL_MASS, SEED_WEIGHT_100))
+    select(c(Genotype, Exp_year, Replicate, Germination, FT, TOTAL_MASS, SEED_WEIGHT_100))
 
 # calculate upper and lower bounds for each trait, in each year separately
 up_bnds <- df %>% 
@@ -103,12 +103,12 @@ nrow(df22)
 nrow(df23)
 
 print("amount of missing data for the 3 measured traits")
-df2 %>% group_by(Exp_year) %>% reframe(across(c(Plants, FT, TOTAL_MASS, SEED_WEIGHT_100), \(x) sum(is.na(x))))
+df2 %>% group_by(Exp_year) %>% reframe(across(c(Germination, FT, TOTAL_MASS, SEED_WEIGHT_100), \(x) sum(is.na(x))))
 
 print("percent of missing data per year")
-df22 %>% summarise(across(c(Plants, FT, TOTAL_MASS, SEED_WEIGHT_100), \(x) (sum(is.na(x))/508)*100))
+df22 %>% summarise(across(c(Germination, FT, TOTAL_MASS, SEED_WEIGHT_100), \(x) (sum(is.na(x))/508)*100))
 
-df23 %>% summarise(across(c(Plants, FT, TOTAL_MASS, SEED_WEIGHT_100), \(x) (sum(is.na(x))/510)*100))
+df23 %>% summarise(across(c(Germination, FT, TOTAL_MASS, SEED_WEIGHT_100), \(x) (sum(is.na(x))/510)*100))
 
 
 
@@ -119,9 +119,9 @@ df23 %>% summarise(across(c(Plants, FT, TOTAL_MASS, SEED_WEIGHT_100), \(x) (sum(
 ## total seed weight / seed-weight-100/100
 
 df3 <- df2 %>% 
-    mutate(MASS_PER_PLANT = TOTAL_MASS/Plants) %>% 
+    mutate(MASS_PER_PLANT = TOTAL_MASS/Germination) %>% 
     mutate(SEED_COUNT = TOTAL_MASS / (SEED_WEIGHT_100/100)) %>%
-    mutate(FECUNDITY = SEED_COUNT / Plants) 
+    mutate(FECUNDITY = SEED_COUNT / Germination) 
 
 write_delim(df3, "data/DERIVED_PHENOTYPES.tsv", "\t")
 
@@ -205,8 +205,8 @@ df3[which(df3$FECUNDITY > 400),]
 
 #### total seed mass / yield
 # calculate total mass relative to plant # and THEN checking range of value differences
-df_tm <- df2 %>% select(c(Genotype, Exp_year, Replicate, Plants, TOTAL_MASS)) %>% 
-  mutate("mass_per_plant"=TOTAL_MASS/Plants) %>% select(-c(Plants, TOTAL_MASS)) 
+df_tm <- df2 %>% select(c(Genotype, Exp_year, Replicate, Germination, TOTAL_MASS)) %>% 
+  mutate("mass_per_plant"=TOTAL_MASS/Germination) %>% select(-c(Germination, TOTAL_MASS)) 
 
 
 up_bnds <- df_tm %>% 

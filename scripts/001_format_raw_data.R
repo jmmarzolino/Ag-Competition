@@ -27,13 +27,13 @@ tmp[which(tmp$Replicate == "rep 4"), 4] <- "rep 2"
 
 tmp2 <- tmp %>%
         group_by(Genotype, Condition, Replicate) %>%
-        summarise("Plants" = mean(Plants), "TOTAL_MASS" = mean(TOTAL_MASS, na.rm = TRUE), "SEED_WEIGHT_100" = mean(SEED_WEIGHT_100, na.rm = TRUE), "FT" = mean(FT, na.rm=TRUE))
+        summarise("Germination" = mean(Germination), "TOTAL_MASS" = mean(TOTAL_MASS, na.rm = TRUE), "SEED_WEIGHT_100" = mean(SEED_WEIGHT_100, na.rm = TRUE), "FT" = mean(FT, na.rm=TRUE))
 
 ord <- tmp %>% select(c(Genotype, Condition, Replicate,  BED_2021, ROW_2021)) 
 ord2 <- ord[order(ord$Genotype, ord$Condition, ord$Replicate),][c(1,3,5,7,9,11,13,15),]
 
 avgd <- full_join(tmp2, ord2, by = c("Genotype", "Condition", "Replicate"))
-sw3 <- full_join(sw2, avgd, by = c("TOTAL_MASS", "SEED_WEIGHT_100", "FT", "Genotype", "Condition", "Replicate", "BED_2021", "ROW_2021", "Plants"))
+sw3 <- full_join(sw2, avgd, by = c("TOTAL_MASS", "SEED_WEIGHT_100", "FT", "Genotype", "Condition", "Replicate", "BED_2021", "ROW_2021", "Germination"))
 
 # add year col
 sw3$Exp_year <- 2022
@@ -63,14 +63,14 @@ sw6 <- sw5 %>% filter(!(Genotype %in% c("1_6", "7_69")))
 
 tmp2 <- tmp %>%
         group_by(Genotype, Condition, Replicate) %>%
-        summarise("Plants" = mean(Plants), "TOTAL_MASS" = mean(TOTAL_MASS, na.rm = TRUE), "SEED_WEIGHT_100" = mean(SEED_WEIGHT_100, na.rm = TRUE), "FT" = mean(FT, na.rm=TRUE))
+        summarise("Germination" = mean(Germination), "TOTAL_MASS" = mean(TOTAL_MASS, na.rm = TRUE), "SEED_WEIGHT_100" = mean(SEED_WEIGHT_100, na.rm = TRUE), "FT" = mean(FT, na.rm=TRUE))
 
 ord <- tmp %>% select(c(Genotype, PLOT_ID, Condition, Replicate, ROW, BED_2022, ROW_2022)) 
 ord2 <- ord[order(ord$Genotype, ord$Condition, ord$Replicate),][c(1,3,5,7,9,11,13,15),]
 
 
 avgd <- full_join(tmp2, ord2, by = c("Genotype", "Condition", "Replicate"))
-sw7 <- full_join(sw6, avgd, by = c("PLOT_ID", "TOTAL_MASS", "SEED_WEIGHT_100", "FT", "ROW", "Genotype", "Condition", "Replicate", "BED_2022", "ROW_2022", "Plants"))
+sw7 <- full_join(sw6, avgd, by = c("PLOT_ID", "TOTAL_MASS", "SEED_WEIGHT_100", "FT", "ROW", "Genotype", "Condition", "Replicate", "BED_2022", "ROW_2022", "Germination"))
 
 #sw4 <- sw4 %>%
  #       group_by(Genotype, Condition, Replicate) %>%
@@ -82,7 +82,7 @@ sw7$Exp_year <- 2023
 
 
 ### Join years of data
-sw_join <- full_join(sw3, sw7, by = c("Genotype", "Plants", "Condition", "Replicate", "FT", "TOTAL_MASS", "SEED_WEIGHT_100", "Exp_year", "BED_2021" = "BED_2022", "ROW_2021" = "ROW_2022")) 
+sw_join <- full_join(sw3, sw7, by = c("Genotype", "Germination", "Condition", "Replicate", "FT", "TOTAL_MASS", "SEED_WEIGHT_100", "Exp_year", "BED_2021" = "BED_2022", "ROW_2021" = "ROW_2022")) 
 
 
 
@@ -92,7 +92,7 @@ which(table(sw_join$PLOT_ID)>1)
 which(table(sw_join$Genotype)>16)
 which(table(sw_join$Genotype)>8)
 sw_join <- sw_join %>% select(-c("PLOT_ID", "ROW"))
-colnames(sw_join) <- c("Genotype", "Plants", "Condition", "Replicate", "BED", "ROW", "FT", "TOTAL_MASS", "SEED_WEIGHT_100", "Exp_year")
+colnames(sw_join) <- c("Genotype", "Germination", "Condition", "Replicate", "BED", "ROW", "FT", "TOTAL_MASS", "SEED_WEIGHT_100", "Exp_year")
 
 # change replicate from character to number
 sw_join$Replicate <- as.numeric(gsub("rep (\\d)", "\\1", sw_join$Replicate))
@@ -100,9 +100,9 @@ sw_join$Replicate <- as.numeric(gsub("rep (\\d)", "\\1", sw_join$Replicate))
 
 # verify phenotype measurements
 # are there any phenotyped lines with plant count of 0?
-sw_join[which(sw_join$Plants==0 & !is.na(sw_join$TOTAL_MASS)), ]
-sw_join[which(sw_join$Plants==0 & !is.na(sw_join$SEED_WEIGHT_100)), ]
-sw_join[which(sw_join$Plants==0 & !is.na(sw_join$FT)), ]
+sw_join[which(sw_join$Germination==0 & !is.na(sw_join$TOTAL_MASS)), ]
+sw_join[which(sw_join$Germination==0 & !is.na(sw_join$SEED_WEIGHT_100)), ]
+sw_join[which(sw_join$Germination==0 & !is.na(sw_join$FT)), ]
 
 
 
@@ -114,12 +114,12 @@ sw_join[which(is.na(sw_join$Genotype)),]
 sw_join <- sw_join %>% filter(!is.na(Genotype))
 
 # check out plots w 0 plants
-(x <- sw_join[which(sw_join$Plants == 0),])
+(x <- sw_join[which(sw_join$Germination == 0),])
 table(x$Genotype)
 # all Genotype 2_168 plots have 0 plants
 # line 2_168 were all albino, though this doesn't explain the observation in 'mixed' plots
 # filter all empty plot rows
-sw_join <- sw_join %>% filter(Plants != 0)
+sw_join <- sw_join %>% filter(Germination != 0)
 
 
 # empty conditions, replicates, etc

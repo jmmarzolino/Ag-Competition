@@ -9,7 +9,7 @@ library(tidyverse)
 
 # load FT data & tidy
 ft_22 <- read_delim("FT_2021_2022.tsv")
-  ft22 <- ft_22 %>% select(-c(Plants, Generation))
+  ft22 <- ft_22 %>% select(-c(Germination, Generation))
   colnames(ft22) <- c("Genotype", "Condition", "Replicate", "Bed", "Row", "FT")
   ft22$Exp_year <- 2022
 ft_23 <- read_delim("FT_2023.tsv")

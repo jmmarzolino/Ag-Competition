@@ -15,8 +15,8 @@ df <- fread("JOINED_PHENOTYPES.tsv")
 
 # average phenotypes across replicates 
 df_mean <- df %>% 
-    mutate("MASS_PER_PLANT"=TOTAL_MASS/Plants) %>% 
-    select(-c(Plants, BED, ROW, Replicate)) %>%
+    mutate("MASS_PER_PLANT"=TOTAL_MASS/Germination) %>% 
+    select(-c(Germination, BED, ROW, Replicate)) %>%
     group_by(Genotype, Condition, Exp_year) %>% 
     summarise(across(where(is.numeric), \(x) mean(x, na.rm=T))) %>%
     ungroup()

@@ -17,7 +17,7 @@ df <- fread("DERIVED_PHENOTYPES.tsv")
 
 
 replicate_df <- df %>%
-  pivot_longer(cols=c(FT, TOTAL_MASS, SEED_WEIGHT_100, Plants, SEED_COUNT, FECUNDITY, MASS_PER_PLANT), names_to='PHENOTYPE', values_to="VALUE") %>%
+  pivot_longer(cols=c(FT, TOTAL_MASS, SEED_WEIGHT_100, Germination, SEED_COUNT, FECUNDITY, MASS_PER_PLANT), names_to='PHENOTYPE', values_to="VALUE") %>%
   pivot_wider(names_from=Replicate, names_prefix="REP_", values_from='VALUE')
 
 # another way of summarizing trait replicate correlations by year, condition, and phenotype
@@ -26,8 +26,8 @@ replicate_df %>% group_by(Exp_year, PHENOTYPE) %>% summarise('correlation'=cor(R
 # across years
 replicate_df %>% group_by(PHENOTYPE) %>% summarise('correlation'=cor(REP_1, REP_2, use="pairwise.complete.obs"))
 # correlation across years results in some weird results - particularly in total weight, and seed weight
-# and with expected but near 0 results for 'Plants'
-# 'Plants' shouldn't necessarily have a correlation so that's fine
+# and with expected but near 0 results for 'Germination'
+# 'Germination' shouldn't necessarily have a correlation so that's fine
 
 
 # check out what's causing the miniscule correlations for total-mass (which is the source of low correlations in fec and fit as well)

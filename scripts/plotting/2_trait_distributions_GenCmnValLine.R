@@ -30,7 +30,7 @@ adjusted_blues <- brewer.pal(7, "Blues")[3:7]
 # round trait blups as a way of binning to common values
 df_rnd <- df
 df_rnd$FT <- round(df$FT, 2)
-df_rnd$Plants <- round(df$Plants, 3)
+df_rnd$Germination <- round(df$Germination, 3)
 df_rnd$FECUNDITY <- round(df$FECUNDITY)
 df_rnd$MASS_PER_PLANT <- round(df$MASS_PER_PLANT)
 
@@ -42,8 +42,8 @@ F58 <- as.numeric(names(sort(table(df_rnd[which(df_rnd$Generation==58), which(co
 FT_cmn <- tibble(F18, F58) %>% pivot_longer(names_to="Generation", cols=everything())
 
 # germination
-F18 <- as.numeric(names(sort(table(df_rnd[which(df_rnd$Generation==18), which(colnames(df_rnd)=="Plants")]), decreasing=T)[1:5]))
-F58 <- as.numeric(names(sort(table(df_rnd[which(df_rnd$Generation==58), which(colnames(df_rnd)=="Plants")]), decreasing=T)[1:5]))
+F18 <- as.numeric(names(sort(table(df_rnd[which(df_rnd$Generation==18), which(colnames(df_rnd)=="Germination")]), decreasing=T)[1:5]))
+F58 <- as.numeric(names(sort(table(df_rnd[which(df_rnd$Generation==58), which(colnames(df_rnd)=="Germination")]), decreasing=T)[1:5]))
 GM_cmn <- tibble(F18, F58) %>% pivot_longer(names_to="Generation", cols=everything())
 
 # fecundity
@@ -71,7 +71,7 @@ ggplot() +
 
 b <- 
 ggplot() +
-  geom_density(data=df, aes(Plants), linewidth=1) +
+  geom_density(data=df, aes(Germination), linewidth=1) +
   geom_vline(data=GM_cmn, aes(xintercept=value, color=Generation), linewidth=1) +
   scale_color_manual(values=c("#6BAED6", "#084594")) + 
   labs(x="", y="density", title="Germination Distribution", subtitle="with most common values colored") +

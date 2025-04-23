@@ -15,7 +15,7 @@ setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 df <- fread("JOINED_PHENOTYPES.tsv")
 df <- df %>%
   select(-c(BED, ROW)) %>%
-  mutate("MASS_PER_PLANT"=TOTAL_MASS/Plants) 
+  mutate("MASS_PER_PLANT"=TOTAL_MASS/Germination) 
 
 # correlation options
 #method=c("pearson", "spearman", "kendall")
@@ -43,8 +43,8 @@ replicate_df %>% group_by(Exp_year, Condition, PHENOTYPE) %>% summarise('correla
 
 graph_correlation <- function(x=df, y='TOTAL_MASS'){
  x %>%
-  filter(Plants>0 & !is.na(TOTAL_MASS) & !is.na(SEED_WEIGHT_100)) %>% 
-  select(-c(Plants)) %>%
+  filter(Germination>0 & !is.na(TOTAL_MASS) & !is.na(SEED_WEIGHT_100)) %>% 
+  select(-c(Germination)) %>%
   select(c('Genotype', 'Condition', 'Replicate', 'Exp_year', all_of(y))) %>% 
   pivot_wider(names_from=Replicate, names_prefix="REP_", values_from=y) %>%
   ggplot(aes(REP_1, REP_2), add = "reg.line") +
@@ -81,7 +81,7 @@ ggsave("../results/replicate_correlations_all.png", gc, width=24, height=24)
 # Residual Plotting
 
 ## scale data
-scaled <- df %>% select(-c(Plants)) 
+scaled <- df %>% select(-c(Germination)) 
 #scaled$FT <- scale(scaled$FT)[,1]
 #scaled$TOTAL_MASS <- scale(scaled$TOTAL_MASS)[,1]
 #scaled$SEED_WEIGHT_100 <- scale(scaled$SEED_WEIGHT_100)[,1]

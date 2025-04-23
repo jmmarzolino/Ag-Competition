@@ -21,7 +21,7 @@ test <- full_join(df, blups)
 cor(test$FT, test$FT_blup)
 cor(test$SEED_WEIGHT_100, test$SEED_WEIGHT_100_blup)
 cor(test$TOTAL_MASS, test$TOTAL_MASS_blup)
-cor(test$Plants, test$Plants_blup)
+cor(test$Germination, test$Germination_blup)
 cor(test$FECUNDITY, test$FECUNDITY_blup)
 cor(test$MASS_PER_PLANT, test$MASS_PER_PLANT_blup)
 
