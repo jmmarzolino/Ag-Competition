@@ -68,6 +68,9 @@ rts_df2$trait <- tidy_text_substitution(rts_df2$trait)
 rts_df2$Generation <- gsub("Parents_to_F18_sd", "Parents to F18", rts_df2$Generation)
 rts_df2$Generation <- gsub("F18_to_F58_sd", "F18 to F58", rts_df2$Generation)
 
+# re-order generation indicators 
+rts_df2$Generation <- factor(rts_df2$Generation, levels = c("Parents to F18", "F18 to F58"))
+
 
 a2 <- ggplot(rts_df2, aes(Generation, response)) +
   geom_point() +
@@ -109,6 +112,8 @@ herit_response$trait <- tidy_text_substitution(herit_response$trait)
 # and tidy generation text
 herit_response$Generation <- gsub("Parents_to_F18_sd", "Parents to F18", herit_response$Generation)
 herit_response$Generation <- gsub("F18_to_F58_sd", "F18 to F58", herit_response$Generation)
+# re-order generation indicators 
+herit_response$Generation <- factor(herit_response$Generation, levels = c("Parents to F18", "F18 to F58"))
 
 
 a <- ggplot(herit_response, aes(Generation, selection_est)) +
