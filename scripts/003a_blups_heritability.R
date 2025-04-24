@@ -85,7 +85,7 @@ H2cal(data = pheno
 
 
 ## not well fitable
-h2_plants <- 
+h2_germ <- 
 H2cal(data = pheno
         , trait = "Germination"
         , gen.name = "Genotype"
@@ -116,7 +116,7 @@ dev.off()
 
 
 H2_table <- tibble("trait" = c("FT", "TOTAL_MASS", "SEED_WEIGHT_100", "MASS_PER_PLANT", "Germination", "FECUNDITY"), 
-                    "H2_s" = c(h2_ft$tabsmr$H2.s, h2_totmass$tabsmr$H2.s, h2_sw100$tabsmr$H2.s, h2_massper$tabsmr$H2.s,  h2_plants$tabsmr$H2.s, 
+                    "H2_s" = c(h2_ft$tabsmr$H2.s, h2_totmass$tabsmr$H2.s, h2_sw100$tabsmr$H2.s, h2_massper$tabsmr$H2.s,  h2_germ$tabsmr$H2.s, 
                     h2_fec$tabsmr$H2.s) )
 write_delim(H2_table, "trait_heritability.tsv", "\t")
 
@@ -125,7 +125,7 @@ write_delim(H2_table, "trait_heritability.tsv", "\t")
 blup_output <- full_join(h2_ft$blups, h2_totmass$blups)
 blup_output <- full_join(blup_output, h2_sw100$blups)
 blup_output <- full_join(blup_output, h2_massper$blups)
-blup_output <- full_join(blup_output, h2_plants$blups)
+blup_output <- full_join(blup_output, h2_germ$blups)
 blup_output <- full_join(blup_output, h2_fec$blups)
 
 write_delim(blup_output, "trait_BLUPs.tsv", "\t")
