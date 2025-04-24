@@ -14,6 +14,7 @@ source("../scripts/CUSTOM_FNS.R")
 hap <- fread("hap_assign.txt")
 df <- fread("trait_BLUPs.tsv")
 
+# set haplotypes to factors instead of numbers
 hap$Haplotype <- as.factor(hap$Haplotype)
 # cut 3-digit genotype codes down to 2 digits
 # to match family lines
@@ -23,12 +24,17 @@ grep("\\d+_\\d+_\\d+", df$Genotype)
 
 # how common was each haplotype in the 4 sampled generations?
 ## calculate haplotype frequency per generation
+# select line IDs from each generation
 f18_hap <- hap[grep("^1_\\d+", hap$Genotype),]
+# quantify how common each haplotype was in that generation
 f18_hap_table <- data.frame(table(f18_hap$Haplotype))
 colnames(f18_hap_table) <- c("Haplotype", "Frequency")
+# divide haplotype occurance by the total number of haplotypes in the generation
 f18_hap_table$fraction <- f18_hap_table$Frequency / sum(f18_hap_table$Frequency)
+# filter out hap numbers not in the generation (were included in table b/c of hap levels)
 f18_hap_table <- f18_hap_table %>% filter(Frequency > 0)
 
+# repeat for other generations
 f28_hap <- hap[grep("^2_\\d+", hap$Genotype),]
 f28_hap_table <- data.frame(table(f28_hap$Haplotype))
 colnames(f28_hap_table) <- c("Haplotype", "Frequency")
@@ -50,14 +56,23 @@ f58_hap_table <- f58_hap_table %>% filter(Frequency > 0)
 # combine genotype, phenotype, and haplotype
 hap_join <- inner_join(hap, df, by = "Genotype")
 
-# check for missing genotype-haplotype match in table
-which(is.na(hap_join$Haplotype))
-
 # how many repeated haplotypes?
-table(hap_join$Haplotype)
-# not many repeat except 1 haplotype
+print("table of repeated haplotypes")
 sort(table(hap_join$Haplotype), decreasing=T)
+# not many repeat except 1 haplotype
+print("table of haplotype re-occurance")
 sort(table(hap_join$Haplotype), decreasing=T) %>% table
+
+
+# average phenotype for each haplotype
+hap_trait_avg <- hap_join %>% group_by(Haplotype) %>% summarise(across(where(is.numeric), mean)) 
+
+# join haplotype, generation frequency, and haplotype phenotypes
+f18_hap_join <- right_join(hap_trait_avg, f18_hap_table, by="Haplotype")
+f28_hap_join <- right_join(hap_trait_avg, f28_hap_table, by="Haplotype")
+f50_hap_join <- right_join(hap_trait_avg, f50_hap_table, by="Haplotype")
+f58_hap_join <- right_join(hap_trait_avg, f58_hap_table, by="Haplotype")
+
 
 # how many haplotypes that were present in the generations' sampling
 # do not have phenotype measurements? (ie. weren't included in Ag experiment)
@@ -83,19 +98,6 @@ print("F58")
 sum(f58_hap_join[which(is.na(f58_hap_join$FT)), ]$fraction)
 
 
-
-
-
-
-## calculate generations' trait averages weighted by haplotype
-# average phenotype for each haplotype
-hap_trait_avg <- hap_join %>% group_by(Haplotype) %>% summarise(across(where(is.numeric), mean)) 
-
-# join haplotype, generation frequency, and haplotype phenotypes
-f18_hap_join <- right_join(hap_trait_avg, f18_hap_table, by="Haplotype")
-f28_hap_join <- right_join(hap_trait_avg, f28_hap_table, by="Haplotype")
-f50_hap_join <- right_join(hap_trait_avg, f50_hap_table, by="Haplotype")
-f58_hap_join <- right_join(hap_trait_avg, f58_hap_table, by="Haplotype")
 
 
 # copy rows to reflect their generation frequency number
@@ -128,5 +130,7 @@ x2 <- rbind(f50_hap_join_poprepd, f58_hap_join_poprepd)
 joined_happops <- rbind(x1,x2)
 joined_happops <- rbind(joined_happops,f0_hap_join_poprepd)
 
+# remove NA columns?
+joined_happops <- joined_happops[-which(is.na(joined_happops$FT)),]
 # write out haplotype-frequency-ajusted data
 write_delim(joined_happops, "trait_BLUPs_HapRepPop.tsv")
