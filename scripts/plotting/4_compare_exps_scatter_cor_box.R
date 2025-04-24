@@ -33,11 +33,11 @@ df$Generation <- as.factor(df$Generation)
 ## All samples
 g <- df %>% filter(days_to_heading < 120) %>% #remove excessive values that don't get plotted anyways
     ggplot(aes(y=FT, x=days_to_heading)) +
-    geom_point() +
+        geom_point() +
         geom_smooth(method="lm", color="black", se=T) + 
-    stat_cor(method="spearman", cor.coef.name="rho") +
-    theme_bw(base_size=16) +
-    labs(x = "Days to Heading (greenhouse)", y = paste0(tidy_text_substitution("FT"), " (field)"), title="Comparing Flowering Time across Environments") 
+        stat_cor(method="spearman", cor.coef.name="rho") +
+        theme_bw(base_size=16) +
+        labs(x = "Days to Heading (greenhouse)", y = paste0(tidy_text_substitution("FT"), " (field)"), title="Comparing Flowering Time across Environments") 
 
 ###   total mass
 m1 <- ggplot(df, aes(y=TOTAL_MASS, x=seed_mass)) +
@@ -87,24 +87,24 @@ g <- df %>% filter(days_to_heading < 120) %>% #remove excessive values that don'
         theme_bw(base_size=16) +
         labs(x = "Days to Heading (greenhouse)", y = paste0(tidy_text_substitution("FT"), " (field)"), title="Comparing Flowering Time across Environments") 
 
-    ###   total mass
+###   total mass
 m1 <- ggplot(df, aes(y=TOTAL_MASS, x=seed_mass, color=Generation)) +
-        geom_point() +
+    geom_point() +
     geom_smooth(method="lm", color="black", se=T) + 
-        stat_cor(method="spearman", cor.coef.name="rho") +
-        theme_bw(base_size=16) +
+    stat_cor(method="spearman", cor.coef.name="rho") +
+    theme_bw(base_size=16) +
     labs(x = "Seed mass (greenhouse)", y = paste0(tidy_text_substitution("TOTAL_MASS"), " (field)"), title="Comparing Yield across Environments") 
 
 
 m2 <- ggplot(df, aes(y=MASS_PER_PLANT, x=seed_mass, color=Generation)) +
-        geom_point() +
+    geom_point() +
     geom_smooth(method="lm", color="black", se=T) + 
-        stat_cor(method="spearman", cor.coef.name="rho") +
-        theme_bw(base_size=16) +
+    stat_cor(method="spearman", cor.coef.name="rho") +
+    theme_bw(base_size=16) +
     labs(x = "Seed mass (greenhouse)", y = paste0(tidy_text_substitution("MASS_PER_PLANT"), " (field)"), title="Comparing Yield across Environments") 
 
 
-    ###   fecundity
+###   fecundity
 f <- ggplot(df, aes(y=FECUNDITY, x=seed_estimate, color=Generation)) +
     geom_point() +
     geom_smooth(method="lm", color="black", se=T) + 
@@ -162,12 +162,12 @@ f <- ggplot(parent, aes(y=FECUNDITY, x=seed_estimate, color=Generation)) +
     theme_bw(base_size=16) +
     labs(x = "Seed estimate (greenhouse)", y = paste0(tidy_text_substitution("FECUNDITY"), " (field)"), title="Comparing Seed Production across Environments") 
 
-    ###   100 seed mass
+###   100 seed mass
 s <- ggplot(parent, aes(y=SEED_WEIGHT_100, x=X100_seed_mass, color=Generation)) +
-        geom_point() +
+    geom_point() +
     geom_smooth(method="lm", color="black", se=T) + 
-        stat_cor(method="spearman", cor.coef.name="rho") +
-        theme_bw(base_size=16) +
+    stat_cor(method="spearman", cor.coef.name="rho") +
+    theme_bw(base_size=16) +
     labs(x = "100-Seed weight (greenhouse)", y = paste0(tidy_text_substitution("SEED_WEIGHT_100"), " (field)"), title="Comparing Yield across Environments") 
 
 ### print all together
@@ -250,24 +250,6 @@ ggsave(filename="results/cross_exp_scatter_cor_progeny.png", plot=zzz, height=(7
 adjusted_blues <- brewer.pal(7, "Blues")[3:7]
 
 ###   Flowering Time
-tmp <- df %>% 
-        select(c(FT, days_to_heading, Generation)) %>% 
-        pivot_longer(-Generation, names_to="experiment")
-
-tmp$experiment <- gsub("FT", "field", tmp$experiment)
-tmp$experiment <- gsub("days_to_heading", "greenhouse", tmp$experiment)
-
-a <- ggplot(tmp, aes(y=value, color=experiment, x=Generation)) +
-    geom_boxplot() +
-    theme_bw(base_size=16) +
-    labs(title="Comparing Experiments", subtitle="Flowering Time", y="Days to heading")
-
-b <- ggplot(tmp, aes(y=value, x=experiment, color=Generation)) +
-    geom_boxplot() +
-    scale_color_manual(values=adjusted_blues) +
-    theme_bw(base_size=16) +
-    labs(title="Comparing Experiments", subtitle="Flowering Time", y="Days to heading")
-
 # scale data for comparison across experiments
 tmp2 <- df %>% select(c(FT, days_to_heading, Generation)) %>% 
     mutate(across(-c(Generation), ~(scale(.) %>% as.vector))) %>% 
@@ -286,36 +268,13 @@ d <- ggplot(tmp2, aes(y=value, x=experiment, color=Generation)) +
     theme_bw(base_size=16) +
     labs(title="Comparing Experiments", subtitle="Flowering Time", y="Scaled Days to heading") 
 
-ggcombo <- ggarrange(a, b, c, d)
-ggsave("results/cross_exp_boxplot_FT.png", ggcombo, width = (7*2)+4, height = (7*2)+2)
-
-
+ggcombo <- ggarrange(c, d)
+ggsave("results/cross_exp_boxplot_FT.png", ggcombo, width = (7*2)+4, height = (7*1)+2)
 
 
 
 
 ###   Seed Weight
-
-tmp <- df %>% select(c(TOTAL_MASS, seed_mass, Generation)) %>% pivot_longer(-Generation, names_to="experiment")
-
-tmp <- df %>% 
-        select(c(TOTAL_MASS, seed_mass, Generation)) %>% 
-        pivot_longer(-Generation, names_to="experiment")
-
-tmp$experiment <- gsub("TOTAL_MASS", "field", tmp$experiment)
-tmp$experiment <- gsub("seed_mass", "greenhouse", tmp$experiment)
-
-a <- ggplot(tmp, aes(y=value, color=experiment, x=Generation)) +
-    geom_boxplot() +
-    theme_bw(base_size=16) +
-    labs(title="Comparing Experiments", subtitle="Total Seed Mass", y="mass (g)")
-
-b <- ggplot(tmp, aes(y=value, x=experiment, color=Generation)) +
-    geom_boxplot() +
-    scale_color_manual(values=adjusted_blues) +
-    theme_bw(base_size=16) +
-    labs(title="Comparing Experiments", subtitle="Total Seed Mass", y="mass (g)")
-
 # scale data for comparison across experiments
 tmp2 <- df %>% select(c(TOTAL_MASS, seed_mass, Generation)) %>% 
     mutate(across(-c(Generation), ~(scale(.) %>% as.vector))) %>% 
@@ -334,31 +293,11 @@ d <- ggplot(tmp2, aes(y=value, x=experiment, color=Generation)) +
     theme_bw(base_size=16) +
     labs(title="Comparing Experiments", subtitle="Total Seed Mass", y="Scaled mass (g)") 
 
-ggcombo <- ggarrange(a, b, c, d)
-ggsave("results/cross_exp_boxplot_MASS.png", ggcombo, width = (7*2)+4, height = (7*2)+2)
+ggcombo <- ggarrange(c, d)
+ggsave("results/cross_exp_boxplot_MASS.png", ggcombo, width = (7*2)+4, height = (7*1)+2)
 
 
 ##  Mass v. 2
-tmp <- df %>% select(c(MASS_PER_PLANT, seed_mass, Generation)) %>% pivot_longer(-Generation, names_to="experiment")
-
-tmp <- df %>% 
-        select(c(MASS_PER_PLANT, seed_mass, Generation)) %>% 
-        pivot_longer(-Generation, names_to="experiment")
-
-tmp$experiment <- gsub("MASS_PER_PLANT", "field", tmp$experiment)
-tmp$experiment <- gsub("seed_mass", "greenhouse", tmp$experiment)
-
-a <- ggplot(tmp, aes(y=value, color=experiment, x=Generation)) +
-    geom_boxplot() +
-    theme_bw(base_size=16) +
-    labs(title="Comparing Experiments", subtitle="Per-plant Seed Mass", y="mass (g)")
-
-b <- ggplot(tmp, aes(y=value, x=experiment, color=Generation)) +
-    geom_boxplot() +
-    scale_color_manual(values=adjusted_blues) +
-    theme_bw(base_size=16) +
-    labs(title="Comparing Experiments", subtitle="Per-plant Seed Mass", y="mass (g)")
-
 # scale data for comparison across experiments
 tmp2 <- df %>% select(c(MASS_PER_PLANT, seed_mass, Generation)) %>% 
     mutate(across(-c(Generation), ~(scale(.) %>% as.vector))) %>% 
@@ -377,30 +316,12 @@ d <- ggplot(tmp2, aes(y=value, x=experiment, color=Generation)) +
     theme_bw(base_size=16) +
     labs(title="Comparing Experiments", subtitle="Per-plant Seed Mass", y="Scaled mass (g)") 
 
-ggcombo <- ggarrange(a, b, c, d)
-ggsave("results/cross_exp_boxplot_MASS2.png", ggcombo, width = (7*2)+4, height = (7*2)+2)
+ggcombo <- ggarrange(c, d)
+ggsave("results/cross_exp_boxplot_MASS2.png", ggcombo, width = (7*2)+4, height = (7*1)+2)
 
 
 
 ###   100 Seed weight
-
-tmp <- df %>% select(c(SEED_WEIGHT_100, X100_seed_mass, Generation)) %>% pivot_longer(-Generation, names_to="experiment")
-
-tmp$experiment <- gsub("SEED_WEIGHT_100", "field", tmp$experiment)
-tmp$experiment <- gsub("X100_seed_mass", "greenhouse", tmp$experiment)
-
-a <- ggplot(tmp, aes(y=value, color=experiment, x=Generation)) +
-    geom_boxplot() +
-    theme_bw(base_size=16) +
-    labs(title="Comparing Experiments", subtitle="100-Seed Mass", y="mass for 100 seeds (g)")
-
-b <- ggplot(tmp, aes(y=value, x=experiment, color=Generation)) +
-    geom_boxplot() +
-    scale_color_manual(values=adjusted_blues) +
-    theme_bw(base_size=16) +
-    labs(title="Comparing Experiments", subtitle="100-Seed Mass", y="mass for 100 seeds (g)")
-
-
 # scale data for comparison across experiments
 tmp2 <- df %>% select(c(SEED_WEIGHT_100, X100_seed_mass, Generation)) %>% 
     mutate(across(-c(Generation), ~(scale(.) %>% as.vector))) %>% 
@@ -419,31 +340,12 @@ d <- ggplot(tmp2, aes(y=value, x=experiment, color=Generation)) +
     theme_bw(base_size=16) +
     labs(title="Comparing Experiments", subtitle="100-Seed Mass", y="Scaled mass for 100 seeds (g)") 
 
-ggcombo <- ggarrange(a, b, c, d)
-ggsave("results/cross_exp_boxplot_100sm.png", ggcombo, width = (7*2)+4, height = (7*2)+2)
-
-
+ggcombo <- ggarrange(c, d)
+ggsave("results/cross_exp_boxplot_100sm.png", ggcombo, width = (7*2)+4, height = (7*1)+2)
 
 
 
 ###   Fecundity / number of seeds
-tmp <- df %>% select(c(FECUNDITY, seed_estimate, Generation)) %>% pivot_longer(-Generation, names_to="experiment")
-
-tmp$experiment <- gsub("FECUNDITY", "field", tmp$experiment)
-tmp$experiment <- gsub("seed_estimate", "greenhouse", tmp$experiment)
-
-a <- ggplot(tmp, aes(y=value, color=experiment, x=Generation)) +
-    geom_boxplot() +
-    theme_bw(base_size=16) +
-    labs(title="Comparing Experiments", subtitle="Estimated seed number", y="Seeds")
-
-b <- ggplot(tmp, aes(y=value, x=experiment, color=Generation)) +
-    geom_boxplot() +
-    scale_color_manual(values=adjusted_blues) +
-    theme_bw(base_size=16) +
-    labs(title="Comparing Experiments", subtitle="Estimated seed number", y="Seeds")
-
-
 # scale data for comparison across experiments
 tmp2 <- df %>% select(c(FECUNDITY, seed_estimate, Generation)) %>% 
     mutate(across(-c(Generation), ~(scale(.) %>% as.vector))) %>% 
@@ -462,5 +364,5 @@ d <- ggplot(tmp2, aes(y=value, x=experiment, color=Generation)) +
     theme_bw(base_size=16) +
     labs(title="Comparing Experiments", subtitle="Estimated seed number", y="Scaled Seeds") 
 
-ggcombo <- ggarrange(a, b, c, d)
-ggsave("results/cross_exp_boxplot_fec.png", ggcombo, width = (7*2)+4, height = (7*2)+2)
+ggcombo <- ggarrange(c, d)
+ggsave("results/cross_exp_boxplot_fec.png", ggcombo, width = (7*2)+4, height = (7*1)+2)
