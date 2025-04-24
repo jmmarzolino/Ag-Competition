@@ -11,16 +11,16 @@ library(corrplot)
 
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
-#"hap_assign.txt"
-#("DERIVED_PHENOTYPES.tsv")
 
 #####    Greenhouse Exp
 # CC II greenhouse experiment data downloaded from paper supplement
 df <- fread("Prog_pheno.txt")
-#prt <- fread("Parents_pheno.txt")
+prt <- fread("Parents_pheno.txt")
 
-# explore data
-table(round(gh$rows))
+## explore data
+# how many lines are 2 vs. 6 row
+table(round(df$rows))
+# Fam_1 = generation number
 df %>% group_by(Fam_1) %>% summarise(across(c(days_to_heading, days_to_heading_2017), \(x) mean(x, na.rm=T)))
 
 sum(is.na(df$days_to_heading))
@@ -30,29 +30,40 @@ sum(is.na(df$days_to_heading_2017))
 
 # select only necessary columns
 df <- df %>% 
-    select(c(V1, X100_seed_mass, seed_mass, seed_estimate, days_to_heading))
+    select(c(V1, Samples, X100_seed_mass, seed_mass, seed_estimate, days_to_heading))
+# add ID number to parent data
+prt$Samples <- as.character(45:72)
+# select necessary columns
+prt <- prt %>% 
+    select(c(V1, Samples, X100_seed_mass, seed_mass, seed_estimate, days_to_heading))
+
+# join parent and progeny data from greenhouse experiment
+gh <- full_join(df, prt) %>% select(-V1)
+
+
 
 
 #####    Field Exp
 # CC II field experiment data
-ag <- fread("trait_BLUPs.tsv")
-# remove parents from data
-ag$gen <- as.numeric(gsub("^(\\d+)_\\d+.*", "\\1", ag$Genotype))
-ag <- ag %>% filter(gen < 10) %>% select(-c(gen, Germination))
+ag <- fread("trait_BLUPs.tsv") 
 
 # format genotype IDs to 'family' groups, #_##, removing any third numbers
 ag$Genotype <- gsub("^(\\d+_\\d+).*", "\\1", ag$Genotype)
+# for parent 'generation' numbers (>7),
+# format genotype to only first number
+ag$gen <- (as.numeric(gsub("^(\\d+)_\\d+.*", "\\1", ag$Genotype)))
+ag[which(ag$gen > 10), 1] <- ag[which(ag$gen > 10), 8]
 
 
 ####    Join data
 # join data by genotypes in both data sets
-combo <- inner_join(ag, df, by=c("Genotype"="V1"))
+combo <- inner_join(ag, gh, by=c("Genotype"="Samples")) %>% select(-gen)
 write_delim(combo, "combined_CCII.tsv")
 
 
 ####    Trait correlations
 # save table of trait correlation values
-x_cor <- cor(combo[,2:10], use="na.or.complete", method="spearman")
+x_cor <- cor(combo[,2:ncol(combo)], use="na.or.complete", method="spearman")
 dimnames(x_cor)[[1]] <- tidy_text_substitution(dimnames(x_cor)[[1]])
 dimnames(x_cor)[[2]] <- tidy_text_substitution(dimnames(x_cor)[[2]])
 x <- data.table(x_cor)
@@ -66,7 +77,7 @@ write_delim(tibble(x), "over_exps_correlation_table.tsv", "\t")
 
 # trait pairs for plotting
 #"X100_seed_mass"="SEED_WEIGHT_100", 
-#"seed_mass"="TOTAL_MASS", "seed_mass" = "MASS_PER_PLANT"
+#"seed_mass"="TOTAL_MASS"
 #"seed_estimate"="FECUNDITY", 
 #"days_to_heading"="FT"
 
