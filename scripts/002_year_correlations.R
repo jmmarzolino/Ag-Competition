@@ -40,7 +40,7 @@ g <- df_rep %>%
     #stat_cor() +
     labs(x = "Year 2022",
         y = "Year 2023",
-        title = paste("Correlation of", sep = " ", y)) +
+        title = "Year Correlations: trait by condition") +
     theme_bw() +
     facet_wrap(Condition~PHENOTYPES, scales="free", nrow=2,ncol=4)
 
