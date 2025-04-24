@@ -31,16 +31,163 @@ df$Generation <- as.factor(df$Generation)
 ###    Scatter Plots
 
 ## All samples
-# parent lines aren't included because they were identified by name in CC II greenhouse data and I don't want to manually match them...
-
-
-## All progeny
-g <- ggplot(df, aes(y=FT, x=days_to_heading)) +
+g <- df %>% filter(days_to_heading < 120) %>% #remove excessive values that don't get plotted anyways
+    ggplot(aes(y=FT, x=days_to_heading)) +
     geom_point() +
-    geom_smooth(method="lm", color="black", se=F) + 
+        geom_smooth(method="lm", color="black", se=T) + 
     stat_cor(method="spearman", cor.coef.name="rho") +
     theme_bw(base_size=16) +
     labs(x = "Days to Heading (greenhouse)", y = paste0(tidy_text_substitution("FT"), " (field)"), title="Comparing Flowering Time across Environments") 
+
+###   total mass
+m1 <- ggplot(df, aes(y=TOTAL_MASS, x=seed_mass)) +
+    geom_point() +
+    geom_smooth(method="lm", color="black", se=T) + 
+    stat_cor(method="spearman", cor.coef.name="rho") +
+    theme_bw(base_size=16) +
+    labs(x = "Seed mass (greenhouse)", y = paste0(tidy_text_substitution("TOTAL_MASS"), " (field)"), title="Comparing Yield across Environments") 
+
+
+m2 <- ggplot(df, aes(y=MASS_PER_PLANT, x=seed_mass)) +
+    geom_point() +
+    geom_smooth(method="lm", color="black", se=T) + 
+    stat_cor(method="spearman", cor.coef.name="rho") +
+    theme_bw(base_size=16) +
+    labs(x = "Seed mass (greenhouse)", y = paste0(tidy_text_substitution("MASS_PER_PLANT"), " (field)"), title="Comparing Yield across Environments") 
+
+
+###   fecundity
+f <- ggplot(df, aes(y=FECUNDITY, x=seed_estimate)) +
+    geom_point() +
+    geom_smooth(method="lm", color="black", se=T) + 
+    stat_cor(method="spearman", cor.coef.name="rho") +
+    theme_bw(base_size=16) +
+    labs(x = "Seed estimate (greenhouse)", y = paste0(tidy_text_substitution("FECUNDITY"), " (field)"), title="Comparing Seed Production across Environments") 
+
+###   100 seed mass
+s <- ggplot(df, aes(y=SEED_WEIGHT_100, x=X100_seed_mass)) +
+    geom_point() +
+    geom_smooth(method="lm", color="black", se=T) + 
+    stat_cor(method="spearman", cor.coef.name="rho") +
+    theme_bw(base_size=16) +
+    labs(x = "100-Seed weight (greenhouse)", y = paste0(tidy_text_substitution("SEED_WEIGHT_100"), " (field)"), title="Comparing Yield across Environments") 
+
+### print all together
+zzz <- ggarrange(g, m1, m2, f, s)
+ggsave(filename="results/cross_exp_scatter_cor.png", plot=zzz, height=(7*2)+2, width=(7*3)+2, units="in")
+
+
+
+## All samples colored by generation
+g <- df %>% filter(days_to_heading < 120) %>% #remove excessive values that don't get plotted anyways
+    ggplot(aes(y=FT, x=days_to_heading, color=Generation)) +
+        geom_point() +
+        geom_smooth(method="lm", color="black", se=T) + 
+        stat_cor(method="spearman", cor.coef.name="rho") +
+        theme_bw(base_size=16) +
+        labs(x = "Days to Heading (greenhouse)", y = paste0(tidy_text_substitution("FT"), " (field)"), title="Comparing Flowering Time across Environments") 
+
+    ###   total mass
+m1 <- ggplot(df, aes(y=TOTAL_MASS, x=seed_mass, color=Generation)) +
+        geom_point() +
+    geom_smooth(method="lm", color="black", se=T) + 
+        stat_cor(method="spearman", cor.coef.name="rho") +
+        theme_bw(base_size=16) +
+    labs(x = "Seed mass (greenhouse)", y = paste0(tidy_text_substitution("TOTAL_MASS"), " (field)"), title="Comparing Yield across Environments") 
+
+
+m2 <- ggplot(df, aes(y=MASS_PER_PLANT, x=seed_mass, color=Generation)) +
+        geom_point() +
+    geom_smooth(method="lm", color="black", se=T) + 
+        stat_cor(method="spearman", cor.coef.name="rho") +
+        theme_bw(base_size=16) +
+    labs(x = "Seed mass (greenhouse)", y = paste0(tidy_text_substitution("MASS_PER_PLANT"), " (field)"), title="Comparing Yield across Environments") 
+
+
+    ###   fecundity
+f <- ggplot(df, aes(y=FECUNDITY, x=seed_estimate, color=Generation)) +
+    geom_point() +
+    geom_smooth(method="lm", color="black", se=T) + 
+    stat_cor(method="spearman", cor.coef.name="rho") +
+    theme_bw(base_size=16) +
+    labs(x = "Seed estimate (greenhouse)", y = paste0(tidy_text_substitution("FECUNDITY"), " (field)"), title="Comparing Seed Production across Environments") 
+
+###   100 seed mass
+s <- ggplot(df, aes(y=SEED_WEIGHT_100, x=X100_seed_mass, color=Generation)) +
+    geom_point() +
+    geom_smooth(method="lm", color="black", se=T) + 
+    stat_cor(method="spearman", cor.coef.name="rho") +
+    theme_bw(base_size=16) +
+    labs(x = "100-Seed weight (greenhouse)", y = paste0(tidy_text_substitution("SEED_WEIGHT_100"), " (field)"), title="Comparing Yield across Environments") 
+
+### print all together
+zzz <- ggarrange(g, m1, m2, f, s)
+ggsave(filename="results/cross_exp_scatter_cor_color_gens.png", plot=zzz, height=(7*2)+2, width=(7*3)+2, units="in")
+
+
+
+
+## All parents
+parent <- df %>% filter(Generation == 0)
+g <- parent %>% filter(days_to_heading < 120) %>% #remove excessive values that don't get plotted anyways
+    ggplot(aes(y=FT, x=days_to_heading, color=Generation)) +
+        geom_point() +
+        geom_smooth(method="lm", color="black", se=T) + 
+        stat_cor(method="spearman", cor.coef.name="rho") +
+        theme_bw(base_size=16) +
+        labs(x = "Days to Heading (greenhouse)", y = paste0(tidy_text_substitution("FT"), " (field)"), title="Comparing Flowering Time across Environments") 
+
+###   total mass
+m1 <- ggplot(parent, aes(y=TOTAL_MASS, x=seed_mass, color=Generation)) +
+    geom_point() +
+    geom_smooth(method="lm", color="black", se=T) + 
+    stat_cor(method="spearman", cor.coef.name="rho") +
+    theme_bw(base_size=16) +
+    labs(x = "Seed mass (greenhouse)", y = paste0(tidy_text_substitution("TOTAL_MASS"), " (field)"), title="Comparing Yield across Environments") 
+
+
+m2 <- ggplot(parent, aes(y=MASS_PER_PLANT, x=seed_mass, color=Generation)) +
+    geom_point() +
+    geom_smooth(method="lm", color="black", se=T) + 
+    stat_cor(method="spearman", cor.coef.name="rho") +
+    theme_bw(base_size=16) +
+    labs(x = "Seed mass (greenhouse)", y = paste0(tidy_text_substitution("MASS_PER_PLANT"), " (field)"), title="Comparing Yield across Environments") 
+
+
+###   fecundity
+f <- ggplot(parent, aes(y=FECUNDITY, x=seed_estimate, color=Generation)) +
+    geom_point() +
+    geom_smooth(method="lm", color="black", se=T) + 
+    stat_cor(method="spearman", cor.coef.name="rho") +
+    theme_bw(base_size=16) +
+    labs(x = "Seed estimate (greenhouse)", y = paste0(tidy_text_substitution("FECUNDITY"), " (field)"), title="Comparing Seed Production across Environments") 
+
+    ###   100 seed mass
+s <- ggplot(parent, aes(y=SEED_WEIGHT_100, x=X100_seed_mass, color=Generation)) +
+        geom_point() +
+    geom_smooth(method="lm", color="black", se=T) + 
+        stat_cor(method="spearman", cor.coef.name="rho") +
+        theme_bw(base_size=16) +
+    labs(x = "100-Seed weight (greenhouse)", y = paste0(tidy_text_substitution("SEED_WEIGHT_100"), " (field)"), title="Comparing Yield across Environments") 
+
+### print all together
+zzz <- ggarrange(g, m1, m2, f, s)
+ggsave(filename="results/cross_exp_scatter_cor_parents.png", plot=zzz, height=(7*2)+2, width=(7*3)+2, units="in")
+
+
+
+
+
+
+## All progeny
+prog <- df %>% filter(Generation != 0)
+
+g <- ggplot(prog, aes(y=FT, x=days_to_heading)) +
+    geom_point() +
+    geom_smooth(method="lm", color="black", se=T) + 
+    stat_cor(method="spearman", cor.coef.name="rho") +
+    theme_bw(base_size=16) +
+    labs(x = "Days to Heading (greenhouse)", y = paste0(tidy_text_substitution("FT"), " (field)"), title="Comparing Flowering Time across Environments", subtitle="Progeny") 
 
 
 ## ggpub syntax
@@ -58,96 +205,41 @@ g <- ggplot(df, aes(y=FT, x=days_to_heading)) +
 #c('bottom', 'top', 'center', 'centre', 'middle')
 
 ###   total mass
-m1 <- ggplot(df, aes(y=TOTAL_MASS, x=seed_mass)) +
+m1 <- ggplot(prog, aes(y=TOTAL_MASS, x=seed_mass)) +
     geom_point() +
-    geom_smooth(method="lm", color="black", se=F) + 
+    geom_smooth(method="lm", color="black", se=T) + 
     stat_cor(method="spearman", cor.coef.name="rho") +
     theme_bw(base_size=16) +
-    labs(x = "Seed mass (greenhouse)", y = paste0(tidy_text_substitution("TOTAL_MASS"), " (field)"), title="Comparing Yield across Environments") 
+    labs(x = "Seed mass (greenhouse)", y = paste0(tidy_text_substitution("TOTAL_MASS"), " (field)"), title="Comparing Yield across Environments", subtitle="Progeny") 
 
 
-m2 <- ggplot(df, aes(y=MASS_PER_PLANT, x=seed_mass)) +
+m2 <- ggplot(prog, aes(y=MASS_PER_PLANT, x=seed_mass)) +
     geom_point() +
-    geom_smooth(method="lm", color="black", se=F) + 
+    geom_smooth(method="lm", color="black", se=T) + 
     stat_cor(method="spearman", cor.coef.name="rho") +
     theme_bw(base_size=16) +
-    labs(x = "Seed mass (greenhouse)", y = paste0(tidy_text_substitution("MASS_PER_PLANT"), " (field)"), title="Comparing Yield across Environments") 
+    labs(x = "Seed mass (greenhouse)", y = paste0(tidy_text_substitution("MASS_PER_PLANT"), " (field)"), title="Comparing Yield across Environments", subtitle="Progeny") 
 
 
 ###   fecundity
-f <- ggplot(df, aes(y=FECUNDITY, x=seed_estimate)) +
+f <- ggplot(prog, aes(y=FECUNDITY, x=seed_estimate)) +
     geom_point() +
-    geom_smooth(method="lm", color="black", se=F) + 
+    geom_smooth(method="lm", color="black", se=T) + 
     stat_cor(method="spearman", cor.coef.name="rho") +
     theme_bw(base_size=16) +
-    labs(x = "Seed estimate (greenhouse)", y = paste0(tidy_text_substitution("FECUNDITY"), " (field)"), title="Comparing Seed Production across Environments") 
+    labs(x = "Seed estimate (greenhouse)", y = paste0(tidy_text_substitution("FECUNDITY"), " (field)"), title="Comparing Seed Production across Environments", subtitle="Progeny") 
 
 ###   100 seed mass
-s <- ggplot(df, aes(y=SEED_WEIGHT_100, x=X100_seed_mass)) +
+s <- ggplot(prog, aes(y=SEED_WEIGHT_100, x=X100_seed_mass)) +
     geom_point() +
-    geom_smooth(method="lm", color="black", se=F) + 
+    geom_smooth(method="lm", color="black", se=T) + 
     stat_cor(method="spearman", cor.coef.name="rho") +
     theme_bw(base_size=16) +
-    labs(x = "100-Seed weight (greenhouse)", y = paste0(tidy_text_substitution("SEED_WEIGHT_100"), " (field)"), title="Comparing Yield across Environments") 
+    labs(x = "100-Seed weight (greenhouse)", y = paste0(tidy_text_substitution("SEED_WEIGHT_100"), " (field)"), title="Comparing Yield across Environments", subtitle="Progeny") 
 
 ### print all together
 zzz <- ggarrange(g, m1, m2, f, s)
-ggsave(filename="results/cross_exp_scatter_cor.png", plot=zzz, height=(7*2)+2, width=(7*3)+2, units="in")
-
-
-
-
-
-
-## Each generation
-for(i in c(18, 28, 50, 58)) {
-
-    tmp <- df %>% filter(Generation == i) 
-
-    ## flowering time
-    g <- ggplot(tmp, aes(y=FT, x=days_to_heading)) +
-        geom_point() +
-        geom_smooth(method="lm", color="black", se=F) + 
-        stat_cor(method="spearman", cor.coef.name="rho") +
-        theme_bw(base_size=16) +
-        labs(x = "Days to Heading (greenhouse)", y = paste0(tidy_text_substitution("FT"), " (field)"), title="Comparing Flowering Time across Environments", subtitle=paste0("Individuals from Generation ", i)) 
-
-    ###   total mass
-    m1 <- ggplot(tmp, aes(y=TOTAL_MASS, x=seed_mass)) +
-        geom_point() +
-        geom_smooth(method="lm", color="black", se=F) + 
-        stat_cor(method="spearman", cor.coef.name="rho") +
-        theme_bw(base_size=16) +
-        labs(x = "Seed mass (greenhouse)", y = paste0(tidy_text_substitution("TOTAL_MASS"), " (field)"), title="Comparing Yield across Environments", subtitle=paste0("Individuals from Generation ", i)) 
-
-    m2 <- ggplot(tmp, aes(y=MASS_PER_PLANT, x=seed_mass)) +
-        geom_point() +
-        geom_smooth(method="lm", color="black", se=F) + 
-        stat_cor(method="spearman", cor.coef.name="rho") +
-        theme_bw(base_size=16) +
-        labs(x = "Seed mass (greenhouse)", y = paste0(tidy_text_substitution("MASS_PER_PLANT"), " (field)"), title="Comparing Yield across Environments", subtitle=paste0("Individuals from Generation ", i))  
-
-    ###   fecundity
-    f <- ggplot(tmp, aes(y=FECUNDITY, x=seed_estimate)) +
-        geom_point() +
-        geom_smooth(method="lm", color="black", se=F) + 
-        stat_cor(method="spearman", cor.coef.name="rho") +
-        theme_bw(base_size=16) +
-        labs(x = "Seed estimate (greenhouse)", y = paste0(tidy_text_substitution("FECUNDITY"), " (field)"), title="Comparing Seed Production across Environments", subtitle=paste0("Individuals from Generation ", i))  
-
-
-    ###   100 seed mass
-    s <- ggplot(tmp, aes(y=SEED_WEIGHT_100, x=X100_seed_mass)) +
-        geom_point() +
-        geom_smooth(method="lm", color="black", se=F) + 
-        stat_cor(method="spearman", cor.coef.name="rho") +
-        theme_bw(base_size=16) +
-        labs(x = "100-Seed weight (greenhouse)", y = paste0(tidy_text_substitution("SEED_WEIGHT_100"), " (field)"), title="Comparing Yield across Environments", subtitle=paste0("Individuals from Generation ", i)) 
-
-    zzz_gen <- ggarrange(g, m1, m2, f, s)
-    ggsave(filename=paste0("results/cross_exp_scatter_cor_gen", i, ".png"), plot=zzz_gen, height=(7*2)+2, width=(7*3)+2, units="in")
-}
-
+ggsave(filename="results/cross_exp_scatter_cor_progeny.png", plot=zzz, height=(7*2)+2, width=(7*3)+2, units="in")
 
 
 
