@@ -56,15 +56,19 @@ ggsave("results/trait_var_over_generations.png", a, width = (7*3)+2, height = (7
 
 
 
-################ same plots, using scaled phenotypes
+################ same plots, using scaled phenotypes + relative to parental generation value
 ### PLOTTING
 ## arrange data for facet plotting
 
 df <- fread("data/generations_trait_avg_var_IN_SD.tsv")
 
+for(i in 2:ncol(df)) {
+      # subtract parental value from all generations
+      df[[i]] <- df[[i]]-df[[i]][1]
+}
+
 df_long <- df %>% pivot_longer(cols=-c('Generation'), values_to="VALUE", names_to="TRAIT")
-# substitute trait names w/ tidy text versions
-df_long$TRAIT <- tidy_text_substitution(df_long$TRAIT)
+
 
 # split data into mean and var
 df_long_mean <- df_long[grep("mean", df_long$TRAIT), ]
@@ -73,6 +77,9 @@ df_long_var <- df_long[grep("sd", df_long$TRAIT), ]
 df_long_mean$TRAIT <- gsub("_mean", "", df_long_mean$TRAIT)
 df_long_var$TRAIT <- gsub("_sd", "", df_long_var$TRAIT)
 
+# substitute trait names w/ tidy text versions
+df_long_mean$TRAIT <- tidy_text_substitution(df_long_mean$TRAIT)
+df_long_var$TRAIT <- tidy_text_substitution(df_long_var$TRAIT)
 
 a <- ggplot(df_long_mean, aes(y=VALUE, x=Generation)) +
       geom_point() + geom_line() + 
