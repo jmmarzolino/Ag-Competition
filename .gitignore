@@ -59,3 +59,4 @@ scripts/.lme_fn_notes.txt
 scripts/.tmp_modeling.R
 scripts/plotting/MK_plot_scripts
 scripts/plotting/MK_plot_scripts/*
+scripts/parent_scaling_chat.md
