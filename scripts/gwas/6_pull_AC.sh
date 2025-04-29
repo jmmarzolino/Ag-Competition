@@ -48,6 +48,6 @@ bcftools query -S F28.gt.names -f '[\t%GT]\n' $VCF | python $PY_SCRIPT > AFS28.t
 bcftools query -S F50.gt.names -f '[\t%GT]\n' $VCF | python $PY_SCRIPT > AFS50.txt
 bcftools query -S F58.gt.names -f '[\t%GT]\n' $VCF | python $PY_SCRIPT > AFS58.txt
 
-paste pos_data.txt AFS1.txt AFS18.txt AFS28.txt AFS50.txt AFS58.txt > POP_AF/COMBINED_AFS.txt
+paste pos_data.txt AFS1.txt AFS18.txt AFS28.txt AFS50.txt AFS58.txt > COMBINED_AFS.txt
 
 #rm F* AFS* all_sites.txt pos_data.txt
