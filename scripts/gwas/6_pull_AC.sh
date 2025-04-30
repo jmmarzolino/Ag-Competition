@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #SBATCH --job-name=GWAS
 #SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6_pull_AC.stdout
 #SBATCH --ntasks=1
@@ -37,6 +36,9 @@ bcftools query -l $VCF | grep '^7_' > F58.gt.names
 # list chr-position data with ref and alt alelles for both site lists
 bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\n' $VCF2 > pos_data.txt
 ## column order is REF count / ALT count
+# list chr-position data for gwas sites
+bcftools query -f '%CHROM\t%POS\n' $VCF > prog_sites.txt
+
 
 # script counts occurance of alt and ref alleles per line/site
 PY_SCRIPT=$'../../scripts/gwas/calc_afs_from_vcf.py'
