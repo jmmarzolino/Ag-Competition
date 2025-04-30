@@ -59,81 +59,57 @@ print((nrow(df2[which(df2$chi_p < (0.05/nrow(df2))),]))/nrow(df2))
 
 
 
-### polarize progeny frequencies to parental minor allele frequency
-# split df by parental minor allele 1 or 2
-MAFA1 <- df2[which(df2$F0_AF < 0.5), ]
-print("num of minor allele 1")
-print(dim(MAFA1)[1])
-MAFA2 <- df2[which(df2$F0_AF > 0.5), ]
-print("num of minor allele 2")
-print(dim(MAFA2)[1])
 
-# invert AF to alt allele frequency if A1 is major
-MAFA2[,11:13] <- 1-MAFA2[,11:13]
-# label which allele is parental minor
-MAFA1$minor_allele <- 1
-MAFA2$minor_allele <- 2
-# put df back together, in order
-minor <- bind_rows(MAFA1, MAFA2)
-minor <- minor[order(minor$CHR, minor$BP),]
-
-
-# add change in AF to df
-minor$DELTA_P18 <- minor$F18_AF - minor$F0_AF
-minor$DELTA_1858 <- minor$F58_AF - minor$F18_AF
-
-
-write_delim(minor, "MAF.tsv")
-
+# allele frequency and change between gens
+df2$F18_AF <- df2$F18A1/(df2$F18A1+df2$F18A2)
+df2$F58_AF <- df2$F58A1/(df2$F58A1+df2$F58A2)
+df2$DELTA_AF <- df2$F58_AF - df2$F18_AF
 
 #### allele freq change stats
-changed <- minor %>% filter(chi_p < (0.005/nrow(minor)))
+changed <- df2 %>% filter(chi_p < (0.005/nrow(df2)))
 
-print("sig changed AF sites: P to F18 allele freq change distribution")
-print(summary(changed$DELTA_P18))
-print(summary(abs(changed$DELTA_P18)))
-
-print("sig changed AF sites: F18 to F58 allele freq change distribution")
-print(summary(changed$DELTA_1858))
-print(summary(abs(changed$DELTA_1858)))
-
-
+## fixed sites
+#df2[which(is.na(df2$chi_p)),]
+# more ways... delta 18-58 is 0 & af18 & f58 are both 0 or both 1
 
 
 #### plotting
 # plot distribution of allele frequency changes over generations
 print('all sites: delta AF distribution')
-print(quantile(minor$DELTA_1858))
-#hist(df2$DELTA_1858)
-g <- ggplot(minor, aes(DELTA_1858)) +
+print(quantile(df2$DELTA_AF))
+#hist(df2$DELTA_AF)
+g <- ggplot(df2, aes(DELTA_AF)) +
         geom_histogram(binwidth=0.05) +
         labs(x="", title="Change in Allele Frequency F18 to F58") +
         theme_bw(base_size=20)
 
-g2 <- ggplot(minor, aes(abs(DELTA_1858))) +
-        geom_histogram(binwidth=0.05) +
+
+g2 <- ggplot(df2, aes(DELTA_AF)) +
+        geom_histogram(binwidth=0.1) +
         labs(x="", title="Change in Allele Frequency F18 to F58") +
         theme_bw(base_size=20)
 
+g3 <- ggplot(df2, aes(abs(DELTA_AF))) +
+        geom_histogram(binwidth=0.05) +
+        labs(x="", title="Change in Allele Frequency F18 to F58", subtitle="Absolute Values") +
+        theme_bw(base_size=20)
 
 print('sig changed AF sites: delta AF distribution')
-print(quantile(changed$DELTA_1858))
-#hist(df3$DELTA_1858)
-h <- ggplot(changed, aes(DELTA_1858)) +
+print(quantile(changed$DELTA_AF))
+#hist(df3$DELTA_AF)
+h <- ggplot(changed, aes(DELTA_AF)) +
         geom_histogram(binwidth=0.05) +
         labs(x="", title="Change in Allele Frequency F18 to F58", subtitle="Sites with Significantly Changed Frequency") +
         theme_bw(base_size=20)
-h2 <- ggplot(changed, aes(abs(DELTA_1858))) +
+h2 <- ggplot(changed, aes(abs(DELTA_AF))) +
         geom_histogram(binwidth=0.05) +
         labs(x="", title="Change in Allele Frequency F18 to F58", subtitle="Sites with Significantly Changed Frequency") +
         theme_bw(base_size=20)
 
 
-gh <- ggarrange(g, h, nrow=2)
-ggsave(gh, filename="sigsites_deltaAF_histograms.png", height=9.5, width=8, units="in", dpi="print")
+gh <- ggarrange(g, g3, h, h2)
+ggsave(gh, filename="deltaAF_histograms.png", height=(7*2)+2, width=(7*2)+2, units="in", dpi="print")
 
-gh2 <- ggarrange(g2, h2, nrow=2)
-ggsave(gh2, filename="sigsites_deltaAF_histograms_absval.png", height=9.5, width=8, units="in", dpi="print")
 
 
 
@@ -142,32 +118,38 @@ ggsave(gh2, filename="sigsites_deltaAF_histograms_absval.png", height=9.5, width
 
 #### beneficial alleles
 ### for sig changed sites, determine beneficial allele
-changed$inc_or_dec <- sign(changed$DELTA_1858)
+changed$inc_or_dec <- sign(changed$DELTA_AF)
 sum(changed$inc_or_dec)
-table(changed$inc_or_dec, changed$minor_allele)
+table(changed$inc_or_dec)
 
-# frequencies are polarized to parent minor, so if freq inc, the minor is the beneficial allele
-changed$beneficial_allele <- as.numeric()
-# and if the freq of the minor dec, its NOT the beneficial allele
-# if freq inc, copy number of minor allele
-changed[which(changed$inc_or_dec==1 & changed$minor_allele==1), 19] <- 1
-changed[which(changed$inc_or_dec==1 & changed$minor_allele==2), 19] <- 2
+# if freq inc, A1 is the beneficial allele
+changed$beneficial_allele <- "A1"
+# so if inc_or_dec col is = -1, change "A1" to "A2"
+changed[which(changed$inc_or_dec==-1), ncol(changed)] <- "A2"
 
-# if freq dec, NOT minor allele number
-# if minor is A1, change beneficial num to 2
-changed[which(changed$inc_or_dec==-1 & changed$minor_allele==1), 19] <- 2
-# if minor is A2, change beneficial num to 1
-changed[which(changed$inc_or_dec==-1 & changed$minor_allele==2), 19] <- 1
-table(changed$beneficial_allele, changed$minor_allele)
-table(changed$inc_or_dec, changed$beneficial_allele)
-
-
-# re-join sig changed sites with neutral sites
-changed <- changed %>% select(-c(inc_or_dec))
-m2 <- full_join(minor, changed, by = join_by(CHR, BP, A1, A2, F0A1, F0A2, F18A1, F18A2, F58A1, F58A2, F0_AF, F18_AF, F58_AF, chi_p, minor_allele, DELTA_P18, DELTA_1858))
+# join sig changed sites with neutral sites
+m2 <- full_join(df2, changed)
+write_delim(m2, "progeny_AF_change.tsv")
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+##################################################################
+############################################
+############################################
+######################
+######################
 ### join list of traits associated with sites (and thus, beneficial alleles)
 tr <- fread("../raw_gwas_assoc_sig_sites.tsv")
 tr$trait <- as.numeric(gsub("trait_(\\d+)", "\\1", tr$trait))
@@ -189,8 +171,6 @@ write_delim(jnm, "MAF_BeneficialAllele_TraitAssoc.tsv")
 
 
 
-
-
 # list of significantly changed traits
 sig <- fread("../../002A_change_over_time_derived_traits_significant.tsv")
 st <- unlist(sig$traits)
@@ -208,18 +188,18 @@ ham %>% filter(!is.na(trait_name)) %>% select(rs) %>% unique %>% nrow %>% print
 
 
 # 1 = sites associated w significantly changed trait
-s1 <- ham %>% filter(trait_name %in% st) %>% select(c('chr', 'rs', 'ps', 'DELTA_1858', 'trait_name'))
+s1 <- ham %>% filter(trait_name %in% st) %>% select(c('chr', 'rs', 'ps', 'DELTA_AF', 'trait_name'))
 print("num of sig-changed sites associated w sig-changed traits")
 unique(s1$rs) %>% length %>% print
 
 
 # 2 = sites associated w any other traits
-s2 <- ham %>% filter(!is.na(trait_name)) %>% filter(!(trait_name %in% st)) %>% select(c('chr', 'rs', 'ps', 'DELTA_1858', 'trait_name'))
+s2 <- ham %>% filter(!is.na(trait_name)) %>% filter(!(trait_name %in% st)) %>% select(c('chr', 'rs', 'ps', 'DELTA_AF', 'trait_name'))
 print("num of sig changed sites associated w NON-sig changed traits")
 unique(s2$rs) %>% length %>% print
 
 
 # 3 = all other sites
-s3 <- ham %>% filter(is.na(trait_name)) %>% select(c('chr', 'rs', 'ps', 'DELTA_1858', 'trait_name'))
+s3 <- ham %>% filter(is.na(trait_name)) %>% select(c('chr', 'rs', 'ps', 'DELTA_AF', 'trait_name'))
 print("num of sig changed sites associated w NO trait")
 unique(s3$rs) %>% length %>% print
