@@ -53,9 +53,9 @@ b <- ggplot(df) +
 
 c <- ggplot(df) + 
       geom_jitter(aes(x=Generation, y=SEED_WEIGHT_100), alpha=0.7) +
-      geom_line(data=gen_means, aes(x=Generation, y=TOTAL_MASS, color=experiment), linewidth=1) + 
+      geom_line(data=gen_means, aes(x=Generation, y=SEED_WEIGHT_100, color=experiment), linewidth=1) + 
       theme_bw(base_size=16) +
-      labs(x = "Generation", y = tidy_text_substitution("TOTAL_MASS"), title="Mass per 100-seeds over Generations") +
+      labs(x = "Generation", y = tidy_text_substitution("SEED_WEIGHT_100"), title="Mass per 100-seeds over Generations") +
       scale_color_manual(values=c("darkblue", "dodgerblue3"), name="averaged data")
 
 d <- ggplot() + 
