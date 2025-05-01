@@ -82,6 +82,6 @@ write_delim(tibble(x), "over_exps_correlation_table.tsv", "\t")
 #"days_to_heading"="FT"
 
 # plot trait relationships 
-png("over_exps_trait_corrs.png")
+png("over_exps_trait_corrs.png", width = 10, height = 10, units = "in", res=300)
 corrplot(x_cor, method="color", type="upper", order="original", title="", mar=c(0,0,4,0), addCoef.col = "black", tl.col = "black")
 dev.off()
