@@ -41,12 +41,12 @@ df$F28_AF <- df$F28A1 / (df$F28A1 + df$F28A2)
 df$F50_AF <- df$F50A1 / (df$F50A1 + df$F50A2)
 df$F58_AF <- df$F58A1 / (df$F58A1 + df$F58A2)
 # not making it polarized to parent minor allele since this is only for filtering segregating sites. so I just need to know if any frequencies are 0/100
-AF <- df %>% select(c(CHR, BP, A1, A2, #F0_AF, F18_AF, 
-F28_AF, F50_AF, F58_AF))
+AF <- df %>% select(c(CHR, BP, A1, A2, #F0_AF, 
+F18_AF, F28_AF, F50_AF, F58_AF))
 
 # filter sites that don't segregate in progeny
 print("summary of un-filtered progeny allele counts")
-print(summary(AF[, 6:9]))
+print(summary(AF[, 6:ncol(AF)]))
 # there's definietly sites at 0 and 1...
 
 # how many sites are fixed in F18?
@@ -71,12 +71,12 @@ AF <- AF[-which(AF$summ==0),]
 #AF[which((AF$summ)/4 < 0.004),]
 # print(paste0("number of sites nearly 0 in progeny... ", length(which((AF$summ)/4 < 0.004))))
 print(paste0("number of sites nearly fixed at 0 in progeny (x < 0.0015): ", length(which(AF$avg < 0.0015))))
-#AF <- AF[-which(AF$avg < 0.0015),]
-AF[order(AF$summ, decreasing=F),]
+AF <- AF[-which(AF$avg < 0.0015),]
+#AF[order(AF$summ, decreasing=F),]
 
 #
 print(paste0("number of sites fixed at nearly 1 (x > 0.995) in progeny: ", length(which(AF$avg > 0.995))))
-AF[order(AF$summ, decreasing=T),]
+#AF[order(AF$summ, decreasing=T),]
 #AF <- AF[-which(AF$avg > 0.995),]
 # I'm leaving sites that maybe don't segregate because the values will be different in the larger population
 
