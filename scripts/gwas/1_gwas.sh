@@ -13,19 +13,128 @@ cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
 #cp /rhome/dkoenig/bigdata/BARLEY_CCII_PROGENY_RAD/DATA/OUTPUT/STITCH/PROGENY.vcf.gz PROGENY.vcf.gz
 #cp /rhome/dkoenig/bigdata/BARLEY_CCII_PROGENY_RAD/DATA/INPUT/SAMPLES.txt SAMPLES.txt
 #cp /rhome/dkoenig/bigdata/BARLEY_CCII_PROGENY_RAD/DATA/OUTPUT/STITCH/FULL_FILTER.vcf FULL_FILTER.vcf#parents and progeny lines
+#/rhome/dkoenig/bigdata/BARLEY_CCII_PROGENY_RAD/SCRIPTS
 #############################################################################
 
 module load vcftools/0.1.16-18
+module load bcftools/1.19
+
+
+
+
 # remove indels for gemma & filter to variant sites
-vcftools --gzvcf imputed.vcf.gz --remove-indels --not-chr chrUn --recode --recode-INFO-all --out imputed_filter
-# minor allele freq set to 1/(2*208 seq'd indvs) = 0.0024
-# so maf filter will only remove freqs of 0
-#--maf 0.002
+vcftools --gzvcf imputed.vcf.gz --remove-indels --not-chr chrUn --maf 0.1 --recode --recode-INFO-all --out imputed_filter
+# maf filter to remove non-varying sites
+#After filtering, kept 155221 out of a possible 425098 Sites
+tabix -C -p vcf imputed.vcf.gz
+bcftools view imputed.vcf.gz --exclude-types indels --exclude "MAF>0.1" -o output
+--min-af FLOAT
+# bcftools recognizes MAF and claculates it on the fly
+#frequency of minor alleles (MAF=MAC/AN)
+bcftools view imputed.vcf.gz --exclude "MAF>0.1" -o output_MAF
+#exclude sites for which EXPRESSION is true.
+# MAF expression is better than min-af, because it does actually look for *minor* allele freqs
+# min-af just looks at allele count / allele number
+bcftools view imputed.vcf.gz --exclude-types indels -o output_indels
+bcftools view imputed.vcf.gz --min-af 0.1 -o output_min-af
+
+
+--write-index
+
+
+# bcftools view -S <(awk '{if ($5<.6) print $1}' NUM_MISS.imiss) -i 'F_MISSING<.4' FINAL_PROGENY_RAD.vcf.gz > FINAL_FILTER_RAD.vcf
+# /rhome/dkoenig/bigdata/LOCAL_SOFTWARE/htslib/htslib/bgzip FINAL_FILTER_RAD.vcf
+# /rhome/dkoenig/bigdata/LOCAL_SOFTWARE/htslib/htslib/tabix -C -p vcf FINAL_FILTER_RAD.vcf.gz
+# bcftools query -f '%CHROM\t%POS\n' FINAL_FILTER_RAD.vcf.gz > RAD_SITES.txt
+# /rhome/dkoenig/bigdata/LOCAL_SOFTWARE/htslib/htslib/tabix -h -R RAD_SITES.txt ~/bigdata/BARLEY_CCII_PARENTS_RAD/DATA/OUTPUT/VARCALLS/FILTERED.vcf.gz > PARENTS.vcf
+# /rhome/dkoenig/bigdata/LOCAL_SOFTWARE/htslib/htslib/bgzip PARENTS.vcf
+# /rhome/dkoenig/bigdata/LOCAL_SOFTWARE/htslib/htslib/tabix -C -p vcf PARENTS.vcf.gz
+# bcftools merge PARENTS.vcf.gz FINAL_FILTER_RAD.vcf.gz > PAR_PROG_FILTER_RAD.vcf
+# /rhome/dkoenig/bigdata/LOCAL_SOFTWARE/htslib/htslib/bgzip PAR_PROG_FILTER_RAD.vcf
+# /rhome/dkoenig/bigdata/LOCAL_SOFTWARE/htslib/htslib/tabix -C -p vcf PAR_PROG_FILTER_RAD.vcf.gz
+
+
 
 # list genotypes in raw vcf as basis for plink phenotype file
 vcftools --vcf imputed_filter.recode.vcf --extract-FORMAT-info GT
+vcftools --gzvcf imputed_filter.recode.vcf.gz --remove-indels --not-chr chrUn --maf 0.1 --kept-sites
+vcftools --vcf FINAL_PROGENY_RAD_INDFILT.vcf --out missing --missing-site
 #Output nucleotide diversity at a list of positions
-vcftools --vcf imputed_filter.recode.vcf --freq
+#vcftools --vcf imputed_filter.recode.vcf --freq
+# vcftools --vcf FINAL_PROGENY_RAD.vcf --missing-indv --out NUM_MISS
+
+
+
+bcftools query -f '%CHROM\t%POS\n' FULL_FILTER.vcf > FULL_FILTER.gt.pos
+bcftools query -l FULL_FILTER.vcf > FULL_FILTER.gt.names
+bcftools query -f '[\t%GT]\n' FULL_FILTER.vcf | sed -e s:"0/0":0:g -e s:"0/1":1:g -e s:"1/1":2:g -e s:"\./\.":NA:g > FULL_FILTER.gt
+#
+bcftools view -S samp_.6.txt FINAL_PROGENY_RAD.vcf > FINAL_PROGENY_RAD_INDFILT.vcf
+
+bcftools view -i 'N_MISSING<273' FINAL_PROGENY_RAD_INDFILT.vcf > FINAL_PROGENY_RAD_FILTER_0.35.vcf
+
+bcftools query -f '%CHROM\t%POS\n' FINAL_PROGENY_RAD_FILTER_0.35.vcf > FINALPOS_0.35.vcf
+sed s/"\/"/"\|"/g FILTERED.vcf | bcftools view -T FINALPOS_0.35.vcf > PARENTS_PHASED_0.35.vcf
+
+cat <(bcftools view -h FINAL_PROGENY_RAD_FILTER_0.35.vcf)  <(bcftools view -H FINAL_PROGENY_RAD_FILTER_0.35.vcf | awk '{OFS="\t"};{$3=$1"."$2"."$4"."$5; print $0}') > PROGENY.vcf
+cat <(bcftools view -h PARENTS_PHASED_0.35.vcf)  <(bcftools view -H PARENTS_PHASED_0.35.vcf | awk '{OFS="\t"};{$3=$1"."$2"."$4"."$5; print $0}') > PARENTS.vcf
+
+
+
+mkdir ~/bigdata/BARLEY_CCII_PROGENY_RAD/DATA/OUTPUT/AFS
+cd ~/bigdata/BARLEY_CCII_PROGENY_RAD/DATA/OUTPUT/AFS
+#
+bcftools query -l ../VARCALLS/PROGENY.vcf.gz | grep '^1_' > F18.txt
+bcftools query -l ../VARCALLS/PROGENY.vcf.gz | grep '^2_' > F28.txt
+bcftools query -l ../VARCALLS/PROGENY.vcf.gz | grep '^3_' > F50.txt
+bcftools query -l ../VARCALLS/PROGENY.vcf.gz | grep '^7_' > F58.txt
+#
+bcftools query -f '%CHROM\t%POS\n' ../VARCALLS/PROGENY.vcf.gz > CALLED_POS.txt
+bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\n' ../VARCALLS/PROGENY.vcf.gz > pos_data.txt
+bcftools query -R CALLED_POS.txt -f '[\t%GT]\n' ../VARCALLS/PARENTS.vcf.gz | python ../../../SCRIPTS/calc_afs_from_vcf.py > AFS1.txt
+bcftools query -S F18.txt -f '[\t%GT]\n' ../VARCALLS/PROGENY.vcf.gz | python ../../../SCRIPTS/calc_afs_from_vcf.py > AFS18.txt
+bcftools query -S F28.txt -f '[\t%GT]\n' ../VARCALLS/PROGENY.vcf.gz | python ../../../SCRIPTS/calc_afs_from_vcf.py > AFS28.txt
+bcftools query -S F50.txt -f '[\t%GT]\n' ../VARCALLS/PROGENY.vcf.gz | python ../../../SCRIPTS/calc_afs_from_vcf.py > AFS50.txt
+bcftools query -S F58.txt -f '[\t%GT]\n' ../VARCALLS/PROGENY.vcf.gz | python ../../../SCRIPTS/calc_afs_from_vcf.py > AFS58.txt
+paste pos_data.txt AFS1.txt AFS18.txt AFS28.txt AFS50.txt AFS58.txt > COMBINDED_AFS.txt
+rm F* AFS* CALLED_POS.txt pos_data.txtmodule load plink
+
+
+bcftools query -f '%CHROM\t%POS\t%CHROM\_%POS\_%REF\_%ALT\t%REF\t%ALT\t%QUAL\t%FILTER\t\.\t\GT[\t%GT]\n' RAD_CALLS_FULL.vcf | sed s/'\/'/'|'/g > RAD_CALLS_FULL_PHASE.vcf
+bcftools query -l RAD_CALLS_FULL.vcf > parent_calls.txt
+#Create vcf
+cd ~/bigdata/BARLEY_CCII_PROGENY_RAD/DATA/OUTPUT/COMBINED_VARIANTS/
+paste ../CALL_VARIANTS/* > FULLVAR_CALLS.txt
+paste ~/bigdata/BARLEY_CCII_PARENTS_RAD/DATA/OUTPUT/VARCALLS/RAD_CALLS_FULL_PHASE.vcf FULLVAR_CALLS.txt > combined_Par_Prog_calls_noheader.vcf
+cat ~/bigdata/BARLEY_CCII_PARENTS_RAD/DATA/OUTPUT/VARCALLS/parent_calls.txt <(ls ../CALL_VARIANTS) | sed s/'.bam.calls'//g > sample_genos.txt
+
+bcftools query -l filtered_Par_Prog.vcf > s_names.txt
+bcftools query -f '[\t%GT]\n' filtered_Par_Prog.vcf > temp.vcf
+bcftools view -S lt_50.txt -i 'COUNT(GT="het")<20 && COUNT(GT="ref")>0 && COUNT(GT="alt")>0' filtered_Par_Prog.vcf > FINAL.vcf
+bcftools view -S fpar_names.txt FINAL.vcf > PARENTS.vcf
+bcftools view -S fprog_names.txt FINAL.vcf > PROGENY.vcf
+
+bcftools view -S <(awk '{if ($5<.6) print $1}' NUM_MISS.imiss) -i 'F_MISSING<.4' FINAL_PROGENY_RAD.vcf.gz > FINAL_FILTER_RAD.vcf
+bcftools query -f '%CHROM\t%POS\n' FINAL_FILTER_RAD.vcf.gz > RAD_SITES.txt
+
+
+mkdir /rhome/dkoenig/bigdata/BARLEY_CCII_PROGENY_RAD/DATA/OUTPUT/AFS
+cd /rhome/dkoenig/bigdata/BARLEY_CCII_PROGENY_RAD/DATA/OUTPUT/AFS
+#
+bcftools query -l ../STITCH/PROGENY.vcf.gz | grep "^1_" > F18.txt
+bcftools query -l ../STITCH/PROGENY.vcf.gz | grep "^2_" > F28.txt
+bcftools query -l ../STITCH/PROGENY.vcf.gz | grep "^3_" > F50.txt
+bcftools query -l ../STITCH/PROGENY.vcf.gz | grep "^7_" > F58.txt
+#
+vcftools --gzvcf  FILTERED.vcf.gz --counts2 --out F0
+vcftools --gzvcf ../STITCH/PROGENY.vcf.gz --keep F18.txt --counts2 --out F18
+vcftools --gzvcf ../STITCH/PROGENY.vcf.gz --keep F28.txt --counts2 --out F28
+vcftools --gzvcf ../STITCH/PROGENY.vcf.gz --keep F50.txt --counts2 --out F50
+vcftools --gzvcf ../STITCH/PROGENY.vcf.gz --keep F58.txt --counts2 --out F58
+
+
+
+
 
 # take list of genotypes from first line
 # cut cols 3+ (excludes CHR & POS cols)
@@ -104,14 +213,27 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_clumped_indv_sites
 
 
 
+## mkdir CCII_greenhouse_exp_gwas
+cp /rhome/jlandis/bigdata/RADSeq/GEMMA/output/MixedModel_*assoc.txt CCII_greenhouse_exp_gwas/
 
 
+cp rhome/dkoenig/bigdata/BARLEY_CCII_PARENTS_RAD/DATA/OUTPUT/VARCALLS/FILTERED.vcf.gz rhome/jmarz001/bigdata/Ag-Competition/results/gwas/PARENTS.vcf.gz
 
+TMPVCF=PARENTS.vcf.gz
+bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\n' $TMPVCF > pos_data2.txt
 
+chr1H   145277
+chr1H   145277
 
+#final parental rad
+chr1H   145289
+chr1H   159194
 
+/rhome/jmarz001/shared/MANUSCRIPT_FILES/2019_LANDIS/CCIISELECT/FINAL_PARENTAL_RAD.vcf.gz
+#FINAL_PROGENY_RAD.vcf: The unimputed progeny calls
 
-
+RAD_CALLS_FILT.vcf
+~/bigdata/BARLEY_CCII_PARENTS_RAD/DATA/INPUT/RECALL_FILT_NAMES.bed
 
 
 
