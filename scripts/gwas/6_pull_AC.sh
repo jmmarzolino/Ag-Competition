@@ -12,7 +12,7 @@ cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
 #module load vcftools/0.1.16-18
 module load bcftools/1.19
 
-VCF='imputed_filter.recode.vcf'
+#VCF='imputed_filter.recode.vcf'
 #VCF2='/rhome/jmarz001/bigdata/IPK_Analysis/results/GWAS/PARENTS.vcf.gz'
 #vcftools --gzvcf $VCF2 --remove-indels --not-chr chrUn --positions CALLED_POS.txt --recode --recode-INFO-all --out PARENT_SITEFILT
 #VCF2='/rhome/jmarz001/bigdata/IPK_Analysis/results/GWAS/PARENT_SITEFILT.recode.vcf'
@@ -20,9 +20,11 @@ VCF='imputed_filter.recode.vcf'
 ### ALLELE FREQUENCIES
 # bcftools needs an index
 #bgzip $VCF
-VCF='imputed_filter.recode.vcf.gz'
+VCF='../imputed_filter.recode.vcf.gz'
 #bcftools index $VCF
 
+mkdir /rhome/jmarz001/bigdata/Ag-Competition/results/gwas/AFS
+cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas/AFS
 # bcftools query
 # Extracts fields from VCF or BCF files and outputs them in user-defined format.
 ## list generations' genotype IDs
@@ -38,10 +40,11 @@ bcftools query -l $VCF | grep '^7_' > F58.gt.names
 ## column order is REF count / ALT count
 # list chr-position data for gwas sites
 bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\n' $VCF > prog_sites.txt
+#bcftools query -f '%CHROM\t%POS\n' imputed_filter.vcf.gz > CALLED_POS.txt
 
 
 # script counts occurance of alt and ref alleles per line/site
-PY_SCRIPT=$'../../scripts/gwas/calc_afs_from_vcf.py'
+PY_SCRIPT=$'../../../scripts/gwas/calc_afs_from_vcf.py'
 # extract allele counts for both site lists
 #bcftools query -f '[\t%GT]\n' $VCF2 | python $PY_SCRIPT > AFS1.txt
 
@@ -53,4 +56,4 @@ bcftools query -S F58.gt.names -f '[\t%GT]\n' $VCF | python $PY_SCRIPT > AFS58.t
 #paste pos_data.txt AFS1.txt AFS18.txt AFS28.txt AFS50.txt AFS58.txt > COMBINED_AFS.txt
 paste prog_sites.txt AFS18.txt AFS28.txt AFS50.txt AFS58.txt > COMBINED_AFS.txt
 
-#rm F* AFS* all_sites.txt pos_data.txt
+rm F*gt.names AFS*.txt prog_sites.txt pos_data.txt
