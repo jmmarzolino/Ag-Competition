@@ -1,17 +1,17 @@
 #!/bin/bash
 #SBATCH --job-name=gwas
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_univariate_association_array.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/3_univariate_association_array.stdout
 #SBATCH --ntasks=2
 #SBATCH --mem=80gb
 #SBATCH --time=2:00:00
 #SBATCH -p koeniglab
 
 # GEMMA 0.98
-cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
+cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas/CCII_greenhouse_exp_gwas
 
 # define variables
-GENO=all_traits
-KINSHIP=../output/related_matrix.cXX.txt
+GENO=gh_field_compare
+KINSHIP=output/related_matrix.cXX.txt
 PCS=pca.txt
 COL=$(expr $SLURM_ARRAY_TASK_ID + 5)
 PHENO_NAME="ASSOC_${COL}"
