@@ -60,8 +60,8 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison
 plink --allow-extra-chr \
 --allow-no-sex \
 --double-id \
---keep AgComp_genotypes.tsv \
---vcf imputed_filter.recode.vcf \
+--keep exp_common_genos2 \
+--vcf $VCF \
 --pca 10 \
 --out gh_field_compare_pca
 
@@ -73,16 +73,16 @@ cut -d" " -f3- gh_field_compare_pca.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\
 
 # Relatedness Matrix
 module load gemma/0.98.5
-/rhome/jmarz001/software/gemma0.98.5 -bfile gh_field_compare -gk 1 -outdir ../output -o related_matrix 
+/rhome/jmarz001/software/gemma0.98.5 -bfile gh_field_compare -gk 1 -outdir output -o related_matrix 
 #-miss 1 -notsnp
 
 
 # GWAS
 # set number of univariate gwas to run based on
 # the number of traits in trait-gwas number file
-ARRAY_LIM=$(tail -n +2 trait_name_to_col_numbers.tsv | wc -l | cut -d\  -f1)
+ARRAY_LIM=$(tail -n +2 CCII_GH_trait_file_nums.tsv | wc -l | cut -d\  -f1)
 # genotype-phenotype association
-sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_univariate_association_array.sh
+sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/3_univariate_association_array.sh
 
 # and gwas with all the traits
 #sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_multivariate_association.sh 
