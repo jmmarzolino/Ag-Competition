@@ -22,6 +22,6 @@ gh <- gh[-grep("^\\d+$", gh$Line), ]
 # join the two trait data sets by their common genotypes
 join <- inner_join(fld, gh, by=c("V1"="Line"))
 # make genotype list 2 columns (plink format)
-join$V2 <- join$V1
+#join$V2 <- join$V1
 # write out genotype list in order
 write_delim(join, "exp_common_genos", delim=" ", col_names=F)
