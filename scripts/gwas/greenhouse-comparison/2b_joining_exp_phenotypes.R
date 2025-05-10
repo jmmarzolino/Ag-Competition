@@ -30,7 +30,7 @@ fam <- fam[,1:5]
 ifelse(length(which(join$V1 != fam$V1)) != 0, "Problem with genotype match", "genotypes match")
 
 # overwrite fam file w phenotype version
-write_delim(join, "common_exp.fam")
+write_delim(join, "gh_field_compare.fam")
 
 # record traits and corresponding col number
 #trait_n <- read_delim("trait_name_to_col_numbers.tsv")
