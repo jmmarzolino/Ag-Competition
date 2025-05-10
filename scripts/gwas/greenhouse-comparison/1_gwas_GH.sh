@@ -27,21 +27,18 @@ cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas/CCII_greenhouse_exp_gwas
 module load bcftools/1.19
 
 # make list of genotypes in both experiments
-sub /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/2_joining_exp_phenotypes.stdout
+sub /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/2a_list_common_genotypes.R
+# format indv list for plink
+cat exp_common_genos | awk '{$1=$1}{print $1" "$1}' > exp_common_genos2
 
-### filter vcf file to indvs used in greenhouse experiment
-bcftools view
 
 #CCII_GH_trait_file_nums.tsv  
 #CCII_Raw_phenotype_data.txt  
 #common_exp.fam  
 
-VCF="../imputed_filter.recode.vcf"
-# format indv list for plink
-cat exp_common_genos | awk '{$1=$1}{print $1" "$1}' > exp_common_genos2
-
 # create plink format files from vcf (bed, bim, fam)
 module load plink/1.90b6.25
+VCF="../imputed_filter.recode.vcf"
 
 plink --allow-extra-chr \
 --allow-no-sex \
@@ -50,14 +47,14 @@ plink --allow-extra-chr \
 --keep exp_common_genos2 \
 --indiv-sort f exp_common_genos2 \
 --make-bed \
---out all_traits \
+--out gh_field_compare \
 --set-missing-var-ids @:#$1,$2 \
 --vcf $VCF
 
 ### format fam file with phenotypes from greenhouse experiment
 
 #### add phenotypes to .fam file
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/2_joining_exp_phenotypes.R
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/2b_joining_exp_phenotypes.R
 
 # make pca covar file
 plink --allow-extra-chr \
@@ -66,17 +63,17 @@ plink --allow-extra-chr \
 --keep AgComp_genotypes.tsv \
 --vcf imputed_filter.recode.vcf \
 --pca 10 \
---out all_traits_pca
+--out gh_field_compare_pca
 
 # cut only eigenvec values from file; ensure proper formatting of value-tab-value (awk reconstitutes all fields)
-cut -d" " -f3- all_traits_pca.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\t"$0}' > pca.txt
+cut -d" " -f3- gh_field_compare_pca.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\t"$0}' > pca.txt
 # awk prints col of "1" \t eigenvecs
 # command removes genotype IDs from first two cols, replaces w one col of 1 gemma can use (1 in first col indicates non-missing/included data I believe)
 
 
 # Relatedness Matrix
 module load gemma/0.98.5
-/rhome/jmarz001/software/gemma0.98.5 -bfile all_traits -gk 1 -outdir ../output -o related_matrix 
+/rhome/jmarz001/software/gemma0.98.5 -bfile gh_field_compare -gk 1 -outdir ../output -o related_matrix 
 #-miss 1 -notsnp
 
 
@@ -93,3 +90,9 @@ sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gw
 
 # plot results
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/4_manhattan_plot.R
+
+
+### filter vcf file to indvs used in greenhouse experiment
+bcftools query -f '%CHROM\t%POS\n' PROGENY.vcf > CALLED_POS.txt
+bcftools query -f '[\t%GT]\n' imputed_filter.vcf.gz | sed -e s:"0/0":0:g -e s:"0/1":1:g -e s:"1/1":2:g -e s:"\./\.":NA:g > imputed_filter.gt
+
