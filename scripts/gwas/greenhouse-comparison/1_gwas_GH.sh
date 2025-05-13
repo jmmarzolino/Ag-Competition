@@ -89,7 +89,7 @@ sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gw
 ### proglem w correlated traits, pca? kinship matrix?
 
 # plot results
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/4_manhattan_plot.R
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/4_manhattan_plot.R
 
 
 ### filter vcf file to indvs used in greenhouse experiment

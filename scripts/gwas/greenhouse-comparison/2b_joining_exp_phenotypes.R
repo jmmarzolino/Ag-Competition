@@ -37,4 +37,5 @@ write_delim(join, "gh_field_compare.fam", delim=" ", col_names=F)
 trait_n2 <- tibble("trait_names"=colnames(gh)[2:ncol(gh)])
 trait_n2$trait_num <- (1:nrow(trait_n2))+5
 trait_n2$file <- paste0("ASSOC_", trait_n2$trait_num, ".assoc.txt")
+trait_n2$file_lmm <- paste0("ASSOC_", trait_n2$trait_num, "_lmm", ".assoc.txt")
 write_delim(trait_n2, "CCII_GH_trait_file_nums.tsv")
