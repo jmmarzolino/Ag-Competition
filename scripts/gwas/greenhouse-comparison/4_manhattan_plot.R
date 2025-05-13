@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 #SBATCH --job-name=gwas
-#SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/4_manhattan_plot.stdout
+#SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/4_manhattan_plot.stdout
 #SBATCH --mem=40G
 #SBATCH -t 02:00:00
 #SBATCH -p koeniglab
@@ -10,11 +10,11 @@ library(pacman)
 p_load(tidyverse, data.table, gridExtra, ggsci, Cairo)
 options(stringsAsFactors = F)
 
-setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
-source("../../scripts/CUSTOM_FNS.R")
+setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas/CCII_greenhouse_exp_gwas")
+source("../../../scripts/CUSTOM_FNS.R")
 
 # load file with trait names and combine
-phenotype_names <- read_delim("trait_name_to_col_numbers.tsv", col_names=T)
+phenotype_names <- read_delim("CCII_GH_trait_file_nums.tsv", col_names=T)
 
 
 addPlot <- function(FileName){
@@ -81,20 +81,20 @@ addPlot <- function(FileName){
         ggtitle(AssocTraitName)
 
     #print(g)
-    }
+}
 
 # set variables
 #df <- read.table(args[1])
 lst <- phenotype_names$file
 test <- lapply(lst, addPlot)
 
-pdf("GWAS_manhattan.pdf")
+pdf("GH_GWAS_manhattan.pdf")
 marrangeGrob(grobs=test, nrow=2, ncol=1)
 dev.off()
 
 lst_lmm <- phenotype_names$file_lmm
 test_lmm <- lapply(lst_lmm, addPlot)
 
-pdf("GWAS_manhattan_lmm.pdf")
+pdf("GH_GWAS_manhattan_lmm.pdf")
 marrangeGrob(grobs=test_lmm, nrow=2, ncol=1)
 dev.off()
