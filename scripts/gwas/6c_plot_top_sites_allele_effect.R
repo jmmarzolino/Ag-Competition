@@ -98,7 +98,7 @@ for (i in 6:11) {
         sample_counts <- jn2 %>% count(genotype) 
 
         g <- ggplot(jn2, aes(x=genotype, y= get(phcol))) + geom_boxplot() +  stat_n_text() + labs(y=tidy_text_substitution(traittxt), subtitle=paste0("site past ", ms$top, " threshhold"), title=paste(ms$CHR, ms$BP)) + theme_bw()
-        print(g)
+        g
     }
 
     dev.off()
