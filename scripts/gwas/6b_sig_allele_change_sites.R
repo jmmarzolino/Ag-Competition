@@ -66,11 +66,7 @@ df2$F58_AF <- df2$F58A1/(df2$F58A1+df2$F58A2)
 df2$DELTA_AF <- df2$F58_AF - df2$F18_AF
 
 #### allele freq change stats
-changed <- df2 %>% filter(chi_p < (0.005/nrow(df2)))
-
-## fixed sites
-#df2[which(is.na(df2$chi_p)),]
-# more ways... delta 18-58 is 0 & af18 & f58 are both 0 or both 1
+changed <- df2 %>% filter(chi_p < (0.05/nrow(df2)))
 
 
 #### plotting
@@ -112,10 +108,6 @@ ggsave(gh, filename="deltaAF_histograms.png", height=(7*2)+2, width=(7*2)+2, uni
 
 
 
-
-
-
-
 #### beneficial alleles
 ### for sig changed sites, determine beneficial allele
 changed$inc_or_dec <- sign(changed$DELTA_AF)
@@ -130,76 +122,3 @@ changed[which(changed$inc_or_dec==-1), ncol(changed)] <- "A2"
 # join sig changed sites with neutral sites
 m2 <- full_join(df2, changed)
 write_delim(m2, "progeny_AF_change.tsv")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-##################################################################
-############################################
-############################################
-######################
-######################
-### join list of traits associated with sites (and thus, beneficial alleles)
-tr <- fread("../raw_gwas_assoc_sig_sites.tsv")
-tr$trait <- as.numeric(gsub("trait_(\\d+)", "\\1", tr$trait))
-
-num <- fread("../num_sig_sites_per_trait_assoc_file.tsv")
-# filter to relevant trait nums & names
-num <- num %>% filter(no_sig_sites > 0) %>% select(c(trait_name, trait_num))
-
-jn <- left_join(tr, num, by=c('trait'='trait_num')) %>% select(-'trait')
-write_delim(jn, "gwas_sites_to_traits.tsv")
-
-
-# combine list of traits that significantly changed w sig changed sites, change in AF over generations, and gwas site associated traits
-## save minor allele freq w beneficial allele col + associated traits
-m2$rs <- paste(m2$CHR, m2$BP, sep="_")
-jn <- jn %>% select(-c(beta, p_lrt, allele0, allele1))
-jnm <- right_join(jn, m2, by=c("chr"="CHR", "ps"="BP", "rs"))
-write_delim(jnm, "MAF_BeneficialAllele_TraitAssoc.tsv")
-
-
-
-# list of significantly changed traits
-sig <- fread("../../002A_change_over_time_derived_traits_significant.tsv")
-st <- unlist(sig$traits)
-
-
-# How many sites w sig allele-freq change are associated with a) significantly changed traits, b) non-significant-changed traits, or c) no trait?
-# look at significantly changed sites only
-ham <- jnm %>% filter(chi_p < (0.005/nrow(minor)))
-print("number of sites w significantly changed AF:")
-print(length(unique(ham$rs)))
-
-
-print("num of (unique) sig-changed sites associated w ANY traits")
-ham %>% filter(!is.na(trait_name)) %>% select(rs) %>% unique %>% nrow %>% print
-
-
-# 1 = sites associated w significantly changed trait
-s1 <- ham %>% filter(trait_name %in% st) %>% select(c('chr', 'rs', 'ps', 'DELTA_AF', 'trait_name'))
-print("num of sig-changed sites associated w sig-changed traits")
-unique(s1$rs) %>% length %>% print
-
-
-# 2 = sites associated w any other traits
-s2 <- ham %>% filter(!is.na(trait_name)) %>% filter(!(trait_name %in% st)) %>% select(c('chr', 'rs', 'ps', 'DELTA_AF', 'trait_name'))
-print("num of sig changed sites associated w NON-sig changed traits")
-unique(s2$rs) %>% length %>% print
-
-
-# 3 = all other sites
-s3 <- ham %>% filter(is.na(trait_name)) %>% select(c('chr', 'rs', 'ps', 'DELTA_AF', 'trait_name'))
-print("num of sig changed sites associated w NO trait")
-unique(s3$rs) %>% length %>% print
