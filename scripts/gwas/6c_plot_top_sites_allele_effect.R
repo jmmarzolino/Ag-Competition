@@ -54,7 +54,7 @@ for (i in 6:11) {
     # ph filter to V6 - V11 colnames that match number in file numbers
     phcol <- paste0("V", i)
 
-    pdf(paste0("top_sites_allele_effects_", i, ".pdf"))
+    #pdf(paste0("top_sites_allele_effects_", i, ".pdf"))
 
 
     for(m in 1:nrow(afs_i)) {
@@ -86,20 +86,20 @@ for (i in 6:11) {
                 a1a2f <- right_join(ph, a1a2t, by=c("V1"="A1A2")) %>% select(all_of(phcol))
                 a1a2f$genotype <- "heterozygous"
 
-                jn2 <- bind_rows(jn, a1a2f)
+                jn <- bind_rows(jn, a1a2f)
 
                 # need to set the levels...
-                jn2$genotype <- factor(jn2$genotype, levels=c("A1 homozygous", "heterozygous", "A2 homozygous")) 
+                jn$genotype <- factor(jn2$genotype, levels=c("A1 homozygous", "heterozygous", "A2 homozygous")) 
         }
 
 
         ## definitley needs sample numbers, cus there's like 2 heterozygotes...
         # maybe even have a filter step for low numbers of heterozygotes
-        sample_counts <- jn2 %>% count(genotype) 
+        sample_counts <- jn %>% count(genotype) 
 
-        g <- ggplot(jn2, aes(x=genotype, y= get(phcol))) + geom_boxplot() +  stat_n_text() + labs(y=tidy_text_substitution(traittxt), subtitle=paste0("site past ", ms$top, " threshhold"), title=paste(ms$CHR, ms$BP)) + theme_bw()
-        g
+        g <- ggplot(jn, aes(x=genotype, y= get(phcol))) + geom_boxplot() +  stat_n_text() + labs(y=tidy_text_substitution(traittxt), subtitle=paste0("site past ", ms$top, " threshhold"), title=paste(ms$CHR, ms$BP)) + theme_bw()
+        ggsave(paste0("allele_effect/", "Rplot_trait", i, "_row", m, ".png"), g)
     }
 
-    dev.off()
+    #dev.off()
 }
