@@ -114,20 +114,45 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/4_manhattan_plot.R
 # change 2nd col "." to chr#_pos##
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5a_format_chr_pos.R
 
+# combine all sig gwas sites across all traits into one table for paper
+
+
+
 # clump gwas results
 ls ASSOC_*.assoc.txt > all_assoc_files.txt
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5b_clump_sig_regions.sh
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_clumped_sites_manhattan.R
+
+ARRAY_LIM=$(wc -l all_assoc_files.txt | cut -d\  -f1)
 sbatch --array=1-$ARRAY_LIM /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5b_clump_indv_regions.sh
 
 # plot results
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_clumped_indv_sites_manhattan.R
 
 
+# make a list of significant snps, top 5%, 1%, and 0.1% of snps from each gwas association file
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5d_extract_leading_snps.R
+
+# extract allele counts for all sites from progeny sequencing
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6_pull_AC.sh
+
+# calculate allele frequncy for each generation based on allele counts; filter non-segregating sites
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6b_segregating_sites_AF.R
+
+# test site allele counts for significant differences between generations F18 and F58; calculate allele frequency change for those sites; plot allele frequency spectra & distribution of change in allele frequency; list which allele (A1, A2) is beneficial
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6b_sig_allele_change_sites.R
+
+# 
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6c_plot_top_sites_allele_effect.R
+
+
+######
+cp ~/shared/for_JILL/combined.vcf.gz ~/bigdata/Ag-Competition/results/gwas/
 
 
 ############
 # submit controlling script for greenhouse experiment gwas
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/1_gwas_GH.sh
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/1_gwas_GH.sh
 
 
 
