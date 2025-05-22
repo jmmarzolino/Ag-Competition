@@ -136,3 +136,10 @@ write_delim(blup_output, "trait_BLUPs.tsv", "\t")
 # yr <- pheno[as.numeric(names(fitted(mod))), 2]
 #mod_tb <- tibble("year"=as.factor(yr$Exp_year), "residuals"=resid(mod), "fitted"=fitted(mod))
 #ggplot(mod_tb, aes(fitted, residuals, color=year)) + geom_point() + geom_smooth() + geom_hline(yintercept=0)
+
+# write out edited genotype list without parental genotypes for filtering vcf
+blup_output <- add_generation(blup_output)
+blup_output$Genotype <- gsub("^(\\d+_\\d+)_\\d", "\\1", blup_output$Genotype)
+geno_list <- blup_output[which(blup_output$Generation != 0), 1][[1]]
+geno_tab <- tibble("X1"=geno_list, "X2"=geno_list)
+write_delim(geno_tab, "../results/gwas/AgComp_genotypes.tsv", col_names=F)
