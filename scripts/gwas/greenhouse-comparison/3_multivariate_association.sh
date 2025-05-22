@@ -31,3 +31,5 @@ PHENO_NAME="ASSOC_MULI"
 #when a small proportion of phenotypes are partially missing, one can impute these missing values before association tests w/ -predict
 
 /rhome/jmarz001/software/gemma0.98.5 -bfile "$GENO" -k "$KINSHIP" -c "$PCS" -lmm 4 -n 1 2 3 4 5 6 -outdir . -o $PHENO_NAME -debug
+
+## multivariate w traits from both exp?
