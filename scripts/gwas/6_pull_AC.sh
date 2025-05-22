@@ -13,9 +13,9 @@ cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
 module load bcftools/1.19
 
 #VCF='imputed_filter.recode.vcf'
-#VCF2='/rhome/jmarz001/bigdata/IPK_Analysis/results/GWAS/PARENTS.vcf.gz'
+#VCF2='/rhome/jmarz001/bigdata/Ag-Competition/results/GWAS/PARENTS.vcf.gz'
 #vcftools --gzvcf $VCF2 --remove-indels --not-chr chrUn --positions CALLED_POS.txt --recode --recode-INFO-all --out PARENT_SITEFILT
-#VCF2='/rhome/jmarz001/bigdata/IPK_Analysis/results/GWAS/PARENT_SITEFILT.recode.vcf'
+#VCF2='/rhome/jmarz001/bigdata/Ag-Competition/results/GWAS/PARENT_SITEFILT.recode.vcf'
 
 ### ALLELE FREQUENCIES
 # bcftools needs an index
