@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-#SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/2b_joining_exp_phenotypes.stdout
+#SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/2b_joining_exp_phenotypes.stdout
 #SBATCH --ntasks=1
 #SBATCH --mem=24gb
 #SBATCH -t 00:30:00

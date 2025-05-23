@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5b_clump_indv_regions.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/5b_clump_indv_regions.stdout
 #SBATCH --ntasks=1
 #SBATCH --mem=20G
 #SBATCH --time=2:00:00
 #SBATCH -p short
 
-cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
+cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas/CCII_greenhouse_exp_gwas
 module load plink/1.90b6.25
 
 ASSOC_FILE=$(cut -f1 all_assoc_files.txt | head -n $SLURM_ARRAY_TASK_ID | tail -n1)

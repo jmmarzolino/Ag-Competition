@@ -85,11 +85,13 @@ ARRAY_LIM=$(tail -n +2 CCII_GH_trait_file_nums.tsv | wc -l | cut -d\  -f1)
 sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/3_univariate_association_array.sh
 
 # and gwas with all the traits
-#sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_multivariate_association.sh 
+#sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/3_multivariate_association.sh 
 ### proglem w correlated traits, pca? kinship matrix?
 
 # plot results
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/4_manhattan_plot.R
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/4_manhattan_plot_cross_exp_plots.R
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/5_cross_exp_trait_pair_gwas_sites.R
 
 
 ### filter vcf file to indvs used in greenhouse experiment

@@ -1,27 +1,16 @@
 #!/usr/bin/env Rscript
 #SBATCH --job-name=gwas
-#SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5a_format_chr_pos.stdout
+#SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/5a_format_chr_pos.stdout
 #SBATCH --mem=20G
 #SBATCH -t 00:10:00
 #SBATCH -p short
 
 library(pacman)
 p_load(tidyverse, data.table, gridExtra, ggsci, Cairo)
-
 options(stringsAsFactors = F)
 
-setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
+setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas/CCII_greenhouse_exp_gwas")
 
-### Fill/Update variant ID column (col 2) with the combination of chr and position
-# read in bim file
-bim <- read_delim("all_traits.bim", "\t", col_names=F)
-# make 2nd col a combo of chr and position
-bim$X2 <- paste0(bim$X1,"_", bim$X4)
-# write bim file out
-write_delim(bim, "all_traits.bim", "\t", col_names=F)
-
-
-############################################################
 ############################################################
 ### Read gwas results (ASSOC files), extract 4 columns, write out
 

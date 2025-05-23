@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH --job-name=gwas
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_multivariate_association.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/3_multivariate_association.stdout
 #SBATCH --ntasks=4
 #SBATCH --mem=100G
 #SBATCH -p koeniglab
 
 # GEMMA 0.98
-cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
+cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas/CCII_greenhouse_exp_gwas
 
 # define variables
 GENO=all_traits

@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 #SBATCH --job-name=GWAS
-#SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6b_sig_allele_change_sites.stdout
+#SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/6b_sig_allele_change_sites.stdout
 #SBATCH --ntasks=1
 #SBATCH --mem=80gb
 #SBATCH -t 10:00:00

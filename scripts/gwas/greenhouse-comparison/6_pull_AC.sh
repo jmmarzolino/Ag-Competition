@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=GWAS
-#SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6_pull_AC.stdout
+#SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/6_pull_AC.stdout
 #SBATCH --ntasks=1
 #SBATCH --mem=50gb
 #SBATCH -t 10:00:00
@@ -8,7 +8,7 @@
 
 
 # calculate generations' minor allele frequencies
-cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
+cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas/CCII_greenhouse_exp_gwas
 #module load vcftools/0.1.16-18
 module load bcftools/1.19
 
@@ -23,8 +23,8 @@ module load bcftools/1.19
 VCF='../imputed_filter.recode.vcf.gz'
 #bcftools index $VCF
 
-mkdir /rhome/jmarz001/bigdata/Ag-Competition/results/gwas/AFS
-cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas/AFS
+mkdir /rhome/jmarz001/bigdata/Ag-Competition/results/gwas/CCII_greenhouse_exp_gwas/AFS
+cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas/CCII_greenhouse_exp_gwas/AFS
 # bcftools query
 # Extracts fields from VCF or BCF files and outputs them in user-defined format.
 ## list generations' genotype IDs

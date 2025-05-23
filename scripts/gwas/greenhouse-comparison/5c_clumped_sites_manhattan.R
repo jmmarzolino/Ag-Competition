@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 #SBATCH --job-name=manhattan
-#SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_clumped_sites_manhattan.stdout
+#SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/5c_clumped_sites_manhattan.stdout
 #SBATCH --ntasks=1
 #SBATCH --mem=20gb
 #SBATCH -t 00:30:00
