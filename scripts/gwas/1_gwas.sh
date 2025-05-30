@@ -5,41 +5,29 @@
 #SBATCH --time=2:00:00
 #SBATCH -p short
 
-#cd /rhome/jmarz001/bigdata/Ag-Competition/results
-# mkdir gwas
 cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
-#############################################################################
-#source files location, alignment by chromosome then stitched back into one vcf. see documentation in BARLEY_CCII_PROGENY_RAD directories
-#cp /rhome/dkoenig/bigdata/BARLEY_CCII_PROGENY_RAD/DATA/OUTPUT/STITCH/PROGENY.vcf.gz PROGENY.vcf.gz
-#cp /rhome/dkoenig/bigdata/BARLEY_CCII_PROGENY_RAD/DATA/INPUT/SAMPLES.txt SAMPLES.txt
-#cp /rhome/dkoenig/bigdata/BARLEY_CCII_PROGENY_RAD/DATA/OUTPUT/STITCH/FULL_FILTER.vcf FULL_FILTER.vcf#parents and progeny lines
-#/rhome/dkoenig/bigdata/BARLEY_CCII_PROGENY_RAD/SCRIPTS
-#############################################################################
-
-module load vcftools/0.1.16-18
 module load bcftools/1.19
 
+######
+cp ~/shared/for_JILL/combined.vcf.gz ~/bigdata/Ag-Competition/results/gwas
+# list sites in vcf file
+bcftools query -f '%CHROM\t%POS\n' PROGENY.vcf > CALLED_POS.txt
 
 # remove indels for gemma & filter to variant sites
-#After filtering, kept 155221 out of a possible 425098 Sites
-tabix -C -p vcf imputed.vcf.gz
-bcftools view imputed.vcf.gz --targets ^chrUn --exclude-types indels --exclude "MAF>0.1" -o imputed_filter.vcf #--regions "^"<expression>, leading carot changes inclusion to exclusion
+#tabix -C -p vcf imputed.vcf.gz
+#bcftools view imputed.vcf.gz --targets ^chrUn --exclude-types indels --exclude "MAF>0.1" -o imputed_filter.vcf 
+#--regions "^"<expression>, leading carot changes inclusion to exclusion
+
+bcftools view combinded.vcf.gz --targets ^chrUn --exclude-types indels --exclude "MAF>0.1" -o combined_filt.vcf.gz 
+
 # Unlike -r, targets can be prefixed with "^"
-bgzip imputed_filter.vcf
-tabix -C -p vcf imputed_filter.vcf.gz
+#bgzip imputed_filter.vcf
+#tabix -C -p vcf imputed_filter.vcf.gz
 # bcftools recognizes MAF and claculates it on the fly
 #frequency of minor alleles (MAF=MAC/AN)
 #exclude sites for which EXPRESSION is true.
 # MAF expression is better than min-af, because it does actually look for *minor* allele freqs
 #--write-index # use for bgzf compressed files
-
-
-# tabix -h -R RAD_SITES.txt FILTERED.vcf.gz > PARENTS.vcf
-# bgzip PARENTS.vcf
-# tabix -C -p vcf PARENTS.vcf.gz
-# bcftools merge PARENTS.vcf.gz FINAL_FILTER_RAD.vcf.gz > PAR_PROG_FILTER_RAD.vcf
-# bgzip PAR_PROG_FILTER_RAD.vcf
-# tabix -C -p vcf PAR_PROG_FILTER_RAD.vcf.gz
 
 # list genotypes in raw vcf as basis for plink phenotype file
 #vcftools --vcf imputed_filter.recode.vcf --extract-FORMAT-info GT
@@ -53,7 +41,7 @@ tabix -C -p vcf imputed_filter.vcf.gz
 #bcftools query -l imputed_filter.vcf.gz > imputed_filter.gt.names
 #cat imputed_filter.gt.names | awk '{$1=$1}{print $1" "$1}' > progeny_geno_pheno_list
 
-bcftools query -f '[\t%GT]\n' imputed_filter.vcf.gz | sed -e s:"0/0":0:g -e s:"0/1":1:g -e s:"1/1":2:g -e s:"\./\.":NA:g > imputed_filter.gt
+bcftools query -f '[\t%GT]\n' combined_filt.vcf.gz | sed -e s:"0/0":0:g -e s:"0/1":1:g -e s:"1/1":2:g -e s:"\./\.":NA:g > combined_filter.gt
 
 # create plink format files from vcf (bed, bim, fam)
 module load plink/1.90b6.25
@@ -66,7 +54,7 @@ plink --allow-extra-chr \
 --make-bed \
 --out all_traits \
 --set-missing-var-ids @:#$1,$2 \
---vcf imputed_filter.recode.vcf
+--vcf combined_filt.vcf.gz
 
 
 #### add phenotypes to .fam file
@@ -77,7 +65,7 @@ plink --allow-extra-chr \
 --allow-no-sex \
 --double-id \
 --keep AgComp_genotypes.tsv \
---vcf imputed_filter.recode.vcf \
+--vcf combined_filt.vcf.gz \
 --pca 10 \
 --out all_traits_pca
 
@@ -146,8 +134,7 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6b_sig_allele_change_
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6c_plot_top_sites_allele_effect.R
 
 
-######
-cp ~/shared/for_JILL/combined.vcf.gz ~/bigdata/Ag-Competition/results/gwas/
+
 
 
 ############
@@ -168,12 +155,6 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7_count_sig_regions.R
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7_sig_sites_over_traits.R
 
 
-# list sites in vcf file
-#TAILNUM=$(($(grep -c "##" PROGENY.vcf) + 1))
-#cut -f1-2 PROGENY.vcf | tail -n+${TAILNUM} > positions.txt
-# do that cleaner w tool~
-module load bcftools/1.19
-bcftools query -f '%CHROM\t%POS\n' PROGENY.vcf > CALLED_POS.txt
 
 # pull allele counts from vcf
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/8a_pull_AC.sh
