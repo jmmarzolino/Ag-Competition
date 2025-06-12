@@ -10,47 +10,50 @@
 library(pacman)
 p_load(tidyverse, data.table, gridExtra, ggsci, ggpubr, Cairo)
 
-setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas/POP_AF")
-#source("../../../scripts/standardize_trait_text_function.R")
-df <- fread("MAF_BeneficialAllele_TraitAssoc.tsv")
-
-# list of significantly changed traits
-sig <- fread("../../002A_change_over_time_derived_traits_significant.tsv")
-st <- unlist(sig$traits)
-
-# divide sites into 3 groups
-# 1 sites associated w significantly changed trait
-s1 <- df %>% filter(trait_name %in% st) %>% select(c('chr', 'rs', 'ps', 'F18_AF', 'F58_AF', 'trait_name'))
-#%>% select(-c('F0A1', 'F0A2', 'F18A1', 'F18A2', 'F58A1', 'F58A2', 'chi_p', 'minor_allele', 'F0_AF', 'DELTA_P18', 'DELTA_1858'))
-dim(s1)
-# number of unique sites
-unique(s1$rs) %>% length
-# list of unique sites' frequencies for binnings
-s1u <- unique(s1[,1:5])
-write_delim(s1u, "SigTraits_sites.tsv")
-
-# 2 sites associated w any other traits
-s2 <- df %>% filter(!is.na(trait_name)) %>% filter(!(trait_name %in% st))  %>% select(c('chr', 'rs', 'ps', 'F18_AF', 'F58_AF', 'trait_name'))
-dim(s2)
-# number of unique sites
-unique(s2$rs) %>% length
-# list of unique sites' frequencies for binnings
-s2u <- unique(s2[,1:5])
-write_delim(s2u, "NeutralTraits_sites.tsv")
-
-# 3 all other sites
-s3 <- df %>% filter(is.na(trait_name))  %>% select(c('chr', 'rs', 'ps', 'F18_AF', 'F58_AF', 'trait_name'))
-dim(s3)
-# number of unique sites
-unique(s3$rs) %>% length
-s3u <- unique(s3[,1:5])
+setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
+source("../../scripts/CUSTOM_FNS.R")
 
 
+## all sites, all generations, allele frequencies
+## read in all sites' allele frequencies
+df <- fread("all_sites_allele_freqs.tsv")
+## should already be filtered to the right columns
+df$snp <- paste0(df$CHR, "_", df$BP)
 
-# allele frequency bins for groups 1 & 2
+
+## polarize all sites to the BENEFICIAL allele (F18 to F58 rather than starting w F0...)
+# which is the one which increases freq over gens
+# do that for all sites
+df$beneficial_allele <- "A1"
+
+x <- round(df$F58_AF - df$F18_AF, 4)
+dfa1 <- df[which(x >= 0), ]
+dfa2 <- df[which(x < 0), ]
+# sites w beneficial allele 2...
+dfa2$beneficial_allele <- "A2"
+dfa2[, 5:9] <- 1 - (dfa2[, 5:9])
+
+# stitch data sets back together
+df2 <- bind_rows(dfa1, dfa2)
+
+## then pull sites associated w traits
+## and filter them to their own dataset
+# load associated sites list
+all_sig <- fread("all_gwas_sig_sites.tsv")
+all_sig$rs <- paste0(all_sig$chr, "_", all_sig$ps)
+
+trait_assoc_sites <- df2 %>% filter(snp %in% all_sig$rs)
+neutral_sites <- df2 %>% filter(!(snp %in% all_sig$rs))
+
+
+## find starting allele freqs for all trait associated sites
 #### Site Frequency Binning
 # define other necessary vars, the breaks & ranges
-bins = c("0.01-0.05", "0.05-0.1", '0.1-0.15', '0.15-0.2', '0.2-0.25', '0.25-0.3', '0.3-0.35', '0.35-0.4', '0.4-0.45', '0.45-0.5', '0.5-0.55', '0.55-0.6', '0.6-0.65', '0.65-0.7', '0.7-0.75', '0.75-0.8', '0.8-0.85', '0.85-0.9', '0.9-0.95', '0.95-1') #, 'unknown')
+bins = c("0.00-0.05", "0.05-0.1", '0.1-0.15', '0.15-0.2', '0.2-0.25', '0.25-0.3', '0.3-0.35', '0.35-0.4', '0.4-0.45', '0.45-0.5', '0.5-0.55', '0.55-0.6', '0.6-0.65', '0.65-0.7', '0.7-0.75', '0.75-0.8', '0.8-0.85', '0.85-0.9', '0.9-0.95', '0.95-1') #, 'unknown')
+#levels(cut(0:1, 20))
+#levels(cut(0:1, 10))
+bigbins = c("0.0-0.1", '0.1-0.2', '0.2-0.3', '0.3-0.4', '0.4-0.5', '0.5-0.6', '0.6-0.7', '0.7-0.8', '0.8-0.9', '0.9-1', 'unknown')
+
 
 # binning function
 binning <- function(x) {
@@ -79,102 +82,100 @@ binning <- function(x) {
     u = 0
     zero = 0
 
-    for(row in 1:nrow(x)) {
-        # take in the frequency, put it in a bin
-        Line = x[row, 1]
+      for(row in 1:nrow(x)) {
+          # take in the frequency, put it in a bin
+          Line = x[row, 1]
 
-        #if(Line == bins[1]) {
-        #  zero = zero + 1
-        #} else if(Line >= bins[1] & Line < bins[2]) {
-        if(Line >= bins[1] & Line < bins[2]) {
-          a = a +1
-        } else if(Line >= bins[2] & Line < bins[3]) {
-          b = b +1
-        } else if(Line >= bins[3] & Line < bins[4]) {
-          c = c +1
-        } else if(Line >= bins[4] & Line < bins[5]) {
-          d = d +1
-        } else if(Line >= bins[5] & Line < bins[6]) {
-          e = e +1
-        } else if(Line >= bins[6] & Line < bins[7]) {
-          f = f +1
-        } else if(Line >= bins[7] & Line < bins[8]) {
-          g = g +1
-        } else if(Line >= bins[8] & Line < bins[9]) {
-          h = h +1
-        } else if(Line >= bins[9] & Line < bins[10]) {
-          i = i +1
-        } else if(Line >= bins[10] & Line < bins[11]) {
-          j = j +1
-        } else if(Line >= bins[11] & Line < bins[12]) {
-          k = k +1
-        } else if(Line >= bins[12] & Line < bins[13]) {
-          l = l +1
-        } else if(Line >= bins[13] & Line < bins[14]) {
-          m = m +1
-        } else if(Line >= bins[14] & Line < bins[15]) {
-          n = n +1
-        } else if(Line >= bins[15] & Line < bins[16]) {
-          o = o +1
-        } else if(Line >= bins[16] & Line < bins[17]) {
-          p = p +1
-        } else if(Line >= bins[17] & Line < bins[18]) {
-          q = q +1
-        } else if(Line >= bins[18] & Line < bins[19]) {
-          r = r +1
-        } else if(Line >= bins[19] & Line < bins[20]) {
-          s = s +1
-        } else if(Line >= bins[20] & Line <= bins[21]) {
-          t = t +1
-        } else {
-          u = u+1
-        }
-  }
+          #if(Line == bins[1]) {
+          #  zero = zero + 1
+          #} else if(Line >= bins[1] & Line < bins[2]) {
+          if(Line >= bins[1] & Line < bins[2]) {
+            a = a +1
+          } else if(Line >= bins[2] & Line < bins[3]) {
+            b = b +1
+          } else if(Line >= bins[3] & Line < bins[4]) {
+            c = c +1
+          } else if(Line >= bins[4] & Line < bins[5]) {
+            d = d +1
+          } else if(Line >= bins[5] & Line < bins[6]) {
+            e = e +1
+          } else if(Line >= bins[6] & Line < bins[7]) {
+            f = f +1
+          } else if(Line >= bins[7] & Line < bins[8]) {
+            g = g +1
+          } else if(Line >= bins[8] & Line < bins[9]) {
+            h = h +1
+          } else if(Line >= bins[9] & Line < bins[10]) {
+            i = i +1
+          } else if(Line >= bins[10] & Line < bins[11]) {
+            j = j +1
+          } else if(Line >= bins[11] & Line < bins[12]) {
+            k = k +1
+          } else if(Line >= bins[12] & Line < bins[13]) {
+            l = l +1
+          } else if(Line >= bins[13] & Line < bins[14]) {
+            m = m +1
+          } else if(Line >= bins[14] & Line < bins[15]) {
+            n = n +1
+          } else if(Line >= bins[15] & Line < bins[16]) {
+            o = o +1
+          } else if(Line >= bins[16] & Line < bins[17]) {
+            p = p +1
+          } else if(Line >= bins[17] & Line < bins[18]) {
+            q = q +1
+          } else if(Line >= bins[18] & Line < bins[19]) {
+            r = r +1
+          } else if(Line >= bins[19] & Line < bins[20]) {
+            s = s +1
+          } else if(Line >= bins[20] & Line <= bins[21]) {
+            t = t +1
+          } else {
+            u = u+1
+          }
+    }
     # for frequency divide bins by lines
     hist <- c(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t) #, u) #, zero)
     #hist <- hist/dim(x)[1]
     return(hist)
 }
 
+# divide site list into allele freq bins
+## one list starting w F0 and one w F18
 
 # apply plotting function and make list of those plots
-b14 <- binning(s1[,4])
-b15 <- binning(s1[,5])
-b24 <- binning(s2[,4])
-b25 <- binning(s2[,5])
+# allele freq bins for gwas sites, F0 and F18
+bin_F0 <- binning(trait_assoc_sites[,5])
+bin_F18 <- binning(trait_assoc_sites[,6])
 
 # number of samples to pull to match starting site freqs
-b14u <- binning(s1u[,4])
-b24u <- binning(s2u[,4])
+sample_n <- nrow(trait_assoc_sites)
 
 
-b34 <- binning(s3[,4])
-b35 <- binning(s3[,5])
 
 # make frequency bin df
-pop_freqs <- tibble('bins'=bins, 'F18_sig'=b14, 'F58_sig'=b15, 'F18_trait'=b24, 'F58_trait'=b25, 'F18_neu'=b34, 'F58_neu'=b35)
+pop_freqs <- tibble('bins'=bins, 'F0_bins'=bin_F0, 'F18_bins'=bin_F18)
 # determines sample number to each AF bin
-
-
-# determine size of samples to match
-s1num <- sum(b14u)
-s2num <- sum(b24u)
-#s1 ~80
-#s2 ~100
+fwrite(pop_freqs, "gwas_sites_pop_freq_binned.tsv")
 
 
 
+## with remaining (neutral) sites of genome, 
+## divide those sites into bins based on their starting allele freq
+neutral_sites
+bin_F0_neutral <- binning(neutral_sites[,5])
+bin_F18_neutral <- binning(neutral_sites[,6])
+pop_freqs_neutral <- tibble('bins'=bins, 'F0_bins_neutral'=bin_F0_neutral, 'F18_bins_neutral'=bin_F18_neutral)
 
-# bin s3 sites for easy sampling?
-# reuse binning function, but instead of counting sies for each frequencies bin,
-# store the chr-position
-# sites in neutral site list that belong to each bin
-s3s <- s3 %>% select(c(rs, F18_AF))
-s3 <- s3 %>% select(c(rs, F18_AF, F58_AF))
-s3$delta <- s3$F58_AF - s3$F18_AF
+fwrite(pop_freqs_neutral, "neutral_sites_pop_freq_binned.tsv")
 
+full_join(pop_freqs, pop_freqs_neutral)
 
-sort_site_by_freq <- function(x) {
+### bin all neutral sites based on their starting frequency
+### this will make sampling based on starting frequency easy 
+# reuse binning function, but instead of counting sites for each frequencies bin,
+# store the chr-position sites in neutral site list that belong to each bin
+
+sort_site_by_freq <- function(x=netral_sites, gen_col="F18_AF") {
     bins = c(0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0)
 
     a = c()
@@ -201,9 +202,9 @@ sort_site_by_freq <- function(x) {
 
     for(row in 1:nrow(x)) {
         # take in the frequency
-        freq = unlist(x[row, 2])
+        freq = unlist(x[row, ..gen_col])
         # when the bin matches, store the site in that bin
-        site = unlist(x[row, 1])
+        site = unlist(x[row, snp])
 
         if(freq >= bins[1] & freq < bins[2]) {
           a[length(a)+1] = site
@@ -256,62 +257,99 @@ sort_site_by_freq <- function(x) {
     return(freq_sites)
 }
 
-sfq <- sort_site_by_freq(s3s)
+sfq18 <- sort_site_by_freq(neutral_sites, "F18_AF")
+sfq0 <- sort_site_by_freq(neutral_sites, "F0_AF")
 # are any of the freq categories empty?
-for(i in 1:length(sfq)){print(length(sfq[[i]]))}
+for(i in 1:length(sfq0)){
+  print(length(sfq0[[i]])) }
+for(i in 1:length(sfq18)){
+  print(length(sfq18[[i]])) }
 
 
+# randomly sample a matching number of starting allele freq sites
+# record the allele freq change over gens for each of those sites
+# record median & absolute val median
+# repeat 1000 times
 
-neutral_site_AF <- function(sample_sites=sfq, sample_freqs= s3, freq_sample_numbers=b14u) {
-        change_sample <- c()
+
+#sample sites = table of genome sites binned by frequency
+# list of genome-site lists binned based on allele frequency
+# or, a list of neutral sites for a given starting allele freq 
+#bins
+#str(sfq0)
+#str(sfq18)
+# sample_freqs = ??? 's3' full data?
+#neutral_sites$delta_F0F18 <- neutral_sites$F18_AF - neutral_sites$F0_AF
+#neutral_sites$delta_F18F58 <- neutral_sites$F58_AF - neutral_sites$F18_AF
+# freq_sample_numbers = 
+#pop_freqs
+#sfq0 & F0_bins 
+#sfq18 & F18_bins 
+
+neutral_site_AF <- function(sample_sites=sfq0, sample_freqs= neutral_sites, freq_sample_numbers=pop_freqs$F0_bins, EARLY=0, LATE=58) {
+        delta_sample <- c()
+        delta_abs_sample <- c()
         early_sample <- c()
         late_sample <- c()
+
+        
+        # define 'early' and 'late' generation cols
+        earlygen <- paste0("F", EARLY, "_AF")
+        lategen <- paste0("F", LATE, "_AF")
+
 
         # sample loop 1000 times
         for(i in 1:1000){
           # run through each frequency bin in turn
-          F18_AF_list <- c()
-          F58_AF_list <- c()
-          new_delta_list <- c()
+            early_AF_list <- c()
+            late_AF_list <- c()
+            delta_list <- c()
 
           # for each frequency bin
             ## each frequency bin is a list of site IDs
           for(j in 1:length(sample_sites)){
-            bbin <- sample_freqs[[1]]
-            sample_num <- freq_sample_numbers[j]
-            # sample the sites from each bin
-            fx <- sample(bbin, sample_num, replace=F)
+            sites <- sample_sites[[j]] # select the list of IDs
+            sample_num <- freq_sample_numbers[j] # select the number of IDs to sample from the list
+            fx <- sample(sites, sample_num, replace=F) # sample the sites from each bin
 
             # pull allele frequencies at the sites
-            daf <- sample_freqs %>% filter(rs %in% fx) %>% select(delta) %>% unlist
-            af1 <- sample_freqs %>% filter(rs %in% fx) %>% select(F18_AF) %>% unlist
-            af2 <- sample_freqs %>% filter(rs %in% fx) %>% select(F58_AF) %>% unlist
+            row <- sample_freqs %>% filter(snp %in% fx)
+
+            earlygenaf <- row %>% select(all_of(earlygen)) %>% unlist
+            lategenaf <- row %>% select(all_of(lategen)) %>% unlist
+            dddelta <- lategenaf - earlygenaf
 
             # and save it for averaging over all freq bins
-            new_delta_list <- c(new_delta_list, daf)
-            F18_AF_list <- c(F18_AF_list, af1)
-            F58_AF_list <- c(F58_AF_list, af2)
+            early_AF_list <- c(early_AF_list, earlygenaf)
+            late_AF_list <- c(late_AF_list, lategenaf)
+            delta_list <- c(delta_list, dddelta)
           }
 
-          # average change in AF over sites
-          # add sample average to your neutral site AF list
-          change_sample <- c(change_sample, mean(new_delta_list))
-          early_sample <- c(early_sample, mean(F18_AF_list))
-          late_sample <- c(late_sample, mean(F58_AF_list))
+          # find the median change in AF over sites
+          # add sampled median to your neutral-site AF change list
+          delta_sample <- c(delta_sample, median(delta_list))
+          delta_abs_sample <- c(delta_abs_sample, median(abs(delta_list)))
+          early_sample <- c(early_sample, median(early_AF_list))
+          late_sample <- c(late_sample, median(late_AF_list))
         }
 
-        xyz <- tibble("F18_AF_neutral"=early_sample, "F58_AF_neutral"=late_sample, "delta_AF_neutral"=change_sample)
+        xyz <- tibble("early_AF_neutral"=early_sample, "late_AF_neutral"=late_sample, "delta_AF_neutral"=delta_sample, "delta_AF_neutral_absolute"=delta_abs_sample)
         return(xyz)
       }
 
 
 
-safe <- neutral_site_AF(sample_sites=sfq, sample_freqs= s3, freq_sample_numbers=b14u)
-saff <- neutral_site_AF(sample_sites=sfq, sample_freqs= s3, freq_sample_numbers=b24u)
+random_sample_neutral_F0 <- neutral_site_AF(sample_sites=sfq0, sample_freqs= neutral_sites, freq_sample_numbers=pop_freqs$F0_bins, EARLY=0, LATE=58)
+random_sample_neutral_F18 <- neutral_site_AF(sample_sites=sfq18, sample_freqs= neutral_sites, freq_sample_numbers=pop_freqs$F18_bins, EARLY=18, LATE=58)
 
 
-write_delim(safe, "SigTraits_neutral_sites.tsv", "\t")
-write_delim(saff, "AssocTraits_neutral_sites.tsv", "\t")
+write_delim(random_sample_neutral_F0, "neutral_sites_sampled_F0.tsv", "\t")
+write_delim(random_sample_neutral_F18, "neutral_sites_sampled_F18.tsv", "\t")
 # the average change in allele frequency
 # for sites with the same starting allele frequency
 # randomly sample 1000 times to simulate the random probability paths of frequency changes
+
+
+
+# plot allele freq & allele freq chnages as bar plot/allele freq spectrum
+# next script
