@@ -18,24 +18,13 @@ source("../../scripts/CUSTOM_FNS.R")
 pop_freqs <- fread("gwas_sites_pop_freq_binned.tsv")
 pop_freqs_neutral <- fread("neutral_sites_pop_freq_binned.tsv")
 
-##################################################
-## keep this section as notes on data format...
-# sites associated w traits
-#tmp <- fread("../../../IPK_Analysis/results/GWAS/POP_AF/NeutralTraits_sites.tsv") %>% select(-c(chr, rs, ps))
-#tmp2 <- fread("../../../IPK_Analysis/results/GWAS/POP_AF/AssocTraits_neutral_sites.tsv")
-#assoc_trait_sites$delta <- assoc_trait_sites$F58_AF - assoc_trait_sites$F18_AF
-#assoc_trait_sites$group <- "trait associated"
-##################################################
-
-
 ## make binned/count data into a fraction of the whole
 # gwas sites
-pop_freqs[,2:4] <- pop_freqs %>% reframe(across(c(F0_bins, F18_bins, F58_bins), \(x) x/sum(x)))
-
+pop_freqs[,2:ncol(pop_freqs)] <- pop_freqs %>% reframe(across(-c(bins), \(x) x/sum(x)))
+colSums(pop_freqs[,2:ncol(pop_freqs)])
 # all neutral sites 
-pop_freqs_neutral[,2:3] <- pop_freqs_neutral %>% reframe(across(-bins, \(x) x/sum(x)))
-
-
+pop_freqs_neutral[,2:ncol(pop_freqs_neutral)] <- pop_freqs_neutral %>% reframe(across(-c(bins), \(x) x/sum(x)))
+colSums(pop_freqs_neutral[,2:ncol(pop_freqs_neutral)])
 
 
 #### plot allele frequency spectrum for
@@ -51,7 +40,7 @@ pop_freqs %>%
         labs(x="Frequency Ranges", y="Proportion of Sites", title="Site Frequency Spectrum", subtitle="GWAS sites") +
         scale_fill_discrete(name = "Generation",
         labels = c("Parents", "F18", "F28", "F50", "F58"))
-ggsave("gwas_sites_afs.png", gwas_sites)
+ggsave("gwas_sites_afs.png", gwas_sites, height=9, width=15, units="in")
 
 ### gwas sites for parents, F18, and F58 generations
 pop_freqs2 <- pop_freqs %>% select(c(bins, F0_bins, F18_bins, F58_bins))
@@ -65,7 +54,7 @@ pop_freqs2 %>%
         labs(x="Frequency Ranges", y="Proportion of Sites", title="Site Frequency Spectrum", subtitle="GWAS sites") +
         scale_fill_discrete(name = "Generation",
         labels = c("Parents", "F18", "F58"))
-ggsave("gwas_sites_limitedgens_afs.png", gwas_sites2)
+ggsave("gwas_sites_limitedgens_afs.png", gwas_sites2, height=9, width=15, units="in")
 
 
 
@@ -79,8 +68,8 @@ pop_freqs_neutral %>%
         theme(axis.text.x = element_text(angle=45, hjust=1)) +
         labs(x="Frequency Ranges", y="Proportion of Sites", title="Site Frequency Spectrum", subtitle="all genome sites") +
         scale_fill_discrete(name = "Generation",
-        labels = c("Parents", "F18", "F58"))
-ggsave("genome_sites_afs.png", genome_sites)
+        labels = c("Parents", "F18", "F28", "F50", "F58"))
+ggsave("genome_sites_afs.png", genome_sites, height=9, width=15, units="in")
 
 
 ### comparing gwas & genome sites
@@ -89,71 +78,56 @@ ggsave("genome_sites_afs.png", genome_sites)
 ##  F58-gwas / F58-neutral sites
 
 # join gwas & neutral data together
+pop_freqs <- pop_freqs %>% select(-c(F28_bins, F50_bins))
+pop_freqs_neutral <- pop_freqs_neutral %>% select(-c(F28_bins_neutral, F50_bins_neutral))
+
 df <- full_join(pop_freqs, pop_freqs_neutral)
 combo <- df %>% pivot_longer(cols=c(-bins), names_to="group")
 combo$group <- as.factor(combo$group)
 combo$group <- factor(combo$group,  # Change ordering manually
-levels = c("F0_bins", "F18_bins", "F58_bins", "F0_bins_neutral", "F18_bins_neutral", "F58_bins_neutral"))
+levels = c("F0_bins", "F18_bins", "F18_bins_neutral", "F58_bins", "F58_bins_neutral"))
 
+
+#### bar plots comparing groups w their neutral match
+f0 <- combo %>% 
+    filter(group=="F0_bins" | group=="F0_bins_neutral") %>%
+    ggplot(aes(x=bins, y=value, fill=group)) +
+      geom_bar(stat='identity', position='dodge', width=0.7) +
+      theme_classic(base_size=20) +
+      theme(axis.text.x = element_text(angle=45, hjust=1)) +
+      labs(x="Frequency Ranges", y="Proportion of Sites", title="F0 Site Frequency Spectrum", subtitle="Comparing GWAS and neutral sites allele frequencies") +
+      scale_fill_discrete(name = "Site Groups", labels = c("GWAS", "Neutral"))
+
+f1 <- combo %>% 
+    filter(group=="F18_bins" | group=="F18_bins_neutral") %>%
+    ggplot(aes(x=bins, y=value, fill=group)) +
+      geom_bar(stat='identity', position='dodge', width=0.7) +
+      theme_classic(base_size=20) +
+      theme(axis.text.x = element_text(angle=45, hjust=1)) +
+      labs(x="Frequency Ranges", y="Proportion of Sites", title="F18 Site Frequency Spectrum") +
+      scale_fill_discrete(name = "Site Groups", labels = c("GWAS", "Neutral"))
+
+f2 <- combo %>% 
+    filter(group=="F58_bins" | group=="F58_bins_neutral") %>%
+    ggplot(aes(x=bins, y=value, fill=group)) +
+      geom_bar(stat='identity', position='dodge', width=0.7) +
+      theme_classic(base_size=20) +
+      theme(axis.text.x = element_text(angle=45, hjust=1)) +
+      labs(x="Frequency Ranges", y="Proportion of Sites", title="F58 Site Frequency Spectrum") +
+      scale_fill_discrete(name = "Site Groups", labels = c("GWAS", "Neutral"))
+
+png("P_F18_F58_gwas_neutral_freq_comparisons.png", width=10, height=21, units="in", res=300)
+ggarrange(f0, f1, f2, ncol=1)
+dev.off()
+
+
+## all gwas and neutral generations (P, F0, F18)
 combo_afs <- combo %>%
   ggplot(aes(x=bins, y=value, fill=group)) +
         geom_bar(stat='identity', position='dodge', width=0.7) +
         theme_classic(base_size=20) +
         theme(axis.text.x = element_text(angle=45, hjust=1)) +
-        labs(x="Frequency Ranges", y="Proportion of Sites", title="Site Frequency Spectrum")#, subtitle="all genome sites") +
-        scale_fill_discrete(name = "Generation",
-        labels = c("Parents", "F18", "F58"))
-ggsave("gwas_and_genome_sites_afs.png", combo_afs)
-
-
-
-
-
-
-
-#### bar plots comparing groups w their neutral match
-t_sig18 <- df4 %>% filter(group=="sig18" | group=="signeu18")
-t_t18 <- df4 %>% filter(group=="trait18" | group=="trneu18")
-t_sig58 <- df4 %>% filter(group=="sig58" | group=="signeu58")
-t_t58 <- df4 %>% filter(group=="trait58" | group=="trneu58")
-
-
-f1 <- t_sig18 %>%
-    ggplot(aes(x=bins, y=value, fill=group)) +
-      geom_bar(stat='identity', position='dodge', width=0.7) +
-      theme_classic(base_size=20) +
-      theme(axis.text.x = element_text(angle=45, hjust=1)) +
-      labs(x="Frequency Ranges", y="Proportion of Sites", title="F18 Site Frequency Spectrum") +
-      scale_fill_discrete(name = "Site Groups", labels = c("Significant Traits", "Neutral"))
-
-
-f2 <- t_t18 %>%
-    ggplot(aes(x=bins, y=value, fill=group)) +
-      geom_bar(stat='identity', position='dodge', width=0.7) +
-      theme_classic(base_size=20) +
-      theme(axis.text.x = element_text(angle=45, hjust=1)) +
-      labs(x="Frequency Ranges", y="Proportion of Sites", title="F18 Site Frequency Spectrum") +
-      scale_fill_discrete(name = "Site Groups", labels = c("Trait Associated", "Neutral"))
-
-
-f3 <- t_sig58 %>%
-    ggplot(aes(x=bins, y=value, fill=group)) +
-      geom_bar(stat='identity', position='dodge', width=0.7) +
-      theme_classic(base_size=20) +
-      theme(axis.text.x = element_text(angle=45, hjust=1)) +
-      labs(x="Frequency Ranges", y="Proportion of Sites", title="F58 Site Frequency Spectrum") +
-      scale_fill_discrete(name = "Site Groups", labels = c("Significant Traits", "Neutral"))
-
-f4 <- t_t58 %>%
-    ggplot(aes(x=bins, y=value, fill=group)) +
-      geom_bar(stat='identity', position='dodge', width=0.7) +
-      theme_classic(base_size=20) +
-      theme(axis.text.x = element_text(angle=45, hjust=1)) +
-      labs(x="Frequency Ranges", y="Proportion of Sites", title="F58 Site Frequency Spectrum") +
-      scale_fill_discrete(name = "Site Groups", labels = c("Trait Associated", "Neutral"))
-
-png("SFS_2GroupComparisons.png", width=20, height=12, units="in", res=300)
-ggarrange(f1, f2, f3, f4)
-dev.off()
-
-
+        labs(x="Frequency Ranges", y="Proportion of Sites", title="Site Frequency Spectrum") +
+        scale_fill_discrete(name = "Generation & Site Association",
+        labels = c("Parents - GWAS", "F18 - GWAS", "F18 - Neutral", "F58 - GWAS", "F58 - Neutral"))
+ggsave("gwas_and_genome_sites_afs.png", combo_afs, height=9, width=15, units="in")
