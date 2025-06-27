@@ -4,7 +4,7 @@
 #SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7a_site_sampling.stdout
 #SBATCH --ntasks=1
 #SBATCH --mem=80gb
-#SBATCH -t 02:00:00
+#SBATCH -t 04:00:00
 #SBATCH -p koeniglab
 
 library(pacman)
@@ -52,7 +52,7 @@ neutral_sites <- df2 %>% filter(!(snp %in% all_sig$rs))
 bins = c("0.00-0.05", "0.05-0.1", '0.1-0.15', '0.15-0.2', '0.2-0.25', '0.25-0.3', '0.3-0.35', '0.35-0.4', '0.4-0.45', '0.45-0.5', '0.5-0.55', '0.55-0.6', '0.6-0.65', '0.65-0.7', '0.7-0.75', '0.75-0.8', '0.8-0.85', '0.85-0.9', '0.9-0.95', '0.95-1') #, 'unknown')
 #levels(cut(0:1, 20))
 #levels(cut(0:1, 10))
-bigbins = c("0.0-0.1", '0.1-0.2', '0.2-0.3', '0.3-0.4', '0.4-0.5', '0.5-0.6', '0.6-0.7', '0.7-0.8', '0.8-0.9', '0.9-1', 'unknown')
+#bigbins = c("0.0-0.1", '0.1-0.2', '0.2-0.3', '0.3-0.4', '0.4-0.5', '0.5-0.6', '0.6-0.7', '0.7-0.8', '0.8-0.9', '0.9-1', 'unknown')
 
 
 # binning function
@@ -164,7 +164,7 @@ pop_freqs <- pop_freqs %>% select(-c(F28_bins, F50_bins))
 
 ## with remaining (neutral) sites of genome, 
 ## divide those sites into bins based on their starting allele freq
-neutral_sites
+#neutral_sites
 bin_F0_neutral <- binning(neutral_sites[,5])
 bin_F18_neutral <- binning(neutral_sites[,6])
 bin_F28_neutral <- binning(neutral_sites[,7])
@@ -263,20 +263,22 @@ sort_site_by_freq <- function(x=netral_sites, gen_col="F18_AF") {
     return(freq_sites)
 }
 
-sfq18 <- sort_site_by_freq(neutral_sites, "F18_AF")
 sfq0 <- sort_site_by_freq(neutral_sites, "F0_AF")
+#sfq18 <- sort_site_by_freq(neutral_sites, "F18_AF")
 # are any of the freq categories empty?
 for(i in 1:length(sfq0)){
   print(length(sfq0[[i]])) }
-for(i in 1:length(sfq18)){
-  print(length(sfq18[[i]])) }
+#for(i in 1:length(sfq18)){
+#  print(length(sfq18[[i]])) }
+# these should match results in pop_freqs_neutral
 
 
+
+####  sample neutral sites with the same starting allele frequency
 # randomly sample a matching number of starting allele freq sites
 # record the allele freq change over gens for each of those sites
 # record median & absolute val median
 # repeat 1000 times
-
 
 #sample sites = table of genome sites binned by frequency
 # list of genome-site lists binned based on allele frequency
@@ -292,24 +294,23 @@ for(i in 1:length(sfq18)){
 #sfq0 & F0_bins 
 #sfq18 & F18_bins 
 
-neutral_site_AF <- function(sample_sites=sfq0, sample_freqs= neutral_sites, freq_sample_numbers=pop_freqs$F0_bins, EARLY=0, LATE=58) {
-        delta_sample <- c()
-        delta_abs_sample <- c()
-        early_sample <- c()
-        late_sample <- c()
+neutral_site_AF <- function(sample_sites=sfq0, sample_freqs= neutral_sites, freq_sample_numbers=pop_freqs$F0_bins) {
+        delta0_18_sample <- c()
+        delta18_58_sample <- c()
 
-        
-        # define 'early' and 'late' generation cols
-        earlygen <- paste0("F", EARLY, "_AF")
-        lategen <- paste0("F", LATE, "_AF")
+        delta0_18_abs_sample <- c()
+        delta18_58_abs_sample <- c()
 
+        F18_sample <- c()
+        F58_sample <- c()
 
         # sample loop 1000 times
         for(i in 1:1000){
           # run through each frequency bin in turn
-            early_AF_list <- c()
-            late_AF_list <- c()
-            delta_list <- c()
+            F18_AF_list <- c()
+            F58_AF_list <- c()
+            delta0_18_list <- c()
+            delta18_58_list <- c()
 
           # for each frequency bin
             ## each frequency bin is a list of site IDs
@@ -321,41 +322,44 @@ neutral_site_AF <- function(sample_sites=sfq0, sample_freqs= neutral_sites, freq
             # pull allele frequencies at the sites
             row <- sample_freqs %>% filter(snp %in% fx)
 
-            earlygenaf <- row %>% select(all_of(earlygen)) %>% unlist
-            lategenaf <- row %>% select(all_of(lategen)) %>% unlist
-            dddelta <- lategenaf - earlygenaf
+            F0af <- row %>% select(starts_with("F0")) %>% unlist # only need this to calculate delta from P to F18
+            F18af <- row %>% select(starts_with("F18")) %>% unlist
+            F58af <- row %>% select(starts_with("F58")) %>% unlist
+            delta0_18 <- F18af - F0af
+            delta18_58 <- F58af - F18af
 
             # and save it for averaging over all freq bins
-            early_AF_list <- c(early_AF_list, earlygenaf)
-            late_AF_list <- c(late_AF_list, lategenaf)
-            delta_list <- c(delta_list, dddelta)
+            F18_AF_list <- c(F18_AF_list, F18af)
+            F58_AF_list <- c(F58_AF_list, F58af)
+
+            delta0_18_list <- c(delta_list, delta0_18)
+            delta18_58_list <- c(delta_list2, delta18_58)
           }
 
           # find the median change in AF over sites
           # add sampled median to your neutral-site AF change list
-          delta_sample <- c(delta_sample, median(delta_list))
-          delta_abs_sample <- c(delta_abs_sample, median(abs(delta_list)))
-          early_sample <- c(early_sample, median(early_AF_list))
-          late_sample <- c(late_sample, median(late_AF_list))
+          delta0_18_sample <- c(delta0_18_sample, median(delta0_18_list))
+          delta18_58_sample <- c(delta18_58_sample, median(delta18_58_list))
+
+          delta0_18_abs_sample <- c(delta0_18_abs_sample, median(abs(delta0_18_list)))
+          delta18_58_abs_sample <- c(delta18_58_abs_sample, median(abs(delta18_58_list)))
+
+          F18_sample <- c(F18_sample, median(F18_AF_list))
+          F58_sample <- c(F58_sample, median(F58_Af_list))
         }
 
-        xyz <- tibble("early_AF_neutral"=early_sample, "late_AF_neutral"=late_sample, "delta_AF_neutral"=delta_sample, "delta_AF_neutral_absolute"=delta_abs_sample)
+        xyz <- tibble("F18_AF_neutral"=F18_sample, "F58_AF_neutral"=F58_sample, 
+        "delta0_18_AF_neutral"=delta0_18_sample, "delta18_58_AF_neutral"=delta18_58_sample,  
+        "delta0_18_AF_neutral_absolute"=delta0_18_abs_sample, "delta18_58_AF_neutral_absolute"=delta18_58_abs_sample)
         return(xyz)
       }
 
 
+random_sample_neutral_F0 <- neutral_site_AF(sample_sites=sfq0, sample_freqs= neutral_sites, freq_sample_numbers=pop_freqs$F0_bins)
+#random_sample_neutral_F18 <- neutral_site_AF(sample_sites=sfq18, sample_freqs= neutral_sites, freq_sample_numbers=pop_freqs$F18_bins, EARLY=18, LATE=58)
 
-random_sample_neutral_F0 <- neutral_site_AF(sample_sites=sfq0, sample_freqs= neutral_sites, freq_sample_numbers=pop_freqs$F0_bins, EARLY=0, LATE=58)
-random_sample_neutral_F18 <- neutral_site_AF(sample_sites=sfq18, sample_freqs= neutral_sites, freq_sample_numbers=pop_freqs$F18_bins, EARLY=18, LATE=58)
-
-
-write_delim(random_sample_neutral_F0, "neutral_sites_sampled_F0.tsv", "\t")
-write_delim(random_sample_neutral_F18, "neutral_sites_sampled_F18.tsv", "\t")
+write_delim(random_sample_neutral_F0, "neutral_sites_sampled.tsv", "\t")
+#write_delim(random_sample_neutral_F18, "neutral_sites_sampled_F18.tsv", "\t")
 # the average change in allele frequency
 # for sites with the same starting allele frequency
 # randomly sample 1000 times to simulate the random probability paths of frequency changes
-
-
-
-# plot allele freq & allele freq chnages as bar plot/allele freq spectrum
-# next script
