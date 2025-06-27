@@ -146,16 +146,19 @@ binning <- function(x) {
 # allele freq bins for gwas sites, F0 and F18
 bin_F0 <- binning(trait_assoc_sites[,5])
 bin_F18 <- binning(trait_assoc_sites[,6])
+bin_F28 <- binning(trait_assoc_sites[,7])
+bin_F50 <- binning(trait_assoc_sites[,8])
+bin_F58 <- binning(trait_assoc_sites[,9])
 
-# number of samples to pull to match starting site freqs
-sample_n <- nrow(trait_assoc_sites)
-
-
-
-# make frequency bin df
-pop_freqs <- tibble('bins'=bins, 'F0_bins'=bin_F0, 'F18_bins'=bin_F18)
-# determines sample number to each AF bin
+# join all generations freq binned table
+pop_freqs <- tibble('bins'=bins, 'F0_bins'=bin_F0, 'F18_bins'=bin_F18, 'F28_bins'=bin_F28, 'F50_bins'=bin_F50, 'F58_bins'=bin_F58)
+# check number of sites binned matches...
+colSums(pop_freqs[,2:6])
+# write out
 fwrite(pop_freqs, "gwas_sites_pop_freq_binned.tsv")
+
+# make frequency bin df w limited generations
+pop_freqs <- pop_freqs %>% select(-c(F28_bins, F50_bins))
 
 
 
@@ -164,11 +167,14 @@ fwrite(pop_freqs, "gwas_sites_pop_freq_binned.tsv")
 neutral_sites
 bin_F0_neutral <- binning(neutral_sites[,5])
 bin_F18_neutral <- binning(neutral_sites[,6])
-pop_freqs_neutral <- tibble('bins'=bins, 'F0_bins_neutral'=bin_F0_neutral, 'F18_bins_neutral'=bin_F18_neutral)
+bin_F28_neutral <- binning(neutral_sites[,7])
+bin_F50_neutral <- binning(neutral_sites[,8])
+bin_F58_neutral <- binning(neutral_sites[,9])
 
+pop_freqs_neutral <- tibble('bins'=bins, 'F0_bins_neutral'=bin_F0_neutral, 'F18_bins_neutral'=bin_F18_neutral, 'F28_bins_neutral'=bin_F28_neutral, 'F50_bins_neutral'=bin_F50_neutral, 'F58_bins_neutral'=bin_F58_neutral)
 fwrite(pop_freqs_neutral, "neutral_sites_pop_freq_binned.tsv")
-
-full_join(pop_freqs, pop_freqs_neutral)
+pop_freqs_neutral <- pop_freqs_neutral %>% select(-c(F28_bins_neutral, F50_bins_neutral))
+#full_join(pop_freqs, pop_freqs_neutral)
 
 ### bin all neutral sites based on their starting frequency
 ### this will make sampling based on starting frequency easy 
