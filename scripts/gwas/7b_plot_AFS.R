@@ -21,6 +21,9 @@ pop_freqs_neutral <- fread("neutral_sites_pop_freq_binned.tsv")
 # gwas sites
 pop_freqs[,2:ncol(pop_freqs)] <- pop_freqs %>% reframe(across(-c(bins), \(x) x/sum(x)))
 colSums(pop_freqs[,2:ncol(pop_freqs)])
+# neutral sites sampled w same starting freq as gwas sites
+neutral_sampled[,2:ncol(neutral_sampled)] <- neutral_sampled %>% reframe(across(-c(bins), \(x) x/sum(x)))
+colSums(neutral_sampled[,2:ncol(neutral_sampled)])
 # all neutral sites 
 pop_freqs_neutral[,2:ncol(pop_freqs_neutral)] <- pop_freqs_neutral %>% reframe(across(-c(bins), \(x) x/sum(x)))
 colSums(pop_freqs_neutral[,2:ncol(pop_freqs_neutral)])
