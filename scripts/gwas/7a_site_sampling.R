@@ -332,8 +332,8 @@ neutral_site_AF <- function(sample_sites=sfq0, sample_freqs= neutral_sites, freq
             F18_AF_list <- c(F18_AF_list, F18af)
             F58_AF_list <- c(F58_AF_list, F58af)
 
-            delta0_18_list <- c(delta_list, delta0_18)
-            delta18_58_list <- c(delta_list2, delta18_58)
+            delta0_18_list <- c(delta0_18_list, delta0_18)
+            delta18_58_list <- c(delta18_58_list, delta18_58)
           }
 
           # find the median change in AF over sites
