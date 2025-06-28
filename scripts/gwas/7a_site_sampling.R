@@ -345,7 +345,7 @@ neutral_site_AF <- function(sample_sites=sfq0, sample_freqs= neutral_sites, freq
           delta18_58_abs_sample <- c(delta18_58_abs_sample, median(abs(delta18_58_list)))
 
           F18_sample <- c(F18_sample, median(F18_AF_list))
-          F58_sample <- c(F58_sample, median(F58_Af_list))
+          F58_sample <- c(F58_sample, median(F58_AF_list))
         }
 
         xyz <- tibble("F18_AF_neutral"=F18_sample, "F58_AF_neutral"=F58_sample, 
