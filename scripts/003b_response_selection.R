@@ -85,7 +85,7 @@ a3 <- ggplot(rts_df2, aes(Generation, response, group=trait, color=trait)) +
   geom_point() +
   geom_line() +
   labs(title="Scaled Response between Generations", subtitle="average change per generation in standard deviations", x="time span") +
-  theme_bw()
+  theme_bw(base_size = 14)
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/response_combined.png", a3, height=7, width=7, units="in")
 
 
