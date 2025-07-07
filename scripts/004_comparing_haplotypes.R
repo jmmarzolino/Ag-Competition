@@ -118,11 +118,11 @@ f18_hap_join_poprepd$Generation <- 18
 f28_hap_join_poprepd$Generation <- 28
 f50_hap_join_poprepd$Generation <- 50
 f58_hap_join_poprepd$Generation <- 58
-## represent parental generation phenotypes at frequency
-## with one entry for each haplotype
+## represent parental/F1 generation phenotypes at frequency
+## with one entry for each haplotype you have
 #table(hap_trait_avg$Haplotype)
 f0_hap_join_poprepd <- hap_trait_avg %>% select(-Haplotype)
-f0_hap_join_poprepd$Generation <- 0
+f0_hap_join_poprepd$Generation <- 1
 
 ## join generations together
 x1 <- rbind(f18_hap_join_poprepd, f28_hap_join_poprepd)
