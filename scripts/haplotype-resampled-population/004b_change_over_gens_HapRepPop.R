@@ -95,18 +95,18 @@ x3 <- rbind(x2[2,]-x2[1,], x2[5,]-x2[2,])
 x4 <- data.frame(t(x3))[-1,]
 x4c <- rownames(x4)
 x4 <- tibble(x4c, x4)
-colnames(x4) <- c("trait", "P_F18_vardiff", "F18_F58_vardiff")
+colnames(x4) <- c("trait", "F1_F18_vardiff", "F18_F58_vardiff")
 
 
 ##########   are var differences significant?   #########
-var_tab <- tibble("trait"=collist, "all_gens"=as.numeric(NA), "P_F18"=as.numeric(NA), "F18_F58"=as.numeric(NA)) 
+var_tab <- tibble("trait"=collist, "all_gens"=as.numeric(NA), "F1_F18"=as.numeric(NA), "F18_F58"=as.numeric(NA)) 
 # and store change in var & tests p-vals
 
 # w Levene test
 for(i in collist){
   #print(i)
   k <- leveneTest(get(i) ~ as.factor(Generation), hap)$`Pr(>F)`[1]
-  tmp1 <- hap %>% filter(Generation == 0 | Generation == 18)
+  tmp1 <- hap %>% filter(Generation == 1 | Generation == 18)
   tmp2 <- hap %>% filter(Generation == 18 | Generation == 58)
   m <- leveneTest(get(i) ~ as.factor(Generation), tmp1)$`Pr(>F)`[1]
   n <- leveneTest(get(i) ~ as.factor(Generation), tmp2)$`Pr(>F)`[1]
@@ -126,12 +126,12 @@ write_delim(var_tab_sig, "happop_traits_var_change_sig_test.tsv", "\t")
 var_tab_sig <- var_tab_sig %>% select(-all_gens)
 
 ## format table w pivot
-var_tab_sig <- var_tab_sig %>% pivot_longer(cols=c(P_F18, F18_F58), names_to="generations_compared", values_to="Levene_pval")
+var_tab_sig <- var_tab_sig %>% pivot_longer(cols=c(F1_F18, F18_F58), names_to="generations_compared", values_to="Levene_pval")
 var_tab_sig$Levene_sig <- var_tab_sig$Levene_pval < 0.05
 
 
 tmp <- var_tab_sig %>% 
-  pivot_longer(cols=c(P_F18_vardiff, F18_F58_vardiff), names_to="gensvardiff", values_to="var_difference") 
+  pivot_longer(cols=c(F1_F18_vardiff, F18_F58_vardiff), names_to="gensvardiff", values_to="var_difference") 
 
 tmp$gensvardiff <- gsub("_vardiff", "", tmp$gensvardiff)
 tmp <- tmp %>% filter(generations_compared == gensvardiff) %>% select(-c(gensvardiff))
@@ -163,13 +163,13 @@ for(m in 1:(ncol(hap)-1)) {
 ## do phenotypes signif.ly change from F18 compared to F58?
 
 # set up storing results
-signif_tab <- tibble("trait"=collist, "P_F18"=as.numeric(NA), "F18_F58"=as.numeric(NA)) 
+signif_tab <- tibble("trait"=collist, "F1_F18"=as.numeric(NA), "F18_F58"=as.numeric(NA)) 
 
 ## first, test for significant result w Kruskal-wallis test
 
 for(i in 1:length(signif_tab$trait)){
   # filter to only relevant generations
-  tmp1 <- hap %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 0)
+  tmp1 <- hap %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 1)
   tmp2 <- hap %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 58)
 
   res1 <- kruskal.test(unlist(tmp1[,1]) ~ Generation, tmp1)
@@ -181,11 +181,11 @@ for(i in 1:length(signif_tab$trait)){
 
 
 ## for traits w signif K-W p-val, run posthoc test & store results
-signif_tab_KW <- signif_tab %>% pivot_longer(cols=c(P_F18, F18_F58), names_to="generations_compared", values_to="Kruskal_pval")
+signif_tab_KW <- signif_tab %>% pivot_longer(cols=c(F1_F18, F18_F58), names_to="generations_compared", values_to="Kruskal_pval")
 signif_tab_KW$Kruskal_sig <- signif_tab_KW$Kruskal_pval < 0.05
 
 # set up storing posthoc test results
-signif_tab$P_F18_pval <- as.numeric(NA) 
+signif_tab$F1_F18_pval <- as.numeric(NA) 
 signif_tab$F18_F58_pval <- as.numeric(NA) 
 
 # one posthoc test for each trait that requires it
@@ -222,20 +222,20 @@ x3 <- rbind(x2[2,]-x2[1,], x2[5,]-x2[2,])
 x4 <- data.frame(t(x3))[-1,]
 x4c <- rownames(x4)
 x4 <- tibble(x4c, x4)
-colnames(x4) <- c("trait", "P_F18_meandiff", "F18_F58_meandiff")
+colnames(x4) <- c("trait", "F1_F18_meandiff", "F18_F58_meandiff")
 
 # and join with p-val table
 signif_tab <- full_join(signif_tab, x4, by="trait")
 
 
 ## format table by pivoting 
-signif_tab2 <- signif_tab %>% pivot_longer(cols=c(P_F18, F18_F58), names_to="generations_compared", values_to="Kruskal_pval")
+signif_tab2 <- signif_tab %>% pivot_longer(cols=c(F1_F18, F18_F58), names_to="generations_compared", values_to="Kruskal_pval")
 signif_tab2$Kruskal_sig <- signif_tab2$Kruskal_pval < 0.05
 
 
 tmp <- signif_tab2 %>% 
-  pivot_longer(cols=c(P_F18_meandiff, F18_F58_meandiff), names_to="gensmeandiff", values_to="mean_difference") %>%
-  pivot_longer(cols=c(P_F18_pval, F18_F58_pval), names_to="genspostpval", values_to="Dunn_posthoc_pval")
+  pivot_longer(cols=c(F1_F18_meandiff, F18_F58_meandiff), names_to="gensmeandiff", values_to="mean_difference") %>%
+  pivot_longer(cols=c(F1_F18_pval, F18_F58_pval), names_to="genspostpval", values_to="Dunn_posthoc_pval")
 
 tmp$gensmeandiff <- gsub("_meandiff", "", tmp$gensmeandiff)
 tmp$genspostpval <- gsub("_pval", "", tmp$genspostpval)
