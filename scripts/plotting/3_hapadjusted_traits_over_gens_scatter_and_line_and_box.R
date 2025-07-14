@@ -14,18 +14,10 @@ setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
 df <- read_delim("trait_BLUPs_HapRepPop.tsv")
 
-
-### plot scatterplots with linear regressions and distributions for each trait
-
-# add column for parent or progeny marker
-df$pgroup <- "Parents"
-df[which(df$Generation != 0), which(colnames(df) == "pgroup")] <- "Progeny"
-#df$Generation <- as.factor(df$Generation)
-
+### plot scatterplots with average line for each trait
 # the lowest color value is too light, so adjust the color scale down one
 #display.brewer.pal(6, "Blues")
 adjusted_blues <- brewer.pal(7, "Blues")[3:7]
-
 
 # calculate generation means to use as gen-avg line points
 gen_men <- df %>%
