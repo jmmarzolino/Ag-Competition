@@ -122,8 +122,12 @@ df3 <- df2 %>%
     mutate(MASS_PER_PLANT = TOTAL_MASS/Germination) %>% 
     mutate(SEED_COUNT = TOTAL_MASS / (SEED_WEIGHT_100/100)) %>%
     mutate(FECUNDITY = SEED_COUNT / Germination) 
+write_delim(df3, "data/DERIVED_PHENOTYPES_FULL.tsv", "\t")
 
-write_delim(df3, "data/DERIVED_PHENOTYPES.tsv", "\t")
+df4 <- df3 %>%
+    select(-c(Germination, TOTAL_MASS, MASS_PER_PLANT, SEED_COUNT))
+
+write_delim(df4, "data/DERIVED_PHENOTYPES.tsv", "\t")
 
 
 # how many values exist from each derived trait?
