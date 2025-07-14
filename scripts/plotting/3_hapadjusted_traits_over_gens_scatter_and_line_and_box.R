@@ -31,36 +31,18 @@ a <- ggplot() +
       theme_bw(base_size=18) +
       labs(x = "Generation", y = tidy_text_substitution("FT"), title="Flowering Time over Generations") 
 
-b <- ggplot() + 
-      geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=TOTAL_MASS)) + 
-      geom_line(data=gen_men, aes(x=Generation, y=TOTAL_MASS), color="blue", linewidth=1) + 
-      theme_bw(base_size=18) +
-      labs(x = "Generation", y = tidy_text_substitution("TOTAL_MASS"), title="Total Seed Weight over Generations") 
-
 c <- ggplot() + 
       geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=SEED_WEIGHT_100)) + 
       geom_line(data=gen_men, aes(x=Generation, y=SEED_WEIGHT_100), color="blue", linewidth=1) + 
       theme_bw(base_size=18) +
-      labs(x = "Generation", y = tidy_text_substitution("SEED_WEIGHT_100"), title="Genotype 100-Seed Weight over Generations") 
-
-d <- ggplot() + 
-      geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=MASS_PER_PLANT)) + 
-      geom_line(data=gen_men, aes(x=Generation, y=MASS_PER_PLANT), color="blue", linewidth=1) + 
-      theme_bw(base_size=18) +
-      labs(x = "Generation", y = tidy_text_substitution("MASS_PER_PLANT"), title="Genotype Mass per Plant over Generations") 
-
-e <- ggplot() + 
-      geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=Germination)) + 
-      geom_line(data=gen_men, aes(x=Generation, y=Germination), color="blue", linewidth=1) + 
-      theme_bw(base_size=18) +
-      labs(x = "Generation", y = tidy_text_substitution("Germination"), title="Seed Germination over Generations") 
+      labs(x = "Generation", y = tidy_text_substitution("SEED_WEIGHT_100"), title="100-Seed Weight over Generations") 
 
 f <- ggplot() + 
       geom_jitter(data=df, aes(x=Generation, group=as.factor(Generation), y=FECUNDITY)) + 
       geom_line(data=gen_men, aes(x=Generation, y=FECUNDITY), color="blue", linewidth=1) + 
       theme_bw(base_size=18) +
-      labs(x = "Generation", y = tidy_text_substitution("FECUNDITY"), title="Genotype Fecundity over Generations") 
+      labs(x = "Generation", y = tidy_text_substitution("FECUNDITY"), title="Fecundity over Generations") 
 
 # combine and save plots
-ggcombo <- ggarrange(a, b, c, d, e, f)
-ggsave("../results/traits_over_generations_scatterplots_hap_weighted.png", ggcombo, width = 20, height = 10)
+ggcombo <- ggarrange(a, c, f, nrow=1)
+ggsave("../results/traits_over_generations_scatterplots_hap_weighted.png", ggcombo, width = (7*3), height = 7)
