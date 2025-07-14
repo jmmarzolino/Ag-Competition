@@ -38,37 +38,6 @@ H2cal(data = pheno
           , summary = TRUE
           )
 
-
-h2_totmass <- 
-H2cal(data = pheno
-          , trait = "TOTAL_MASS"
-          , gen.name = "Genotype"
-          , rep.n = 2
-          , year.n = 2
-          , year.name = "Exp_year"
-          , fixed.model = "1 + Genotype + Exp_year + (1|Genotype:Exp_year)"
-          , random.model = "1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year)"
-          , plot_diag = TRUE
-          , outliers.rm = TRUE
-          , summary = TRUE
-          )
-
-
-h2_massper <- 
-H2cal(data = pheno
-          , trait = "MASS_PER_PLANT"
-          , gen.name = "Genotype"
-          , rep.n = 2
-          , year.n = 2
-          , year.name = "Exp_year"
-          , fixed.model = "1 + Genotype + Exp_year + (1|Genotype:Exp_year)"
-          , random.model = "1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year)"
-          , plot_diag = TRUE
-          , outliers.rm = TRUE
-          , summary = TRUE
-          )
-
-
 h2_sw100 <- 
 H2cal(data = pheno
           , trait = "SEED_WEIGHT_100"
@@ -82,22 +51,6 @@ H2cal(data = pheno
           , outliers.rm = TRUE
           , summary = TRUE
           )
-
-
-## not well fitable
-h2_germ <- 
-H2cal(data = pheno
-        , trait = "Germination"
-        , gen.name = "Genotype"
-        , rep.n = 2
-        , year.n = 2
-        , year.name = "Exp_year"
-        , fixed.model = "1 + Genotype + Exp_year + (1|Genotype:Exp_year)"
-        , random.model = "1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year)"
-        , plot_diag = TRUE
-        , outliers.rm = TRUE
-        )
-
 
 h2_fec <- 
 H2cal(data = pheno
@@ -115,17 +68,12 @@ H2cal(data = pheno
 dev.off()
 
 
-H2_table <- tibble("trait" = c("FT", "TOTAL_MASS", "SEED_WEIGHT_100", "MASS_PER_PLANT", "Germination", "FECUNDITY"), 
-                    "H2_s" = c(h2_ft$tabsmr$H2.s, h2_totmass$tabsmr$H2.s, h2_sw100$tabsmr$H2.s, h2_massper$tabsmr$H2.s,  h2_germ$tabsmr$H2.s, 
-                    h2_fec$tabsmr$H2.s) )
+H2_table <- tibble("trait" = c("FT", "SEED_WEIGHT_100", "FECUNDITY"), 
+                    "H2_s" = c(h2_ft$tabsmr$H2.s, h2_sw100$tabsmr$H2.s, h2_fec$tabsmr$H2.s) )
 write_delim(H2_table, "trait_heritability.tsv", "\t")
 
-
 # combine BLUP dataframes
-blup_output <- full_join(h2_ft$blups, h2_totmass$blups)
-blup_output <- full_join(blup_output, h2_sw100$blups)
-blup_output <- full_join(blup_output, h2_massper$blups)
-blup_output <- full_join(blup_output, h2_germ$blups)
+blup_output <- full_join(h2_ft$blups, h2_sw100$blups)
 blup_output <- full_join(blup_output, h2_fec$blups)
 
 write_delim(blup_output, "trait_BLUPs.tsv", "\t")

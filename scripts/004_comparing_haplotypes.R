@@ -104,11 +104,11 @@ sum(f58_hap_join[which(is.na(f58_hap_join$FT)), ]$fraction)
 for(j in c("f18_hap_join", "f28_hap_join", "f50_hap_join", "f58_hap_join")) {
   x <- get(j)
   out_df <- tibble(.rows=sum(x$Frequency))
-  for(i in c(2:7)) {
+  for(i in c(2:4)) {
     p <- rep((x[,i][[1]]), x$Frequency)
     out_df <- cbind(out_df, p)
   }
-  colnames(out_df) <- colnames(x)[c(2:7)]
+  colnames(out_df) <- colnames(x)[c(2:4)]
   assign(paste0(j, "_poprepd"), out_df)
 }
 

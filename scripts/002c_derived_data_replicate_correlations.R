@@ -5,15 +5,12 @@
 #SBATCH -p short
 
 library(tidyverse)
-#library(ggpubr)
 library(data.table)
-#library(ggrepel)
-
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
 # load data
-df <- fread("DERIVED_PHENOTYPES.tsv")
+df <- fread("DERIVED_PHENOTYPES_FULL.tsv")
 
 
 replicate_df <- df %>%
@@ -29,9 +26,7 @@ replicate_df %>% group_by(PHENOTYPE) %>% summarise('correlation'=cor(REP_1, REP_
 # and with expected but near 0 results for 'Germination'
 # 'Germination' shouldn't necessarily have a correlation so that's fine
 
-
 # check out what's causing the miniscule correlations for total-mass (which is the source of low correlations in fec and fit as well)
-
 replicate_df %>% filter(PHENOTYPE=="TOTAL_MASS") %>%
 ggplot(aes(x=REP_1, y=REP_2))+
   geom_point(aes(color=as.factor(Generation), shape=as.factor(Exp_year), group=as.factor(Generation)), size=2) +
@@ -39,13 +34,11 @@ ggplot(aes(x=REP_1, y=REP_2))+
   labs(title="total mass") +
   theme_bw()
 
-# 
 replicate_df %>% filter(PHENOTYPE=="TOTAL_MASS") %>%
 ggplot(aes(x=REP_1, y=REP_2))+
   geom_point() +
   geom_smooth(method="lm") +
   facet_wrap(Exp_year~Generation, nrow=2)
-
 
 replicate_df %>%
 ggplot(aes(x=REP_1, y=REP_2))+
@@ -53,9 +46,6 @@ ggplot(aes(x=REP_1, y=REP_2))+
   geom_smooth(method="lm") +
   facet_wrap(Exp_year~PHENOTYPE, scales="free")
 ggsave("derived_trait_replicate_correlation_plots.png")
-
-
-
 
 
 ## how to filter...
@@ -91,19 +81,12 @@ ggplot() +
 sw_filt <- replicate_df %>% filter(PHENOTYPE=="SEED_WEIGHT_100") %>% filter(rep_diff<2 & rep_diff>-2)
 problem_reps_sw <- replicate_df %>% filter(PHENOTYPE=="SEED_WEIGHT_100") %>% filter(rep_diff>2 | rep_diff< -2)
 
-
-
-
 # check correlation of filtered values
 tm_filt %>% group_by(Exp_year) %>% summarise('correlation'=cor(REP_1, REP_2, use="pairwise.complete.obs"))
-
 sw_filt %>% group_by(Exp_year) %>% summarise('correlation'=cor(REP_1, REP_2, use="pairwise.complete.obs"))
 # that makes a big difference...
 # let's try proceeding with that filter to start
 
 ## effect across years
 tm_filt %>% summarise('correlation'=cor(REP_1, REP_2, use="pairwise.complete.obs"))
-
 sw_filt %>% summarise('correlation'=cor(REP_1, REP_2, use="pairwise.complete.obs"))
-
-

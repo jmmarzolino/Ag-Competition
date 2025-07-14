@@ -30,12 +30,12 @@ sum(is.na(df$days_to_heading_2017))
 
 # select only necessary columns
 df <- df %>% 
-    select(c(V1, Samples, X100_seed_mass, seed_mass, seed_estimate, days_to_heading))
+    select(c(V1, Samples, X100_seed_mass, seed_estimate, days_to_heading))
 # add ID number to parent data
 prt$Samples <- as.character(45:72)
 # select necessary columns
 prt <- prt %>% 
-    select(c(V1, Samples, X100_seed_mass, seed_mass, seed_estimate, days_to_heading))
+    select(c(V1, Samples, X100_seed_mass, seed_estimate, days_to_heading))
 
 # join parent and progeny data from greenhouse experiment
 gh <- full_join(df, prt) %>% select(-V1)
@@ -52,7 +52,7 @@ ag$Genotype <- gsub("^(\\d+_\\d+).*", "\\1", ag$Genotype)
 # for parent 'generation' numbers (>7),
 # format genotype to only first number
 ag$gen <- (as.numeric(gsub("^(\\d+)_\\d+.*", "\\1", ag$Genotype)))
-ag[which(ag$gen > 10), 1] <- ag[which(ag$gen > 10), 8]
+ag[which(ag$gen > 10), 1] <- ag[which(ag$gen > 10), 5]
 
 
 ####    Join data
@@ -77,7 +77,6 @@ write_delim(tibble(x), "over_exps_correlation_table.tsv", "\t")
 
 # trait pairs for plotting
 #"X100_seed_mass"="SEED_WEIGHT_100", 
-#"seed_mass"="TOTAL_MASS"
 #"seed_estimate"="FECUNDITY", 
 #"days_to_heading"="FT"
 
