@@ -29,7 +29,7 @@ tidy_text_substitution <- function(x) {
   x <- gsub("MASS_PER_PLANT", "Mass per Plant", x)
   
   x <- gsub("X100_seed_mass", "greenhouse 100-Seed Weight", x)
-  x <- gsub("seed_estimate", "greenhouse FECUNDITY", x)
+  x <- gsub("seed_estimate", "greenhouse Fecundity", x)
   x <- gsub("days_to_heading", "greenhouse Flowering Time", x)
   return(x)
   }
