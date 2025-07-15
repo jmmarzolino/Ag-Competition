@@ -18,7 +18,7 @@ plink --allow-extra-chr \
 --out all_traits \
 --set-missing-var-ids @:#$1,$2 \
 --vcf combined_filt.vcf.gz \
---r2 gz --ld-window 20 --ld-window-kb 1000 --ld-window-r2 0 \
+--r2 gz --ld-window 10 --ld-window-kb 10000 --ld-window-r2 0 \
 --parallel $SLURM_ARRAY_TASK_ID 14
 #--indiv-sort f AgComp_genotypes.tsv \
 #--make-bed \
