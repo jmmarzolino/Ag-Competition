@@ -15,7 +15,7 @@ plink --allow-extra-chr \
 --double-id \
 --maf 0.01 \
 --keep AgComp_genotypes.tsv \
---out LD \
+--out all_traits \
 --set-missing-var-ids @:#$1,$2 \
 --vcf combined_filt.vcf.gz \
 --r2 gz --ld-window 20 --ld-window-kb 1000 --ld-window-r2 0 \
