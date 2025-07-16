@@ -31,7 +31,7 @@ addPlot <- function(FileName){
 
     # print manhattan plot to output
     png(OUTNAME)
-    manhattan(gwas, chr="CHR", bp="ps", p="p_lrt", snp="rs", highlight=clump2$SNP)
+    manhattan(gwas, chr="CHR", bp="ps", p="p_lrt", snp="rs", highlight=clump$SNP)
 
     # close file
     dev.off()
