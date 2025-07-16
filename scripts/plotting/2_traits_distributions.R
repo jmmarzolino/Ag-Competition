@@ -28,10 +28,11 @@ adjusted_blues <- brewer.pal(7, "Blues")[3:7]
 
 ### PLOTTING
 ## arrange data for facet plotting
-df_long <- df %>% pivot_longer(cols=-c('Genotype', 'Generation', 'pgroup'), values_to="VALUE", names_to="TRAIT")
+df_long <- df %>% pivot_longer(cols=-c('Genotype', 'Generation', 'pgroup'), values_to="VALUE", names_to="TRAIT") 
 
 # substitute trait names w/ tidy text versions
-df_long$TRAIT <- tidy_text_substitution(df_long$TRAIT)
+df_long$TRAIT <- tidy_text_substitution(df_long$TRAIT) 
+df_long <- df_long %>% mutate(TRAIT = factor(TRAIT, levels=c("Flowering Time", "100-Seed Weight", "Fecundity"))) 
 
 
 # plot trait distributions
@@ -42,7 +43,7 @@ g <- ggplot(df_long, aes(VALUE)) +
   theme_bw(base_size=20) +
   stat_summary(fun = median, geom = "vline", orientation = "y", aes(xintercept = after_stat(x), y = 0), color="dodgerblue3", linewidth=1) +
   stat_summary(fun = mean, geom = "vline", orientation = "y", aes(xintercept = after_stat(x), y = 0), color="dodgerblue", linewidth=1) 
-ggsave("results/trait_distributions.png", g, width=(7*3)+2, height=(7*2)+2)
+ggsave("results/trait_distributions.png", g, width=(7*3), height=7)
 
 
 # one density line per generation
@@ -53,7 +54,7 @@ g <- ggplot(df_long, aes(VALUE, group=Generation, color=as.factor(Generation))) 
   theme_bw(base_size=20) +
   labs(x="", y="density") +
   stat_summary(fun = mean, geom = "vline", orientation = "y", aes(xintercept = after_stat(x), y = 0), linewidth=1) 
-ggsave("results/trait_distributions_Wgeneration.png", g, width=(7*3)+2, height=(7*2)+2)
+ggsave("results/trait_distributions_Wgeneration.png", g, width=(7*3), height=7)
 
 
 # density lines for parents and progeny groups
@@ -64,5 +65,5 @@ g <- ggplot(df_long, aes(VALUE, group=pgroup, color=as.factor(pgroup))) +
   theme_bw(base_size=20) +
   labs(x="", y="density") +
   stat_summary(fun = mean, geom = "vline", orientation = "y", aes(xintercept = after_stat(x), y = 0), linewidth=1) 
-ggsave("results/trait_distributions_Wparentprogeny.png", g, width=(7*3)+2, height=(7*2)+2)
+ggsave("results/trait_distributions_Wparentprogeny.png", g, width=(7*3), height=7)
 
