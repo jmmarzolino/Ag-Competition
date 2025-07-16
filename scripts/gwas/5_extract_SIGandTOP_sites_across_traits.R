@@ -11,46 +11,6 @@ library(data.table)
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 source("../../scripts/CUSTOM_FNS.R")
 
-
-file_list <- fread("association_files_traits.txt")
-files <- file_list$file_lmm
-
-for(i in files){
-    # read in file
-    df <- fread(i)
-
-    # extract the top x% of sites from gwas
-    # define p-val based on quantiles to use as filter point
-    p5 <- quantile(df$p_lrt, 0.05)
-    p1 <- quantile(df$p_lrt, 0.01)
-    p01 <- quantile(df$p_lrt, 0.001)
-    bonn <- 0.05 / nrow(df)
-
-    # keep only sites at or below our highest threshhold
-    tmp <- df %>% filter(p_lrt <= p5)
-
-    # label top 5% of associations
-    tmp$top <- "5%"
-
-    # for remaining sites, 
-    # change top% col value if it meets higher threshhold
-    # top 1% of assoc
-    tmp[which(tmp$p_lrt<=p1), ncol(tmp)] <- "1%"
-
-    # significant sites
-    tmp[which(tmp$p_lrt<=bonn), ncol(tmp)] <- "Bonferroni"
-
-    # top 0.1%
-    tmp[which(tmp$p_lrt<=p01), ncol(tmp)] <- "0.1%"
-
-    tmp <- tmp %>% select(c("chr", "ps", "beta", "p_lrt", "top"))
-    # now save your resulting list of sites
-    i2 <- gsub("(ASSOC_\\d+).assoc.txt", "\\1", i)
-    write_delim(tmp, paste0(i2, "_top_sites.txt"))
-}
-
-
-
 file_list <- fread("association_files_traits.txt")
 # repeat for lmm model files
 # with file name ref col changed & assigned name change
@@ -77,7 +37,6 @@ lmm_files <- full_join(ASSOC_6_lmm, ASSOC_7_lmm)
 lmm_files <- full_join(lmm_files, ASSOC_8_lmm)
 
 lmm_files$gwas_method <- "lmm"
-
 
 lmm_files$associated_trait <- tidy_text_substitution(lmm_files$associated_trait)
 
