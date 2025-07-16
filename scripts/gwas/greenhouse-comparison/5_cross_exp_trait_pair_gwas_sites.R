@@ -24,7 +24,7 @@ source("../../../scripts/CUSTOM_FNS.R")
 
 # manually compile matched lists of traits & files
 matched_exp_ft <- tibble(
-          "experiment"=c("field", "field", "greenhouse", "greenhouse", "greenhouse", "greenhoue") ,
+          "experiment"=c("field", "field", "greenhouse", "greenhouse", "greenhouse", "greenhouse") ,
           "trait"=c("FT", "FT", "Flowering_days_2017", "Flowering_days_2017", "Flowering_2018_Median", "Flowering_2018_Median") , 
           "gwas_method"=c("lm", "lmm", "lm", "lmm", "lm", "lmm") ,
           "file"=c("../ASSOC_6.assoc.txt", "../ASSOC_6_lmm.assoc.txt", "ASSOC_12.assoc.txt", "ASSOC_12_lmm.assoc.txt", "ASSOC_13.assoc.txt", "ASSOC_13_lmm.assoc.txt")
