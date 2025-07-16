@@ -15,9 +15,8 @@ FILE_LIST=$(cat tmp.txt | xargs echo | sed 's/ /,/g')
 plink --bfile all_traits --double-id --allow-no-sex --allow-extra-chr --clump $FILE_LIST --out plink_clump
 
 
-
 ## lmm file list
-ls ASSOC_*_lmm.assoc.tmp >> tmp_lmm.txt #backup record of file order fed into plink
+ls ASSOC_*_lmm.assoc.tmp > tmp_lmm.txt #backup record of file order fed into plink
 FILE_LIST_LMM=$(cat tmp_lmm.txt | xargs echo | sed 's/ /,/g')
 
 plink --bfile all_traits --double-id --allow-no-sex --allow-extra-chr --clump $FILE_LIST_LMM  --out plink_clump_lmm
