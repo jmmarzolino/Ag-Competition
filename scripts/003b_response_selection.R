@@ -70,6 +70,8 @@ rts_df2$Generation <- gsub("F18_to_F58_sd", "F18 to F58", rts_df2$Generation)
 
 # re-order generation indicators 
 rts_df2$Generation <- factor(rts_df2$Generation, levels = c("Parents to F18", "F18 to F58"))
+# re-order trait factor for facet plot order
+rts_df2 <- rts_df2 %>% mutate(trait = factor(trait, levels=c("Flowering Time", "100-Seed Weight", "Fecundity"))) 
 
 
 a2 <- ggplot(rts_df2, aes(Generation, response)) +
@@ -79,7 +81,7 @@ a2 <- ggplot(rts_df2, aes(Generation, response)) +
   labs(title="Scaled Response between Generations", subtitle="average change per generation in standard deviations", x="time span") +
   theme_bw(base_size = 14) 
 
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/response.png", a2, height=7*2, width=7*3, units="in")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/response.png", a2, height=7, width=7*3, units="in")
 
 a3 <- ggplot(rts_df2, aes(Generation, response, group=trait, color=trait)) +
   geom_point() +
@@ -113,6 +115,8 @@ herit_response$Generation <- gsub("Parents_to_F18_sd", "Parents to F18", herit_r
 herit_response$Generation <- gsub("F18_to_F58_sd", "F18 to F58", herit_response$Generation)
 # re-order generation indicators 
 herit_response$Generation <- factor(herit_response$Generation, levels = c("Parents to F18", "F18 to F58"))
+# re-order trait factor for facet plot order
+herit_response <- herit_response %>% mutate(trait = factor(trait, levels=c("Flowering Time", "100-Seed Weight", "Fecundity"))) 
 
 
 a <- ggplot(herit_response, aes(Generation, selection_est)) +
@@ -122,7 +126,7 @@ a <- ggplot(herit_response, aes(Generation, selection_est)) +
   labs(y="selection estimate", x="time span") +
   theme_bw(base_size = 14) 
 
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection_facet.png", a, height=7*2, width=7*3, units="in")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection_facet.png", a, height=7, width=7*3, units="in")
 
 a3 <- ggplot(herit_response, aes(Generation, selection_est, color=trait, group=trait)) +
   geom_point() +
