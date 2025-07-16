@@ -40,7 +40,8 @@ prt <- prt %>%
 # join parent and progeny data from greenhouse experiment
 gh <- full_join(df, prt) %>% select(-V1)
 
-
+# reorder the GH columns to match that of field exp
+gh <- gh %>% select(c(Samples, days_to_heading, X100_seed_mass, seed_estimate))
 
 
 #####    Field Exp
