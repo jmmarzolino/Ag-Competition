@@ -12,15 +12,17 @@ library(pacman)
 p_load(tidyverse, data.table, ggsci, Cairo, qqman)
 
 # make a list of the clumped-region gwas 
-system("ls ASSOC_*.assoc.clumped > indv_clumped_trait_gwas.txt")
+system("ls ASSOC_*_lmm.assoc.clumped > indv_clumped_trait_gwas.txt")
 file_lst <- fread("indv_clumped_trait_gwas.txt", header=F)
 lst <- file_lst$V1
 
 addPlot <- function(FileName){
     # import data
     clump <- fread(unlist(FileName))
-    clump2 <- clump[,1:11]
-    clump2$NUM_CHR <- as.numeric(gsub("chr(\\d)H", "\\1", clump2$CHR))
+
+    full_gwas <- gsub("(ASSOC_\\d_lmm).assoc.clumped", "\\1.assoc.txt", FileName)
+    gwas <- fread(full_gwas)
+    gwas$CHR <- as.numeric(gsub("chr(\\d)H", "\\1", gwas$chr))
 
     # cut assoc-file-name number for use in output file name
     i <- gsub("ASSOC_(.*).assoc.clumped", "\\1", FileName)
@@ -29,7 +31,7 @@ addPlot <- function(FileName){
 
     # print manhattan plot to output
     png(OUTNAME)
-    manhattan(clump2, chr="NUM_CHR", bp="BP", p="P", col=c("dark blue", "dodger blue"))
+    manhattan(gwas, chr="CHR", bp="ps", p="p_lrt", snp="rs", highlight=clump2$SNP)
 
     # close file
     dev.off()
