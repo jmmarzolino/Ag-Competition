@@ -9,16 +9,33 @@ cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
 module load bcftools/1.19
 
 ######
-cp ~/shared/for_JILL/combined.vcf.gz ~/bigdata/Ag-Competition/results/gwas
+cp ~/shared/for_JILL/combinded.vcf.gz ~/bigdata/Ag-Competition/results/gwas/combined.vcf.gz
 # list sites in vcf file
-bcftools query -f '%CHROM\t%POS\n' PROGENY.vcf > CALLED_POS.txt
+bcftools query -f '%CHROM\t%POS\n' combined.vcf.gz > CALLED_POS.txt
+
+# compare number of CC II samples/lines in each vcf
+# bcftools query -l PROGENY.vcf.gz | wc -l 
+# bcftools query -l imputed.vcf.gz | wc -l 
+# bcftools query -l imputed_filter.vcf.gz | wc -l 
+# bcftools query -l AG.recode.vcf | wc -l 
+# bcftools query -l imputed_filter.recode.vcf.gz | wc -l 
+# bcftools query -l PARENTS.vcf.gz | wc -l 
+# bcftools query -l combinded.vcf.gz | wc -l 
+# bcftools query -l combined_filt.vcf.gz | wc -l 
 
 # remove indels for gemma & filter to variant sites
 #tabix -C -p vcf imputed.vcf.gz
-#bcftools view imputed.vcf.gz --targets ^chrUn --exclude-types indels --exclude "MAF>0.1" -o imputed_filter.vcf 
 #--regions "^"<expression>, leading carot changes inclusion to exclusion
 
-bcftools view combinded.vcf.gz --targets ^chrUn --exclude-types indels --exclude "MAF>0.1" -o combined_filt.vcf.gz 
+
+## vcf file already filtered ---
+###bcftools_filterCommand=filter -G 3; Date=Thu Dec 14 08:51:17 2023
+##bcftools_viewCommand=view -i 'TYPE="snp" & COUNT(GT="het")<4 & MIN(AD[*:0]+AD[*:1])>3 & DP>100 & DP<1000 & QUAL>500 & N_ALT=1'; Date=Thu Dec 14 08:51:17 2023
+
+bcftools view combined.vcf.gz --targets ^chrUn --exclude-types indels -o combined_filt.vcf.gz 
+
+#Filter calls for biallelic, no missing calls, minimum coverage 2, less than 6 heterozygotes,
+#max depth 500, QUAL more than 30, snps only, at least one homozygous alternate call of GQ>5
 
 # Unlike -r, targets can be prefixed with "^"
 #bgzip imputed_filter.vcf
@@ -96,14 +113,17 @@ sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gw
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/4_manhattan_plot.R
 
 
+# combine all sig gwas sites across all traits into one table for paper
+# make a list of significant snps, top 5%, 1%, and 0.1% of snps from each gwas association file
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5_extract_SIGandTOP_sites_across_traits.R
+
+
+
 ## clump gwas results to potentially find sig sites or narrow identified regions
 
 # format all_traits.bim for clumping gwas regions
 # change 2nd col "." to chr#_pos##
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5a_format_chr_pos.R
-
-# combine all sig gwas sites across all traits into one table for paper
-
 
 
 # clump gwas results
