@@ -18,12 +18,14 @@ lst <- file_lst$V1
 
 addPlot <- function(FileName){
     # import data
-    clump <- fread(unlist(FileName))
+    clump <- fread(unlist(FileName))[,1:5]
 
     full_gwas <- gsub("(ASSOC_\\d_lmm).assoc.clumped", "\\1.assoc.txt", FileName)
     gwas <- fread(full_gwas)
     gwas$CHR <- as.numeric(gsub("chr(\\d)H", "\\1", gwas$chr))
-
+    # format full-gwas snp list "rs" col to match clumped format
+    gwas$rs <- gsub("(chr\\dH):(\\d+),", "\\1_\\2", gwas$rs)
+    
     # cut assoc-file-name number for use in output file name
     i <- gsub("ASSOC_(.*).assoc.clumped", "\\1", FileName)
     # name output 
