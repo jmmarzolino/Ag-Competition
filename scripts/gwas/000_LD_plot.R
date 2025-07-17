@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 #SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/000_LD_plot.stdout
 #SBATCH --ntasks=1
-#SBATCH --mem=64gb
+#SBATCH --mem=100gb
 #SBATCH -t 01:30:00
 #SBATCH -p short
 
@@ -11,23 +11,33 @@ library(data.table)
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 source("../../scripts/CUSTOM_FNS.R")
 
-for(i in 1:7){
+ld <- fread("LD_10kbwin.ld.gz")
+sites <- fread("top_sites.txt")$SNP
 
-    # read in chr file 
-    IN <- paste0("all_traits_chr", i, ".ld.gz")
-    ld <- fread(IN)
+# format LD files SNP cols to match site list
+ld$SNP_A <- gsub("(chr\\dH):(\\d+),", "\\1_\\2", ld$SNP_A)
+ld$SNP_B <- gsub("(chr\\dH):(\\d+),", "\\1_\\2", ld$SNP_B)
+
+# loop over each top site and plot the LD
+for(i in 1:length(sites)){
+
+    x <- sites[i]
+
+    # filter ld file to the site
+    ld_filt <- ld %>% filter(SNP_A %in% x)
 
     # print average LD over chromosome
-    print(mean(ld$R2))
-    print(quantile(ld$R2))
+    print(mean(ld_filt$R2))
+    print(quantile(ld_filt$R2))
 
     # make heatmap plot
-    tit <- paste0("CHR", i, " LD")
-    g <- ggplot(ld, aes(x=SNP_A, y=SNP_B, fill=R2)) + geom_tile() + labs(title=tit)
+    tit <- paste0(x, " LD")
+    g <- ggplot(ld_filt, aes(x=SNP_A, y=SNP_B, fill=R2)) + geom_tile() + labs(title=tit)
 
     # write out
-    ggsave(paste0("LD_chr", i, ".png"), g)
+    ggsave(paste0("LD_heatmap_", i, ".png"), g)
 
     # make distribution of LD values?
-    ggplot(ld, aes(R2)) + geom_histogram()
+    h <- ggplot(ld_filt, aes(R2)) + geom_histogram()
+    ggsave(paste0("LD_hist_", i, ".png"), h)
 }
