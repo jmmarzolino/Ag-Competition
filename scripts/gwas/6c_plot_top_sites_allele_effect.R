@@ -14,7 +14,6 @@ p_load(tidyverse, data.table, gridExtra, ggsci, Cairo, EnvStats)
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 source("../../scripts/CUSTOM_FNS.R")
 
-
 ## read in data sets
 
 # separate phenotype cols?
@@ -34,14 +33,14 @@ gt <- gt %>% select(c("CHROM", "POS", any_of(lines)))
 
 
 
-for (i in 6:11) {
+for (i in 6:8) {
 
     traittxt <- file_traits[which(i == file_traits$trait_num), 1][[1]]
 
     ## read in list of gwas significant & significantly changed allele count sites
     ## these will be the only sites you need
         # filtering file: 'top' snps
-    sites <- fread(paste0("ASSOC_", i, "_top_sites.txt"))
+    sites <- fread(paste0("ASSOC_", i, "_lmm.assoc.clumped"))
 
     ### start by filtering allele allele freqs to only those in sites file
     afs_i <- right_join(afs, sites, by=c("CHR"="chr", "BP"="ps"))
