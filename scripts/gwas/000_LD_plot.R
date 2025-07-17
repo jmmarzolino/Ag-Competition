@@ -32,7 +32,11 @@ for(i in 1:length(sites)){
 
     # make heatmap plot
     tit <- paste0(x, " LD")
-    g <- ggplot(ld_filt, aes(x=SNP_A, y=SNP_B, fill=R2)) + geom_tile() + labs(title=tit)
+    g <- ggplot(ld_filt, aes(x=SNP_A, y=SNP_B, fill=R2)) + geom_tile() + labs(title=tit) + 
+    scale_fill_gradient2(low="lightblue", high="darkblue", 
+        midpoint=0.5, 
+        breaks=seq(0,1,0.25), #breaks in the scale bar
+        limits=c(0, 1))
 
     # write out
     ggsave(paste0("LD_heatmap_", i, ".png"), g)
