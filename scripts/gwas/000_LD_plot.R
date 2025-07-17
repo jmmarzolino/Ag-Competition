@@ -41,3 +41,22 @@ for(i in 1:length(sites)){
     h <- ggplot(ld_filt, aes(R2)) + geom_histogram()
     ggsave(paste0("LD_hist_", i, ".png"), h)
 }
+
+
+
+
+## filter to top sites all at once
+ld_filt <- ld %>% filter(SNP_A %in% sites)
+
+print(mean(ld_filt$R2))
+print(quantile(ld_filt$R2))
+
+m <- ggplot(ld_filt, aes(x=SNP_A, y=SNP_B, fill=R2)) + 
+    geom_tile() + 
+    labs(title=tit) + 
+    scale_fill_gradient2(low="lightblue", high="darkblue", 
+        midpoint=0.5, 
+        breaks=seq(0,1,0.25), #breaks in the scale bar
+        limits=c(0, 1))
+
+ggsave("LD_heatmap_all.png", m)
