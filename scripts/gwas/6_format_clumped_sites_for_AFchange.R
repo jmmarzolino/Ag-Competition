@@ -19,6 +19,9 @@ p_load(tidyverse, data.table, ggsci, Cairo, qqman)
 for(i in 6:8){
     # read in full gwas file
     full <- fread(paste0("ASSOC_", i, "_lmm.assoc.txt"))
+    # format full-gwas snp list "rs" col to match clumped format
+    full$rs <- gsub("(chr\\dH):(\\d+),", "\\1_\\2", full$rs)
+
     # read in sig sites clumped list
     sig <- fread(paste0("ASSOC_", i, "_lmm.assoc.clumped"))[,1:5]
 
