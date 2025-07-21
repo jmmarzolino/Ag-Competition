@@ -101,6 +101,10 @@ neg_beta$F58_AF <- 1 - neg_beta$F58_AF
 df5 <- bind_rows(neg_beta, pos_beta) %>% select(-c(A1, A2))
 fwrite(df5, "beta_polarized_sig_sites_AFs.tsv")
 
+# and record the site identified for multiple traits
+print("any sites identified for multiple traits:")
+dup_sites <- names(which(table(df5$site)>1))
+df5 %>% filter(site %in% dup_sites) %>% print
 
 
 ######################                  PLOTTING
