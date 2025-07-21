@@ -1,5 +1,4 @@
 #!/usr/bin/env Rscript
-
 #SBATCH --job-name=gwas
 #SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7b_plot_AFS.stdout
 #SBATCH --ntasks=1
@@ -123,6 +122,7 @@ ggarrange(f0, f1, f2, ncol=1)
 dev.off()
 
 
+######### at least** here is where you need the neutrally sampled sites lists!!!
 ## all gwas and neutral generations (P, F0, F18)
 combo_afs <- combo %>%
   ggplot(aes(x=bins, y=value, fill=group)) +
