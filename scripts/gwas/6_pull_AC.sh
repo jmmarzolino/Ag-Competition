@@ -32,6 +32,8 @@ bcftools query -l $VCF | grep '^1_' > F18.gt.names
 bcftools query -l $VCF | grep '^2_' > F28.gt.names
 bcftools query -l $VCF | grep '^3_' > F50.gt.names
 bcftools query -l $VCF | grep '^7_' > F58.gt.names
+#wc -l F*gt.names
+#wc -l F*gt.names PARENTS.gt.names
 
 ### calculate MAF for generations
 # list chr-position data for gwas sites
