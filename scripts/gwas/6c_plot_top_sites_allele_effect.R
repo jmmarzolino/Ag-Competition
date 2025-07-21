@@ -43,7 +43,7 @@ for (i in 6:8) {
     sites <- fread(paste0("ASSOC_", i, "_lmm.assoc.clumped"))[,1:11]
 
     ### start by filtering allele allele freqs to only those in sites file
-    afs_i <- right_join(afs, sites, by=c("CHR"="chr", "BP"="ps"))
+    afs_i <- right_join(afs, sites, by=c("CHR"="CHR", "BP"="BP"))
     # cool, great, 7700 sites is much better to deal w for testing especially...
 
     # format that data...
