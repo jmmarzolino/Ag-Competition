@@ -114,7 +114,11 @@ df5 <- df5 %>% select(-c(chr, ps))
 plotting <- df5 %>% select(c(site, associated_trait, ends_with("AF"))) %>% pivot_longer(cols=c(F0_AF, F18_AF, F28_AF, F50_AF, F58_AF), values_to="allele_frequency", names_to="generation")
 plotting$generation <- as.numeric(gsub("F(\\d+)_AF", "\\1", plotting$generation))
 
-g <- ggplot(plotting, aes(x=generation, y=allele_frequency, group=site, color=associated_trait)) + 
+# there's one site in common between fecundity and flowering time, 
+# so make a temp plotting column for 
+plotting$tmp <- paste0(plotting$site, "_", plotting$associated_trait)
+
+g <- ggplot(plotting, aes(x=generation, y=allele_frequency, group=tmp, color=associated_trait)) + 
   geom_point(alpha=0.4) + geom_line(alpha=0.4) +
   theme_bw() +
   labs(x="Generation", y="Allele Frequency", title="Allele Frequency over Generation", subtitle="site frequency polarized to trait increase", color="Associated Trait")
@@ -131,7 +135,7 @@ ggsave("trait_assoc_sites_allele_freq_over_gens_trait_faceted.png", g2, height=7
 
 ##    now plot just generations F18 to F58...
 plotting2 <- plotting %>% filter(generation != 0)
-g <- ggplot(plotting2, aes(x=generation, y=allele_frequency, group=site, color=associated_trait)) + 
+g <- ggplot(plotting2, aes(x=generation, y=allele_frequency, group=tmp, color=associated_trait)) + 
   geom_point(alpha=0.4) + geom_line(alpha=0.4) +
   theme_bw() +
   labs(x="Generation", y="Allele Frequency", title="Allele Frequency over Generation", subtitle="site frequency polarized to trait increase", color="Associated Trait")
