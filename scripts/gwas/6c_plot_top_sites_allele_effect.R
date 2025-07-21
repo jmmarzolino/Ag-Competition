@@ -88,7 +88,7 @@ for (i in 6:8) {
                 jn <- bind_rows(jn, a1a2f)
 
                 # need to set the levels...
-                jn$genotype <- factor(jn2$genotype, levels=c("A1 homozygous", "heterozygous", "A2 homozygous")) 
+                jn$genotype <- factor(jn$genotype, levels=c("A1 homozygous", "heterozygous", "A2 homozygous")) 
         }
 
 
