@@ -51,4 +51,3 @@ joined[which(joined$p_lrt <= bonn), ncol(joined)] <- "sig_site"
 
 # now save your resulting list of sites
 write_delim(joined, "gwas_top_sites.tsv")
-
