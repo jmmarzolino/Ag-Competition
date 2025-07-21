@@ -15,17 +15,17 @@ source("../../../scripts/CUSTOM_FNS.R")
 
 # load file with trait names and combine
 phenotype_names <- read_delim("CCII_GH_trait_file_nums.tsv", col_names=T)
-phenotype_names <- phenotype_names[which(phenotype_names$trait_names %in% c("Mass_100", "Total_mass", "Seed_Estimate", "Flowering_2018_Median", "Flowering_days_2017")), ]
+phenotype_names <- phenotype_names[which(phenotype_names$trait_names %in% c("Mass_100","Seed_Estimate", "Flowering_2018_Median", "Flowering_days_2017")), ]
 
 field_exp <- read_delim("../trait_name_to_col_numbers.tsv", col_names=T)
-field_exp <- field_exp[which(field_exp$trait_names %in% c("SEED_WEIGHT_100", "TOTAL_MASS", "FECUNDITY", "FT", "FT")), ]
+field_exp <- field_exp[which(field_exp$trait_names %in% c("SEED_WEIGHT_100", "FECUNDITY", "FT", "FT")), ]
 
 
 
-addPlot <- function(FileName, TraitName, Experiment, Method){
+addPlot <- function(FileName, TraitName, Experiment){
   # convert computer-style trait names to human-readable
   AssocTraitName <- tidy_text_substitution(TraitName)
-  AssocTraitName <- paste0(AssocTraitName, " measured in ", Experiment, "; gwas method ", Method)
+  AssocTraitName <- paste0(AssocTraitName, " measured in ", Experiment)
   # put line breaks into long trait names so they're readable
   AssocTraitName <- paste(strwrap(AssocTraitName, width=60), collapse="\n")
 
@@ -89,7 +89,6 @@ addPlot <- function(FileName, TraitName, Experiment, Method){
 # trait pairs
 ## FT - Flowering_days_2017
 ## FT - Flowering_2018_Median
-## TOTAL_MASS - Total_mass
 ## SEED_WEIGHT_100 - Mass_100
 ## FECUNDITY - Seed_Estimate
 
@@ -97,41 +96,30 @@ addPlot <- function(FileName, TraitName, Experiment, Method){
 # set variables
 # manually compile matched lists of traits & files
 matched_exp_ft <- tibble(
-          "experiment"=c("field", "field", "greenhouse", "greenhouse", "greenhouse", "greenhoue") ,
-          "trait"=c("FT", "FT", "Flowering_days_2017", "Flowering_days_2017", "Flowering_2018_Median", "Flowering_2018_Median") , 
-          "gwas_method"=c("lm", "lmm", "lm", "lmm", "lm", "lmm") ,
-          "file"=c("../ASSOC_6.assoc.txt", "../ASSOC_6_lmm.assoc.txt", "ASSOC_12.assoc.txt", "ASSOC_12_lmm.assoc.txt", "ASSOC_13.assoc.txt", "ASSOC_13_lmm.assoc.txt")
+          "experiment"=c("field", "greenhouse", "greenhouse") ,
+          "trait"=c("FT", "Flowering_days_2017", "Flowering_2018_Median") , 
+          "file"=c("../ASSOC_6_lmm.assoc.txt", "ASSOC_12_lmm.assoc.txt", "ASSOC_13_lmm.assoc.txt")
           )
 
 matched_exp_fec <- tibble(
-          "experiment"=c("field", "field", "greenhouse", "greenhouse") ,
-          "trait"=c("FECUNDITY", "FECUNDITY", "Seed_Estimate", "Seed_Estimate") , 
-          "gwas_method"=c("lm", "lmm", "lm", "lmm") ,
-          "file"=c("../ASSOC_11.assoc.txt", "../ASSOC_11_lmm.assoc.txt", "ASSOC_11.assoc.txt", "ASSOC_11_lmm.assoc.txt")
+          "experiment"=c("field", "greenhouse") ,
+          "trait"=c("FECUNDITY", "Seed_Estimate") , 
+          "file"=c("../ASSOC_8_lmm.assoc.txt", "ASSOC_11_lmm.assoc.txt")
           )
 
 matched_exp_sw <- tibble(
-          "experiment"=c("field", "field", "greenhouse", "greenhouse") ,
-          "trait"=c("SEED_WEIGHT_100", "SEED_WEIGHT_100", "Mass_100", "Mass_100") , 
-          "gwas_method"=c("lm", "lmm", "lm", "lmm") ,
-          "file"=c("../ASSOC_8.assoc.txt", "../ASSOC_8_lmm.assoc.txt", "ASSOC_9.assoc.txt", "ASSOC_9_lmm.assoc.txt")
+          "experiment"=c("field", "greenhouse") ,
+          "trait"=c("SEED_WEIGHT_100", "Mass_100") , 
+          "file"=c("../ASSOC_7_lmm.assoc.txt", "ASSOC_9_lmm.assoc.txt")
           )
 
-
-matched_exp_tm <- tibble(
-          "experiment"=c("field", "field", "greenhouse", "greenhouse") ,
-          "trait"=c("TOTAL_MASS", "TOTAL_MASS", "Total_mass", "Total_mass") , 
-          "gwas_method"=c("lm", "lmm", "lm", "lmm") ,
-          "file"=c("../ASSOC_7.assoc.txt", "../ASSOC_7_lmm.assoc.txt", "ASSOC_10.assoc.txt", "ASSOC_10_lmm.assoc.txt")
-          )
-
-combo_traits <- bind_rows(matched_exp_ft, matched_exp_fec, matched_exp_sw, matched_exp_tm)
+combo_traits <- bind_rows(matched_exp_ft, matched_exp_sw, matched_exp_fec, )
 
 
 pdf("FLD_GH_GWAS_manhattan.pdf")
 for(i in 1:length(combo_traits$trait)){
 
-  gggg <- addPlot(FileName = combo_traits[[i, 4]], TraitName=combo_traits[i, 2], Experiment=combo_traits[i, 1], Method=combo_traits[i, 3])
+  gggg <- addPlot(FileName = combo_traits[[i, 3]], TraitName=combo_traits[i, 2], Experiment=combo_traits[i, 1])
   print(gggg)
 
 }
