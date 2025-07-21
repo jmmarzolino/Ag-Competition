@@ -96,7 +96,7 @@ for (i in 6:8) {
         # maybe even have a filter step for low numbers of heterozygotes
         sample_counts <- jn %>% count(genotype) 
 
-        g <- ggplot(jn, aes(x=genotype, y= get(phcol))) + geom_boxplot() +  stat_n_text() + labs(y=tidy_text_substitution(traittxt), subtitle=paste0("site past ", ms$top, " threshhold"), title=paste(ms$CHR, ms$BP)) + theme_bw()
+        g <- ggplot(jn, aes(x=genotype, y= get(phcol))) + geom_boxplot() +  stat_n_text() + labs(y=tidy_text_substitution(traittxt), title=paste(ms$CHR, ms$BP)) + theme_bw()
         ggsave(paste0("allele_effect/", "Rplot_trait", i, "_row", m, ".png"), g)
     }
 
