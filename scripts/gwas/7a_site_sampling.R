@@ -39,7 +39,7 @@ df2 <- bind_rows(dfa1, dfa2)
 ## then pull sites associated w traits
 ## and filter them to their own dataset
 # load associated sites list
-all_sig <- fread("all_gwas_sig_sites.tsv")
+all_sig <- fread("gwas_top_sites.tsv")
 all_sig$rs <- paste0(all_sig$chr, "_", all_sig$ps)
 
 trait_assoc_sites <- df2 %>% filter(snp %in% all_sig$rs)
