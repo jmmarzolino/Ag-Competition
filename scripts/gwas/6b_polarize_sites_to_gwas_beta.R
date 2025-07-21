@@ -36,17 +36,12 @@ afs <- afs %>% select(-c( F0A1, F0A2, F18A1, F18A2, F28A1, F28A2, F50A1, F50A2, 
 fwrite(afs, "all_sites_allele_freqs.tsv")
 
 
-
-
-
-
-
 ### load list of gwas sites & combine w AFs
-gwas_sites <- fread("all_gwas_sig_sites.tsv")
+sig_sites <- fread("gwas_top_sites.tsv")
 # filter to relevant cols
-gwas_sites <- gwas_sites %>% select(c(chr, ps, allele1, allele0, beta, associated_trait))
+sig_sites <- sig_sites %>% select(c(chr, ps, allele1, allele0, beta, associated_trait))
 # combine & filter list of all site AFs with list of gwas sites
-joined_sites <- left_join(gwas_sites, afs, by=c("chr"="CHR", "ps"="BP"))
+joined_sites <- left_join(sig_sites, afs, by=c("chr"="CHR", "ps"="BP"))
 
 
 
