@@ -40,7 +40,7 @@ for (i in 6:8) {
     ## read in list of gwas significant & significantly changed allele count sites
     ## these will be the only sites you need
         # filtering file: 'top' snps
-    sites <- fread(paste0("ASSOC_", i, "_lmm.assoc.clumped"))
+    sites <- fread(paste0("ASSOC_", i, "_lmm.assoc.clumped"))[,1:11]
 
     ### start by filtering allele allele freqs to only those in sites file
     afs_i <- right_join(afs, sites, by=c("CHR"="chr", "BP"="ps"))
