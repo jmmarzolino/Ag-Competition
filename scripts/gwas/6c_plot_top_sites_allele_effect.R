@@ -14,66 +14,70 @@ p_load(tidyverse, data.table, gridExtra, ggsci, Cairo, EnvStats)
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 source("../../scripts/CUSTOM_FNS.R")
 
-## read in data sets
-
-# separate phenotype cols?
-# run one association file results & phenotype file at a time
-#ie. phenotype ft = association 6...
-file_traits <- fread("association_files_traits.txt")
+##################################################
+### read in data sets
+# allele frequencies
 afs <- fread("progeny_AF_change.tsv")
+# list of top sites
+top <- fread("gwas_top_sites.tsv")
+# filter afs to just top sites
+afs <- left_join(top, afs, by=c("chr"="CHR", "ps"="BP"))
+
+
 # line IDs + genotype
-gt <- fread("out.GT.FORMAT")
+gt <- fread("top_sites.gt")
+gtnm <- fread("combined_filt.gt.names", header=F)
+# replace first 28 parent-line names w their KL numbers (45 to 72)
+gtnm[1:28, 1] <- 45:72
+# pair up genotype names with columns of genotype data
+colnames(gt) <- c("CHROM", "POS", gtnm$V1)
+
+
 # line ID + phenotype
-ph <- fread("all_traits.fam")
+# read in full phenotype file
+pheno <- fread("../../data/trait_BLUPs.tsv")
+
+# shorten genotype codes to 2 generations (\\d_\\d), for consistency, IDing genotype families instead of lines
+pheno$Genotype <- gsub("(\\d+_\\d+)_\\d+", "\\1", pheno$Genotype)
+# add generation column...
+pheno <- add_generation(pheno)
+# if generation is 0, remove one more _ of genotype ID
+pheno[which(pheno$Generation == 0), ]$Genotype <- gsub("(\\d+)_\\d", "\\1", pheno[which(pheno$Generation == 0), ]$Genotype)
+
+# make sure trait names match later
+colnames(pheno) <- tidy_text_substitution(colnames(pheno))
+
 
 # filter genotype file by line IDs in phenotype file
-#colnames(gt_filt)[3:ncol(gt_filt)]
-lines <- ph$V1
+lines <- pheno$Genotype
 gt <- gt %>% select(c("CHROM", "POS", any_of(lines)))
+#colnames(gt)[3:ncol(gt)]
+##################################################
 
 
+for(i in c(unique(afs$associated_trait))){
 
-for (i in 6:8) {
+    site_list_i <- afs[which(afs$associated_trait == i)]
+    phcol <- which(c(unique(afs$associated_trait)) ==i)
 
-    traittxt <- file_traits[which(i == file_traits$trait_num), 1][[1]]
+    for(m in 1:nrow(site_list_i)) {
+        # filter afs data to each top site in turn
+        ms <- site_list_i[m, ]
+        # filter genotype data to that site & only genotype digits
+        gs <- gt %>% filter(CHROM==ms$chr) %>% filter(POS ==ms$ps) %>% select(-c(CHROM, POS))
 
-    ## read in list of gwas significant & significantly changed allele count sites
-    ## these will be the only sites you need
-        # filtering file: 'top' snps
-    sites <- fread(paste0("ASSOC_", i, "_lmm.assoc.clumped"))[,1:11]
-
-    ### start by filtering allele allele freqs to only those in sites file
-    afs_i <- right_join(afs, sites, by=c("CHR"="CHR", "BP"="BP"))
-    # cool, great, 7700 sites is much better to deal w for testing especially...
-
-    # format that data...
-    # filter genotype data to common sites
-    gt_filt <- right_join(gt, afs_i, by=c("CHROM"="CHR", "POS"="BP")) 
-
-    # ph filter to V6 - V11 colnames that match number in file numbers
-    phcol <- paste0("V", i)
-
-    #pdf(paste0("top_sites_allele_effects_", i, ".pdf"))
-
-
-    for(m in 1:nrow(afs_i)) {
-        ms <- afs_i[m, ]
-        gs <- gt_filt[m, ]
-
-
-        # divide genotype subset file line IDs by genotype
+        # divide line IDs by genotype
         tgs <- t(gs)
-        a1 <- names(tgs[grep("0\\|0", tgs),])
-        a2 <- names(tgs[grep("1\\|1", tgs),])
-        a1a2 <- c(names(tgs[grep("1\\|0", tgs),]), names(tgs[grep("0\\|1", tgs),]))
-
+        a1 <- names(tgs[grep("0", tgs),])
+        a2 <- names(tgs[grep("2", tgs),])
+        a1a2 <- names(tgs[grep("1", tgs),])
 
         a1t <- tibble("A1" = a1)
-        a1f <- right_join(ph, a1t, by=c("V1"="A1")) %>% select(all_of(phcol))
+        a1f <- right_join(pheno, a1t, by=c("Genotype"="A1")) %>% select(all_of(i))
         a1f$genotype <- "A1 homozygous"
 
         a2t <- tibble("A2"=a2)
-        a2f <- right_join(ph, a2t, by=c("V1"="A2")) %>% select(all_of(phcol))
+        a2f <- right_join(pheno, a2t, by=c("Genotype"="A2")) %>% select(all_of(i))
         a2f$genotype <- "A2 homozygous"
 
         jn <- bind_rows(a1f, a2f)
@@ -82,7 +86,7 @@ for (i in 6:8) {
         # in which case, you can't join that data
         if(length(a1a2)!=0) {
                 a1a2t <- tibble("A1A2"=a1a2)
-                a1a2f <- right_join(ph, a1a2t, by=c("V1"="A1A2")) %>% select(all_of(phcol))
+                a1a2f <- right_join(pheno, a1a2t, by=c("Genotype"="A1A2")) %>% select(all_of(i))
                 a1a2f$genotype <- "heterozygous"
 
                 jn <- bind_rows(jn, a1a2f)
@@ -96,9 +100,11 @@ for (i in 6:8) {
         # maybe even have a filter step for low numbers of heterozygotes
         sample_counts <- jn %>% count(genotype) 
 
-        g <- ggplot(jn, aes(x=genotype, y= get(phcol))) + geom_boxplot() +  stat_n_text() + labs(y=tidy_text_substitution(traittxt), title=paste(ms$CHR, ms$BP)) + theme_bw()
+        # difference in average A1 / A2 phenotype
+        grp_avg <- jn %>% group_by(genotype) %>% summarise(avg = mean(get(i), na.rm=T))
+        a1a2_diff <- grp_avg[1, 2] - grp_avg[nrow(grp_avg), 2]
+        
+        g <- ggplot(jn, aes(x=genotype, y= get(i))) + geom_boxplot() +  stat_n_text() + labs(y=tidy_text_substitution(i), title=paste(ms$chr, ms$ps), subtitle=paste0("difference in A1, A2 trait average: ", round(a1a2_diff, 3))) + theme_bw()
         ggsave(paste0("allele_effect/", "Rplot_trait", i, "_row", m, ".png"), g)
     }
-
-    #dev.off()
 }
