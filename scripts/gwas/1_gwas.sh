@@ -55,9 +55,12 @@ tabix -C -p vcf combined_filt.vcf.gz
 # awk: copy first col, print col \s col. replicates genotype list into two matching columns for plink
 #head -n1 out.GT.FORMAT | cut -f3- | sed 's/\t/\n/g' | awk '{$1=$1}{print $1" "$1}' > progeny_geno_pheno_list
 
-#
-#bcftools query -l imputed_filter.vcf.gz > imputed_filter.gt.names
-#cat imputed_filter.gt.names | awk '{$1=$1}{print $1" "$1}' > progeny_geno_pheno_list
+
+# pull the genotype names
+bcftools query -l combined_filt.vcf.gz  > combined_filt.gt.names
+# cut and copy genotype names into two columns (plink format) 
+# and remove parental lines (first 28 entries)
+tail -n+29 combined_filt.gt.names | awk '{$1=$1}{print $1" "$1}' > progeny_geno_pheno_list
 
 bcftools query -f '[\t%GT]\n' combined_filt.vcf.gz | sed -e s:"0/0":0:g -e s:"0/1":1:g -e s:"1/1":2:g -e s:"\./\.":NA:g > combined_filter.gt
 
