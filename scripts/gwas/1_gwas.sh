@@ -62,7 +62,15 @@ bcftools query -l combined_filt.vcf.gz  > combined_filt.gt.names
 # and remove parental lines (first 28 entries)
 tail -n+29 combined_filt.gt.names | awk '{$1=$1}{print $1" "$1}' > progeny_geno_pheno_list
 
-bcftools query -f '[\t%GT]\n' combined_filt.vcf.gz | sed -e s:"0/0":0:g -e s:"0/1":1:g -e s:"1/1":2:g -e s:"\./\.":NA:g > combined_filter.gt
+# pull ea. position and all genotypes
+# replace genotype indicators (0/0, 0/1, 1/1, ./.) w 0/1/2/NA
+bcftools query -f '%CHROM\t%POS[\t%GT]\n' combined_filt.vcf.gz | sed -e s:"0|0":0:g -e s:"0|1":1:g -e s:"1|1":2:g -e s:"\.|\.":NA:g > combined_filter.gt
+
+# check that the number of columns (genotypes) match the number of individuals
+wc -l combined_filt.gt.names
+head -n1 combined_filter.gt | awk '{print NF}'
+# 2 extra fields in combined_filter.gt b/c of chr/pos cols
+
 
 # create plink format files from vcf (bed, bim, fam)
 module load plink/1.90b6.25
