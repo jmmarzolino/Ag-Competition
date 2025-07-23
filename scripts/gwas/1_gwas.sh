@@ -162,8 +162,29 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6b_segregating_sites_
 # test site allele counts for significant differences between generations F18 and F58; calculate allele frequency change for those sites; plot allele frequency spectra & distribution of change in allele frequency; list which allele (A1, A2) is beneficial
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6b_sig_allele_change_sites.R
 
-# 
+## filter the genotype file before reading into R
+## by limiting the number of sites
+# start by formatting your list of positions for bcftools
+awk '{print $1"\t"$3}' gwas_top_sites.tsv | tail -n+2 > top_sites.tsv
+
+
+bcftools view --regions-file top_sites.tsv combined_filt.vcf.gz -o top_sites.vcf
+bcftools query -f '%CHROM\t%POS[\t%GT]\n' top_sites.vcf | sed -e s:"0|0":0:g -e s:"0|1":1:g -e s:"1|0":1:g -e s:"1|1":2:g -e s:"\.|\.":NA:g > top_sites.gt
+
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6c_plot_top_sites_allele_effect.R
+
+
+
+
+############
+
+# plot allele frequency spectra for all sites & for sites identified as significant from gwas
+## match starting allele frequencies for sites associated w traits & randomly sample them to create neutral comparison sets
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7a_site_sampling.R
+
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7b_plot_AFS.R
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7b_plot_deltaAF.R
+
 
 
 
