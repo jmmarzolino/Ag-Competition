@@ -33,6 +33,7 @@ bcftools query -f '%CHROM\t%POS\n' combined.vcf.gz > CALLED_POS.txt
 ##bcftools_viewCommand=view -i 'TYPE="snp" & COUNT(GT="het")<4 & MIN(AD[*:0]+AD[*:1])>3 & DP>100 & DP<1000 & QUAL>500 & N_ALT=1'; Date=Thu Dec 14 08:51:17 2023
 
 bcftools view combined.vcf.gz --targets ^chrUn --exclude-types indels -o combined_filt.vcf.gz 
+tabix -C -p vcf combined_filt.vcf.gz
 
 #Filter calls for biallelic, no missing calls, minimum coverage 2, less than 6 heterozygotes,
 #max depth 500, QUAL more than 30, snps only, at least one homozygous alternate call of GQ>5
