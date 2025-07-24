@@ -18,7 +18,8 @@ for line in sys.stdin:
             REF += 2
         elif i == "1/1" or i == "1|1":
             ALT += 2
-        elif i == "0/1" or i == "0|1" or i == "1|0":
+        elif i == "0/1" or i == "1/0" or i == "0|1" or i == "1|0":
             ALT += 1
+            REF += 1
     print(REF,"\t",ALT)
 #f.close
