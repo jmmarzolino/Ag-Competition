@@ -54,27 +54,24 @@ x2 <- joined_sites[which(joined_sites$A1 == joined_sites$allele1), ]
 #A0 corresponds to allele0 and A1 corresponds to allele1
 
 # sites w/out alleles matching
-# switch A1/A2 & allele freq to match the a1/a2 orientation of other sites...
-#(make ref/alt allele consistent to A1/A2 pulled from plink (which uses major allele) instead of vcfs a1/a2 allele orientation) 
-x1$F0_AF <- 1 - x1$F0_AF
-x1$F18_AF <- 1 - x1$F18_AF
-x1$F28_AF <- 1 - x1$F28_AF
-x1$F50_AF <- 1 - x1$F50_AF
-x1$F58_AF <- 1 - x1$F58_AF
-# switch allele states to match other set of sites...
-a2 <- x1$A2
-a1 <- x1$A1
-
-x1$allele0 <- a1
-x1$allele1 <- a2
+## polarize allele freqs to major allele
+# switch A0/A1 & allele freq to match the allele0/allele1 orientation 
+#(make ref/alt allele pulled from vcf match the allele0/allele1 notation from gemma)
+# gemma uses major allele, ref/alt are pulled from vcf...
+# aka just polarize A0/A1 and allele freq to major allele instead of ref/alt
+x1[, grep("F\\d+_AF", colnames(x1))] <- x1 %>% reframe(across(starts_with("F"), \(x) 1-x))
+# and switch allele states to match gwas allele0/allele1 format
+x1$A0 <- x1$allele0 
+x1$A1 <- x1$allele1
 
 #rejoin data
-df4 <- bind_rows(x1, x2)
+maj_pol <- bind_rows(x1, x2)
 # & check for matching alleles...
-df4[which(df4$A2 != df4$allele1), ]
-# allele orientaiton for a1/A2 match that of other sites now...
-# which means v3 = ref allele (allele0) & A2 = alt allele (allele1)
-# and beta reflects the phenotype change from ref to alt
+maj_pol[which(maj_pol$A1 != maj_pol$allele1), ]
+# allele orientaiton for A0/A1 match 
+# and all allele frequencies as of now are A0=major allele
+
+# gemma defines beta as the phenotype change associated with allele change from allele0 (major allele) to allele1 (minor allele)
 
 
 
@@ -90,23 +87,28 @@ neg_beta <- maj_pol[which(sign(maj_pol$beta) == -1),]
 
 
 # polarize allele freq to the direction of gwas' beta
-## then polarize allele frequencies to allele which increases phenotype (positive beta, flip sign for negative beta)
-# for positive beta, record that alt allele is beneficial
-pos_beta$beneficial_allele <- pos_beta$allele1
-neg_beta$beneficial_allele <- neg_beta$allele0
 
-# now, for negative beta values, switch them to positive values
-neg_beta$beta <- abs(neg_beta$beta)
-# and switch their allele freq orientation
-neg_beta$F0_AF <- 1 - neg_beta$F0_AF
-neg_beta$F18_AF <- 1 - neg_beta$F18_AF
-neg_beta$F28_AF <- 1 - neg_beta$F28_AF
-neg_beta$F50_AF <- 1 - neg_beta$F50_AF
-neg_beta$F58_AF <- 1 - neg_beta$F58_AF
+# for positive beta values, 
+# record that allele1 increases beta
+# keep beta value the same; flip allele frequency 
+pos_beta$inc_beta_allele <- pos_beta$allele1
+pos_beta[, grep("F\\d+_AF", colnames(pos_beta))] <- pos_beta %>% reframe(across(starts_with("F"), \(x) 1-x))
 
-# rejoin data and you can now drop A1/A2
-df5 <- bind_rows(neg_beta, pos_beta) %>% select(-c(A1, A2))
-fwrite(df5, "beta_polarized_sig_sites_AFs.tsv")
+
+# for negative beta values, 
+# record that allele0 increases beta
+# flip beta value; keep allele frequency the same
+neg_beta$inc_beta_allele <- neg_beta$allele0
+neg_beta$beta <- neg_beta$beta * -1
+
+
+# check that all allele1==A1 and allele0==A0
+# now all allele frequencies are based on the count of the 'inc_beta_allele' out of the total allele counts & you can remove the A1/A0 columns
+which(pos_beta$A0 != pos_beta$allele0)
+which(neg_beta$A0 != neg_beta$allele0)
+# rejoin data and drop A0/A1
+rejoined <- bind_rows(neg_beta, pos_beta) %>% select(-c(A0, A1))
+fwrite(rejoined, "beta_polarized_sig_sites_AFs.tsv")
 
 # and record the site identified for multiple traits
 rejoined$site <- paste0(rejoined$chr, ":", rejoined$ps)
