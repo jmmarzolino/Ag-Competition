@@ -18,21 +18,21 @@ setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 #       for sites significantly associated w traits via gwas, polarize the allele frequencies to a positive trait change (beta value, calculated for allele change from a0 to a1);
 #       plot allele frequencies over generations for gwas sites
 
-
+#############
 # read in data: 
 # site allele counts for each generation 
 afs <- fread("COMBINED_AFS.txt")
-colnames(afs) <- c("CHR", "BP", "A1", "A2", "F0A1", "F0A2", "F18A1", "F18A2", "F28A1", "F28A2", "F50A1", "F50A2", "F58A1", "F58A2")
+colnames(afs) <- c("CHR", "BP", "A0", "A1", "F0A0", "F0A1", "F18A0", "F18A1", "F28A0", "F28A1", "F50A0", "F50A1", "F58A0", "F58A1")
 
-# calculate allele frequencies for A1/A2
-# V5 = A1 count, V6 = A2 count...
-afs$F0_AF <- afs$F0A1/(afs$F0A1 + afs$F0A2)
-afs$F18_AF <- afs$F18A1/(afs$F18A1 + afs$F18A2)
-afs$F28_AF <- afs$F28A1/(afs$F28A1 + afs$F28A2)
-afs$F50_AF <- afs$F50A1/(afs$F50A1 + afs$F50A2)
-afs$F58_AF <- afs$F58A1/(afs$F58A1 + afs$F58A2)
+# calculate allele frequencies for A0/A1
+# V5 = A0 count, V6 = A1 count...
+afs$F0_AF <- afs$F0A0/(afs$F0A0 + afs$F0A1)
+afs$F18_AF <- afs$F18A0/(afs$F18A0 + afs$F18A1)
+afs$F28_AF <- afs$F28A0/(afs$F28A0 + afs$F28A1)
+afs$F50_AF <- afs$F50A0/(afs$F50A0 + afs$F50A1)
+afs$F58_AF <- afs$F58A0/(afs$F58A0 + afs$F58A1)
 
-afs <- afs %>% select(-c( F0A1, F0A2, F18A1, F18A2, F28A1, F28A2, F50A1, F50A2, F58A1, F58A2))
+afs <- afs %>% select(-c( F0A0, F0A1, F18A0, F18A1, F28A0, F28A1, F50A0, F50A1, F58A0, F58A1))
 fwrite(afs, "all_sites_allele_freqs.tsv")
 
 
@@ -45,11 +45,13 @@ joined_sites <- left_join(sig_sites, afs, by=c("chr"="CHR", "ps"="BP"))
 
 
 
-#############
-# check that A1/A2 letters match
+
+##########        MAJOR ALLELE POLARIZATION
+# check that A0/A1 letters match
 # they don't! so we need to .... divide, re-order, rejoin...
-x1 <- joined_sites[which(joined_sites$A2 != joined_sites$allele1), ]
-x2 <- joined_sites[which(joined_sites$A2 == joined_sites$allele1), ] #A1 corresponds to allele0 and A2 corresponds to allele1
+x1 <- joined_sites[which(joined_sites$A1 != joined_sites$allele1), ]
+x2 <- joined_sites[which(joined_sites$A1 == joined_sites$allele1), ] 
+#A0 corresponds to allele0 and A1 corresponds to allele1
 
 # sites w/out alleles matching
 # switch A1/A2 & allele freq to match the a1/a2 orientation of other sites...
@@ -76,11 +78,16 @@ df4[which(df4$A2 != df4$allele1), ]
 
 
 
+
+#############    BETA POLARIZATION
 #######          polarize to gwas-beta orientation
 ### polarize change in allele frequency to the snp that causes positive trait change
-# record which allele is associated w positive beta
-pos_beta <- df4[which(sign(df4$beta) == 1),]
-neg_beta <- df4[which(sign(df4$beta) == -1),]
+# and record which allele is associated w positive beta
+
+# divide data into sites w and w/out positive beta value
+pos_beta <- maj_pol[which(sign(maj_pol$beta) == 1),]
+neg_beta <- maj_pol[which(sign(maj_pol$beta) == -1),]
+
 
 # polarize allele freq to the direction of gwas' beta
 ## then polarize allele frequencies to allele which increases phenotype (positive beta, flip sign for negative beta)
@@ -102,16 +109,20 @@ df5 <- bind_rows(neg_beta, pos_beta) %>% select(-c(A1, A2))
 fwrite(df5, "beta_polarized_sig_sites_AFs.tsv")
 
 # and record the site identified for multiple traits
+rejoined$site <- paste0(rejoined$chr, ":", rejoined$ps)
 print("any sites identified for multiple traits:")
-dup_sites <- names(which(table(df5$site)>1))
-df5 %>% filter(site %in% dup_sites) %>% print
+dup_sites <- names(which(table(rejoined$site)>1))
+rejoined %>% filter(site %in% dup_sites) %>% print
+
+
+
+
 
 
 ######################                  PLOTTING
 #######        plot allele freq over gens for sites identified in gwas
-df5$site <- paste0(df5$chr, ":", df5$ps)
-df5 <- df5 %>% select(-c(chr, ps))
-plotting <- df5 %>% select(c(site, associated_trait, ends_with("AF"))) %>% pivot_longer(cols=c(F0_AF, F18_AF, F28_AF, F50_AF, F58_AF), values_to="allele_frequency", names_to="generation")
+rejoined <- rejoined %>% select(-c(chr, ps))
+plotting <- rejoined %>% select(c(site, associated_trait, ends_with("AF"))) %>% pivot_longer(cols=c(F0_AF, F18_AF, F28_AF, F50_AF, F58_AF), values_to="allele_frequency", names_to="generation")
 plotting$generation <- as.numeric(gsub("F(\\d+)_AF", "\\1", plotting$generation))
 
 # there's one site in common between fecundity and flowering time, 
