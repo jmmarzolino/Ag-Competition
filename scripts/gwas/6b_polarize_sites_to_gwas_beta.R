@@ -147,16 +147,39 @@ ggsave("trait_assoc_sites_allele_freq_over_gens_trait_faceted.png", g2, height=7
 
 
 ##    now plot just generations F18 to F58...
-plotting2 <- plotting %>% filter(generation != 0)
-g <- ggplot(plotting2, aes(x=generation, y=allele_frequency, group=tmp, color=associated_trait)) + 
-  geom_point(alpha=0.4) + geom_line(alpha=0.4) +
-  theme_bw() +
-  labs(x="Generation", y="Allele Frequency", title="Allele Frequency over Generation", subtitle="site frequency polarized to trait increase", color="Associated Trait")
-ggsave("trait_assoc_sites_allele_freq_over_gens_18to58.png", g, width=8, height=7)
+#plotting2 <- plotting %>% filter(generation != 0)
+#g <- ggplot(plotting2, aes(x=generation, y=allele_frequency, group=tmp, color=associated_trait)) + 
+#  geom_point(alpha=0.4) + geom_line(alpha=0.4) +
+#  theme_bw() +
+#  labs(x="Generation", y="Allele Frequency", title="Allele Frequency over Generation", subtitle="site frequency polarized to trait increase", color="Associated Trait")
+#ggsave("trait_assoc_sites_allele_freq_over_gens_18to58.png", g, width=8, height=7)
 
-g2 <- ggplot(plotting2, aes(x=generation, y=allele_frequency, group=site)) + 
+#g2 <- ggplot(plotting2, aes(x=generation, y=allele_frequency, group=site)) + 
+# geom_point(alpha=0.4) + geom_line(alpha=0.4) + 
+# facet_wrap(~associated_trait) +
+# theme_bw() +
+# labs(x="Generation", y="Allele Frequency", title="Allele Frequency over Generation", subtitle="site frequency polarized to trait increase")
+#ggsave("trait_assoc_sites_allele_freq_over_gens_trait_faceted_18to58.png", g2, height=7, width=5.5*3)
+
+# reload list of significant sites
+sig_sites <- fread("gwas_top_sites.tsv")
+# this time, keep only significant sites (remove suggestive sites)
+sig_sites <- sig_sites %>% filter(sig_or_suggestive == "sig_site")
+# format sites to match plotting...
+sig_sites$site <- paste0(sig_sites$chr, ":", sig_sites$ps)
+
+sig_sites %>% filter(p_lrt <= 5e-07)
+sig_sites %>% filter(p_lrt <= 5e-06)
+
+# select the list of sites from your significant site list
+sigs <- sig_sites$site
+
+# filter polarized data set to only significant sites
+plot_sigs <- plotting %>% filter(site %in% sigs)
+# plot allele freq over time with only significant/stronlgy suggestive? sites
+g3 <- ggplot(plot_sigs, aes(x=generation, y=allele_frequency, group=site)) + 
  geom_point(alpha=0.4) + geom_line(alpha=0.4) + 
  facet_wrap(~associated_trait) +
  theme_bw() +
  labs(x="Generation", y="Allele Frequency", title="Allele Frequency over Generation", subtitle="site frequency polarized to trait increase")
-ggsave("trait_assoc_sites_allele_freq_over_gens_trait_faceted_18to58.png", g2, height=7, width=5.5*3)
+ggsave("trait_assoc_sites_allele_freq_over_gens_trait_faceted_onlygwassignificantsites.png", g3, height=7, width=5.5*1)
