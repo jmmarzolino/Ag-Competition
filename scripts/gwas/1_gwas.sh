@@ -150,17 +150,48 @@ sbatch --array=1-$ARRAY_LIM /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_clumped_indv_sites_manhattan.R
 
 
-# make a list of significant snps, top 5%, 1%, and 0.1% of snps from each gwas association file
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5d_extract_leading_snps.R
+## calculate LD
+## plot LD decay around lead snps
 
+# plot chr 4 peak and vrn h2
+# zoom in view of chr 4 & 5 regions
+# snp effect of lead snps
+
+## FT allele freq over time, using only main snps
+
+# pull the full gwas info (position, p-val, beta) for site identified in clumping
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6_format_clumped_sites_for_AFchange.R
+
+
+
+## calculate LD for all sites
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6_calc_LD_for_top_sites.sh
+
+# filter the LD output to r2 vals of top sites
+# extract the SNP list from all 3 clumped files and copy them into a new, one col list/file
+awk '{print $3}' ASSOC_6_lmm.assoc.clumped | head -n-2 > top_sites.txt
+awk '{print $3}' ASSOC_7_lmm.assoc.clumped | tail -n+2 | head -n-2 >> top_sites.txt
+awk '{print $3}' ASSOC_8_lmm.assoc.clumped | tail -n+2 | head -n-2 >> top_sites.txt
+
+## plot LD decay around peak snps
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/000_LD_plot.R
+
+
+
+
+
+### ALLELE FREQUENCIES
 # extract allele counts for all sites from progeny sequencing
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6_pull_AC.sh
 
-# calculate allele frequncy for each generation based on allele counts; filter non-segregating sites
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6b_segregating_sites_AF.R
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6b_polarize_sites_to_gwas_beta.R
+
+### test genome sites for significant changes in allele frequency between generations (0-18, 18-58)
+# actually need to troubleshoot it for 0-18 period...
+# and plot distributions of allele change btwn generations
 
 # test site allele counts for significant differences between generations F18 and F58; calculate allele frequency change for those sites; plot allele frequency spectra & distribution of change in allele frequency; list which allele (A1, A2) is beneficial
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6b_sig_allele_change_sites.R
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6b_test_for_sig_allele_change_sites.R
 
 ## filter the genotype file before reading into R
 ## by limiting the number of sites
