@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-#SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/plotting/5_extract_SIGandTOP_sites_across_traits.stdout
+#SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5_extract_SIGandTOP_sites_across_traits.stdout
 #SBATCH --ntasks=1
 #SBATCH --mem=64gb
 #SBATCH -t 01:30:00
