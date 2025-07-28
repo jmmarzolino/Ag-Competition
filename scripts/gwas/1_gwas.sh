@@ -150,6 +150,19 @@ sbatch --array=1-$ARRAY_LIM /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_clumped_indv_sites_manhattan.R
 
 
+
+
+## FT allele freq over time, using only main snps
+# pull the full gwas info (position, p-val, beta) for site identified in clumping
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_format_clumped_sites_for_AFchange.R
+
+
+
+
+
+
+
+
 ## calculate LD
 ## plot LD decay around lead snps
 
@@ -157,10 +170,12 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_clumped_indv_sites
 # zoom in view of chr 4 & 5 regions
 # snp effect of lead snps
 
-## FT allele freq over time, using only main snps
 
-# pull the full gwas info (position, p-val, beta) for site identified in clumping
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6_format_clumped_sites_for_AFchange.R
+
+
+
+
+
 
 
 
