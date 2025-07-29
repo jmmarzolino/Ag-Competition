@@ -14,7 +14,6 @@ plink --allow-extra-chr \
 --allow-no-sex \
 --double-id \
 --maf 0.01 \
-#--keep AgComp_genotypes.tsv \
 --set-missing-var-ids @:#$1,$2 \
 --vcf combined_filt.vcf.gz \
 --r2 gz --ld-window-r2 0 --ld-window 10000 \
