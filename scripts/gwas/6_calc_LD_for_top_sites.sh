@@ -3,6 +3,7 @@
 #SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6_calc_LD_for_top_sites.stdout
 #SBATCH --ntasks=14
 #SBATCH --mem=100G
+#SBATCH --time=4:00:00
 #SBATCH -p koeniglab
 
 cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
