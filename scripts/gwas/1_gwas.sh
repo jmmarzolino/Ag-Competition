@@ -82,7 +82,7 @@ plink --allow-extra-chr \
 --indiv-sort f AgComp_genotypes.tsv \
 --make-bed \
 --out all_traits \
---set-missing-var-ids @:#$1,$2 \
+--set-missing-var-ids @:# \
 --vcf combined_filt.vcf.gz
 
 
