@@ -85,12 +85,6 @@ addPlot <- function(FileName){
 
 # set variables
 #df <- read.table(args[1])
-lst <- phenotype_names$file
-test <- lapply(lst, addPlot)
-
-pdf("GWAS_manhattan.pdf")
-marrangeGrob(grobs=test, nrow=2, ncol=1)
-dev.off()
 
 lst_lmm <- phenotype_names$file_lmm
 test_lmm <- lapply(lst_lmm, addPlot)
