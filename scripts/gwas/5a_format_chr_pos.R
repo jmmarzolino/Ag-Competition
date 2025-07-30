@@ -12,15 +12,6 @@ options(stringsAsFactors = F)
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 
-### Fill/Update variant ID column (col 2) with the combination of chr and position
-# read in bim file
-bim <- read_delim("all_traits.bim", "\t", col_names=F)
-# make 2nd col a combo of chr and position
-bim$X2 <- paste0(bim$X1,"_", bim$X4)
-# write bim file out
-write_delim(bim, "all_traits.bim", "\t", col_names=F)
-
-
 ############################################################
 ############################################################
 ### Read gwas results (ASSOC files), extract 4 columns, write out
@@ -50,5 +41,5 @@ format_assoc <- function(filename){
 
 
 # set variables
-lst <- c(assoc_files_list$file, assoc_files_list$file_lmm)
+lst <- c(assoc_files_list$file_lmm)
 lapply(lst, format_assoc)
