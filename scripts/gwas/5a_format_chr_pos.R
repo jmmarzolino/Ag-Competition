@@ -31,7 +31,7 @@ format_assoc <- function(filename){
   df <- fread(filename)
 
   # make a table w the columns CHR, SNP (variant ID), BP (position on chr), P (association p-value)
-  x <- tibble(CHR=df$chr, SNP=paste(df$chr, df$ps, sep="_"), BP=df$ps, P=df$p_lrt)
+  x <- tibble(CHR=df$chr, SNP=paste(df$chr, df$ps, sep=":"), BP=df$ps, P=df$p_lrt)
   # p_wald, p_lrt, p_score
 
   filename_out <- gsub("txt", "tmp", filename)
