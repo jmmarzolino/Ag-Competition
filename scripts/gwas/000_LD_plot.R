@@ -6,61 +6,102 @@
 #SBATCH -p short
 
 library(tidyverse)
+library(gridExtra)
 library(data.table)
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 source("../../scripts/CUSTOM_FNS.R")
+# manhattan plots, zoomed in on specific peak, and points colored by LD with peak site
 
+
+# load LD measures
 ld <- fread("LD_10kbwin.ld.gz")
-sites <- fread("top_sites.txt")$SNP
 
-# format LD files SNP cols to match site list
-ld$SNP_A <- gsub("(chr\\dH):(\\d+),", "\\1_\\2", ld$SNP_A)
-ld$SNP_B <- gsub("(chr\\dH):(\\d+),", "\\1_\\2", ld$SNP_B)
+# load top sites list & their gwas info
+sites <- fread("top_sites.txt")$SNP
+sites2 <- fread("gwas_top_sites.tsv")
+#setdiff(sites, sites2$rs) # check for diffs in list of clump sites
+
+# read in file connecting file name/number and trait
+files <- fread("association_files_traits.txt")
+files$trait_names <- tidy_text_substitution(files$trait_names)
+
 
 # loop over each top site and plot the LD
-for(i in 1:length(sites)){
+addPlot <- function(site){
 
-    x <- sites[i]
+    # filter LD file to R2 value of each site vs focal site
+    tmp <- ld %>% filter(SNP_A == site)
 
-    # filter ld file to the site
-    ld_filt <- ld %>% filter(SNP_A %in% x)
+    # now that all data is related to that focal site, remove the "A" site columns
+    tmp <- tmp %>% select(-c("CHR_A", "BP_A", "SNP_A"))
+    # and replace col names
+    colnames(tmp) <- gsub("(\\w+)_B", "\\1", colnames(tmp))
 
-    # print average LD over chromosome
-    print(mean(ld_filt$R2))
-    print(quantile(ld_filt$R2))
+    # pull the trait associated w the top site
+    gwas_data <- sites2 %>% filter(site == rs)
+    gwas_file <- unlist(files[which(files$trait_names == gwas_data$associated_trait), 4])
+    full_gwas <- fread(gwas_file)
 
-    # make heatmap plot
-    tit <- paste0(x, " LD")
-    g <- ggplot(ld_filt, aes(x=SNP_A, y=SNP_B, fill=R2)) + geom_tile() + labs(title=tit) + 
-    scale_fill_gradient2(low="lightblue", high="darkblue", 
-        midpoint=0.5, 
-        breaks=seq(0,1,0.25), #breaks in the scale bar
-        limits=c(0, 1))
+    # filter full gwas file to sites +/- 100kb of top site
+    site_chr <- gsub("(chr\\dH):\\d+", "\\1", site)
+    site_bp <- as.numeric(gsub("chr\\dH:(\\d+)", "\\1", site))
+    max_bp <- site_bp + 200000
+    min_bp <- site_bp - 200000
 
-    # write out
-    ggsave(paste0("LD_heatmap_", i, ".png"), g)
+    site_region_gwas <- full_gwas %>% filter(chr == site_chr & ps <= max_bp & ps >= min_bp)
 
-    # make distribution of LD values?
-    h <- ggplot(ld_filt, aes(R2)) + geom_histogram()
-    ggsave(paste0("LD_hist_", i, ".png"), h)
+    ## combine R2 values w gwas sites
+    jnt <- full_join(site_region_gwas, tmp, by=c("chr"="CHR", "rs"="SNP", "ps"="BP"))
+
+    ## manhattan plot
+  # following code adapted from:
+    # https://www.r-graph-gallery.com/wp-content/uploads/2018/02/Manhattan_plot_in_R.html
+    # format for plotting
+    result <- jnt %>%
+      # Compute chromosome size
+      group_by(chr) %>%
+      summarise(chr_len = max(ps)) %>%
+      # Calculate cumulative position of each chromosome
+      mutate(tot = cumsum(as.numeric(chr_len))-as.numeric(chr_len)) %>%
+      select(-chr_len) %>%
+      # Add this info to the initial dataset
+      left_join(jnt, ., by=c("chr" = "chr")) %>%
+      # Add a cumulative position of each SNP
+      arrange(chr, ps) %>%
+      mutate(BPcum = ps+tot)
+
+    axisdf <- result %>% group_by(chr) %>% summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
+
+    threshold <- 0.05/nrow(full_gwas)
+
+    # mark the central snp...
+    centralsnp <- result[which(result$rs == site), BPcum]
+
+    # Manhattan plot
+    ggplot(result, aes(x=BPcum, y=-log10(p_lrt))) +
+        # Show all points
+        geom_point(aes(color=R2), size=1.3) +
+        geom_hline(aes(yintercept=-log10(threshold)), color = "firebrick1", linetype="dashed", alpha=0.7) +
+        geom_vline(aes(xintercept=centralsnp), color="dodgerblue", linetype="dashed", alpha=0.6) +
+        # custom X axis:
+        scale_x_continuous(label = axisdf$chr, breaks= axisdf$center) +
+        scale_y_continuous(expand = c(0, 0.5)) +     # remove space between plot area and x axis
+        # Custom theme:
+        theme_classic() +
+        theme(panel.border = element_blank(),
+              panel.grid.major.x = element_blank(),
+              panel.grid.minor.x = element_blank(),
+              text=element_text(size=16),
+              plot.title = element_text(size=12),
+              plot.subtitle = element_text(size=10)) +
+        xlab("Chromosome") +
+        ylab(expression(-log[10](italic(p))))
 }
 
+lst <- sites
+test <- lapply(lst, addPlot)
 
-
-
-## filter to top sites all at once
-ld_filt <- ld %>% filter(SNP_A %in% sites)
-
-print(mean(ld_filt$R2))
-print(quantile(ld_filt$R2))
-
-m <- ggplot(ld_filt, aes(x=SNP_A, y=SNP_B, fill=R2)) + 
-    geom_tile() + 
-    labs(title=tit) + 
-    scale_fill_gradient2(low="lightblue", high="darkblue", 
-        midpoint=0.5, 
-        breaks=seq(0,1,0.25), #breaks in the scale bar
-        limits=c(0, 1))
-
-ggsave("LD_heatmap_all.png", m)
+pdf("LD_decay_manhattans.pdf")
+marrangeGrob(grobs=test, nrow=2, ncol=1)
+dev.off()
