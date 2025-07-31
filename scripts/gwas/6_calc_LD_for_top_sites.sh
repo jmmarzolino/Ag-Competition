@@ -17,7 +17,7 @@ plink --allow-extra-chr \
 --set-missing-var-ids @:# \
 --vcf combined_filt.vcf.gz \
 --ld-snp-list top_sites.txt \
---r2 gz --ld-window-r2 0 --ld-window 100 --ld-window-kb 100 \
+--r2 gz --ld-window-r2 0 --ld-window 1000 --ld-window-kb 5000 \
 --out LD_10kbwin
 
 #--set-missing-var-ids @_# 
