@@ -43,11 +43,11 @@ addPlot <- function(site){
     gwas_file <- unlist(files[which(files$trait_names == gwas_data$associated_trait), 4])
     full_gwas <- fread(gwas_file)
 
-    # filter full gwas file to sites +/- 100kb of top site
+    # filter full gwas file to sites +/- 500kb of top site
     site_chr <- gsub("(chr\\dH):\\d+", "\\1", site)
     site_bp <- as.numeric(gsub("chr\\dH:(\\d+)", "\\1", site))
-    max_bp <- site_bp + 200000
-    min_bp <- site_bp - 200000
+    max_bp <- site_bp + 500000
+    min_bp <- site_bp - 500000
 
     site_region_gwas <- full_gwas %>% filter(chr == site_chr & ps <= max_bp & ps >= min_bp)
 
@@ -83,9 +83,9 @@ addPlot <- function(site){
         # Show all points
         geom_point(aes(color=R2), size=1.3) +
         geom_hline(aes(yintercept=-log10(threshold)), color = "firebrick1", linetype="dashed", alpha=0.7) +
-        geom_vline(aes(xintercept=centralsnp), color="dodgerblue", linetype="dashed", alpha=0.6) +
+        #geom_vline(aes(xintercept=centralsnp), color="dodgerblue", linetype="dashed", alpha=0.6) +
         # custom X axis:
-        scale_x_continuous(label = axisdf$chr, breaks= axisdf$center) +
+        scale_x_continuous(label = c((centralsnp-500000), centralsnp, (centralsnp+500000)), breaks= c((centralsnp-500000), centralsnp, (centralsnp+500000))) +
         scale_y_continuous(expand = c(0, 0.5)) +     # remove space between plot area and x axis
         # Custom theme:
         theme_classic() +
@@ -95,7 +95,7 @@ addPlot <- function(site){
               text=element_text(size=16),
               plot.title = element_text(size=12),
               plot.subtitle = element_text(size=10)) +
-        xlab("Chromosome") +
+        xlab(gsub("chr(\\d)H", "Chromosome \\1", axisdf$chr)) +
         ylab(expression(-log[10](italic(p))))
 }
 
