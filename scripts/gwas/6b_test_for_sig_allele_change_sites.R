@@ -73,18 +73,18 @@ print((nrow(df[which(df$chi_p <= (0.05/nrow(df))),]))/nrow(df))
 
 ### polarize progeny frequencies to parental minor allele frequency
 # split df by parental minor allele 1 or 2
-MAFA1 <- df2[which(df2$F0_AF < 0.5), ]
+MAFA1 <- df[which(df$F0_AF < 0.5), ]
 print("num of minor allele 1")
 print(dim(MAFA1)[1])
-MAFA2 <- df2[which(df2$F0_AF > 0.5), ]
+MAFA2 <- df[which(df$F0_AF > 0.5), ]
 print("num of minor allele 2")
 print(dim(MAFA2)[1])
 
 # invert AF to alt allele frequency if A1 is major
 MAFA2[,11:13] <- 1-MAFA2[,11:13]
 # label which allele is parental minor
-MAFA1$minor_allele <- 1
-MAFA2$minor_allele <- 2
+MAFA1$minor_allele <- 0
+MAFA2$minor_allele <- 1
 # put df back together, in order
 minor <- bind_rows(MAFA1, MAFA2)
 minor <- minor[order(minor$CHR, minor$BP),]
@@ -176,15 +176,10 @@ sum(changed$inc_or_dec)
 table(changed$inc_or_dec)
 
 # if freq inc, A1 is the beneficial allele
-changed$beneficial_allele <- "A1"
-# so if inc_or_dec col is = -1, change "A1" to "A2"
-changed[which(changed$inc_or_dec==-1), ncol(changed)] <- "A2"
+changed$beneficial_allele <- "A0"
+# so if inc_or_dec col is = -1, change "A0" to "A1"
+changed[which(changed$inc_or_dec==-1), ncol(changed)] <- "A1"
 
 # join sig changed sites with neutral sites
 m2 <- full_join(df, changed)
 write_delim(m2, "sig_AF_change_test.tsv")
-
-
-# filter to relevant sites
-AF <- fread("A1_allele_freqs.tsv") %>% select(-c(F28_AF, F50_AF))
-df <- right_join(df, AF, by=c("CHR", "BP", "A1", "A2"))
