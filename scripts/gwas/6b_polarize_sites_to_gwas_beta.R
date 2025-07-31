@@ -137,6 +137,11 @@ g <- ggplot(plotting, aes(x=generation, y=allele_frequency, group=tmp, color=ass
   labs(x="Generation", y="Allele Frequency", title="Allele Frequency over Generation", subtitle="site frequency polarized to trait increase", color="Associated Trait")
 ggsave("trait_assoc_sites_allele_freq_over_gens.png", g, width=8, height=7)
 
+
+# update the levels of associated trait as a factor to make plotting order of traits consistent
+plotting$associated_trait <- factor(plotting$associated_trait,  # Change ordering manually
+levels = c("Flowering Time", "100-Seed Weight", "Fecundity"))
+
 g2 <- ggplot(plotting, aes(x=generation, y=allele_frequency, group=site)) + 
  geom_point(alpha=0.4) + geom_line(alpha=0.4) + 
  facet_wrap(~associated_trait) +
