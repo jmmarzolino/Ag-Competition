@@ -117,6 +117,9 @@ ARRAY_LIM=$(tail -n +2 trait_name_to_col_numbers.tsv | wc -l | cut -d\  -f1)
 # genotype-phenotype association
 sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_univariate_association_array.sh
 
+# list association files output by gwas
+ls ASSOC_*.assoc.txt > all_assoc_files.txt
+
 # and gwas with all the traits
 #sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/3_multivariate_association.sh 
 ### proglem w correlated traits, pca? kinship matrix?
@@ -139,7 +142,6 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5a_format_chr_pos.R
 
 
 # clump gwas results
-ls ASSOC_*.assoc.txt > all_assoc_files.txt
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5b_clump_sig_regions.sh
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_clumped_sites_manhattan.R
 
@@ -151,24 +153,9 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_clumped_indv_sites
 
 
 
-
-## FT allele freq over time, using only main snps
-# pull the full gwas info (position, p-val, beta) for site identified in clumping
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_format_clumped_sites_for_AFchange.R
-
-
-
-
-
-
-
-
-## calculate LD
-## plot LD decay around lead snps
-
-# plot chr 4 peak and vrn h2
-# zoom in view of chr 4 & 5 regions
-# snp effect of lead snps
+### zoom in view of chr 4 & 5 regions
+# plot chr 4 peak and vrn-h2
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/000_zoom_in_manhattans.R
 
 
 
@@ -177,29 +164,48 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_format_clumped_sit
 
 
 
-
-
-## calculate LD for all sites
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6_calc_LD_for_top_sites.sh
-
-# filter the LD output to r2 vals of top sites
+### plot LD decay around lead snps
+## filter the LD output to r2 vals of top sites
 # extract the SNP list from all 3 clumped files and copy them into a new, one col list/file
 awk '{print $3}' ASSOC_6_lmm.assoc.clumped | head -n-2 > top_sites.txt
 awk '{print $3}' ASSOC_7_lmm.assoc.clumped | tail -n+2 | head -n-2 >> top_sites.txt
 awk '{print $3}' ASSOC_8_lmm.assoc.clumped | tail -n+2 | head -n-2 >> top_sites.txt
+#awk '{print $3}' ASSOC_6_lmm.assoc.clumped | tail -n+2 > ft.peaks
+# this set of sites will be used for filtering the total list of LD 
 
-## plot LD decay around peak snps
+# calculate LD for all sites & for list of top sites
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6_calc_LD_for_top_sites.sh
+
+## filter LD list to top sites & plot LD decay around peak snps
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/000_LD_plot.R
 
 
 
 
 
+
+
+
+
+
+
 ### ALLELE FREQUENCIES
+
+## plot FT allele freq over time, using only main snps
+# pull the full gwas info (position, p-val, beta) for site identified in clumping
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_format_clumped_sites_for_AFchange.R
+
+
+
 # extract allele counts for all sites from progeny sequencing
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6_pull_AC.sh
 
+
+
+
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6b_polarize_sites_to_gwas_beta.R
+
+
 
 ### test genome sites for significant changes in allele frequency between generations (0-18, 18-58)
 # actually need to troubleshoot it for 0-18 period...
@@ -217,6 +223,7 @@ awk '{print $1"\t"$3}' gwas_top_sites.tsv | tail -n+2 > top_sites.tsv
 bcftools view --regions-file top_sites.tsv combined_filt.vcf.gz -o top_sites.vcf
 bcftools query -f '%CHROM\t%POS[\t%GT]\n' top_sites.vcf | sed -e s:"0|0":0:g -e s:"0|1":1:g -e s:"1|0":1:g -e s:"1|1":2:g -e s:"\.|\.":NA:g > top_sites.gt
 
+# snp effect of lead snps
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6c_plot_top_sites_allele_effect.R
 
 
@@ -249,11 +256,9 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison
 
 
 
-####
+#### SPARE SCRIPT BITTTTTSS
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7_count_sig_regions.R
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7_sig_sites_over_traits.R
-
-
 
 # pull allele counts from vcf
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/8a_pull_AC.sh
@@ -262,11 +267,6 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/8a_pull_AC.sh
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/8b_IPK_segregating_sites_AF.R
 # investigate genome sites w significant chang in allele counts
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/8b_sig_allele_change_sites.R
-
-
-# plot allele frequency spectra for all sites & for sites identified as significant from gwas
-## match starting allele frequencies for sites associated w traits & randomly sample them to create neutral comparison sets
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/8c_site_sampling.R
 
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/8d_plot_AFS.R
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/8d_plot_deltaAF.R
