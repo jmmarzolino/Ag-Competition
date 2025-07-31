@@ -18,7 +18,7 @@ source("../../scripts/CUSTOM_FNS.R")
 ## read in all sites' allele frequencies
 df <- fread("all_sites_allele_freqs.tsv")
 ## should already be filtered to the right columns
-df$snp <- paste0(df$CHR, "_", df$BP)
+df$snp <- paste0(df$CHR, ":", df$BP)
 
 
 ## polarize all sites to the BENEFICIAL allele (F18 to F58 rather than starting w F0...)
@@ -40,7 +40,6 @@ df2 <- bind_rows(dfa1, dfa2)
 ## and filter them to their own dataset
 # load associated sites list
 all_sig <- fread("gwas_top_sites.tsv")
-all_sig$rs <- paste0(all_sig$chr, "_", all_sig$ps)
 
 trait_assoc_sites <- df2 %>% filter(snp %in% all_sig$rs)
 neutral_sites <- df2 %>% filter(!(snp %in% all_sig$rs))
