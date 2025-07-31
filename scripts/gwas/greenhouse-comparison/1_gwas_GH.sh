@@ -38,7 +38,7 @@ cat exp_common_genos | awk '{$1=$1}{print $1" "$1}' > exp_common_genos2
 
 # create plink format files from vcf (bed, bim, fam)
 module load plink/1.90b6.25
-VCF="../imputed_filter.recode.vcf"
+VCF="../combined_filt.vcf.gz"
 
 plink --allow-extra-chr \
 --allow-no-sex \
@@ -48,7 +48,7 @@ plink --allow-extra-chr \
 --indiv-sort f exp_common_genos2 \
 --make-bed \
 --out gh_field_compare \
---set-missing-var-ids @:#$1,$2 \
+--set-missing-var-ids @:# \
 --vcf $VCF
 
 ### format fam file with phenotypes from greenhouse experiment
