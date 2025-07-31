@@ -47,7 +47,7 @@ plink --allow-extra-chr \
 --keep exp_common_genos2 \
 --indiv-sort f exp_common_genos2 \
 --make-bed \
---out gh_field_compare \
+--out gh \
 --set-missing-var-ids @:# \
 --vcf $VCF
 
@@ -63,17 +63,17 @@ plink --allow-extra-chr \
 --keep exp_common_genos2 \
 --vcf $VCF \
 --pca 10 \
---out gh_field_compare_pca
+--out gh_pca
 
 # cut only eigenvec values from file; ensure proper formatting of value-tab-value (awk reconstitutes all fields)
-cut -d" " -f3- gh_field_compare_pca.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\t"$0}' > pca.txt
+cut -d" " -f3- gh_pca.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\t"$0}' > pca.txt
 # awk prints col of "1" \t eigenvecs
 # command removes genotype IDs from first two cols, replaces w one col of 1 gemma can use (1 in first col indicates non-missing/included data I believe)
 
 
 # Relatedness Matrix
 module load gemma/0.98.5
-/rhome/jmarz001/software/gemma0.98.5 -bfile gh_field_compare -gk 1 -outdir output -o related_matrix 
+/rhome/jmarz001/software/gemma0.98.5 -bfile gh -gk 1 -outdir output -o related_matrix 
 #-miss 1 -notsnp
 
 
