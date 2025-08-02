@@ -362,6 +362,19 @@ random_sample_neutral_F0 <- neutral_site_AF(sample_sites=sfq0, sample_freqs= neu
 #random_sample_neutral_F18 <- neutral_site_AF(sample_sites=sfq18, sample_freqs= neutral_sites, freq_sample_numbers=pop_freqs$F18_bins, EARLY=18, LATE=58)
 
 write_delim(random_sample_neutral_F0, "neutral_sites_sampled.tsv", "\t")
+
+# bin the list of allele frequencies
+bin_F18_neu <- binning(random_sample_neutral_F0[,1])
+bin_F58_neu <- binning(random_sample_neutral_F0[,2])
+
+# join all generations freq binned table
+neutral_pop_freqs <- tibble('bins'=bins, 'F18_neutral_sampled'=bin_F18_neu, 'F58_neutral_sampled'=bin_F58_neu)
+
+# check number of sites binned matches...
+colSums(neutral_pop_freqs[,2:ncol(neutral_pop_freqs)])
+# write out
+fwrite(neutral_pop_freqs, "neutral_sites_sampled_binned.tsv")
+
 #write_delim(random_sample_neutral_F18, "neutral_sites_sampled_F18.tsv", "\t")
 # the average change in allele frequency
 # for sites with the same starting allele frequency
