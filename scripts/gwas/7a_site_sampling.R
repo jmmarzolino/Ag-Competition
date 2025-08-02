@@ -23,18 +23,22 @@ df$snp <- paste0(df$CHR, ":", df$BP)
 
 ## polarize all sites to the BENEFICIAL allele (F18 to F58 rather than starting w F0...)
 # which is the one which increases freq over gens
-# do that for all sites
-df$beneficial_allele <- "A1"
+# allele freqs *at this point* are A0/(A0+A1)
 
+# default beneficial allele is A0
+df$beneficial_allele <- "A0"
+# calculate change in allele freq over progeny generations
 x <- round(df$F58_AF - df$F18_AF, 4)
-dfa1 <- df[which(x >= 0), ]
-dfa2 <- df[which(x < 0), ]
-# sites w beneficial allele 2...
-dfa2$beneficial_allele <- "A2"
-dfa2[, 5:9] <- 1 - (dfa2[, 5:9])
+# divide data based on allele freq change being positive or negative
+dfa0 <- df[which(x >= 0), ]
+dfa1 <- df[which(x < 0), ]
+# if the change in AF is negative, then beneficial allele is A1
+dfa1$beneficial_allele <- "A1"
+# polarize AF so freq is A1 / (A0+A1)
+dfa1[, 5:9] <- 1 - (dfa1[, 5:9])
 
 # stitch data sets back together
-df2 <- bind_rows(dfa1, dfa2)
+df2 <- bind_rows(dfa0, dfa1)
 
 ## then pull sites associated w traits
 ## and filter them to their own dataset
