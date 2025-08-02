@@ -12,7 +12,8 @@ p_load(tidyverse, data.table, gridExtra, ggsci, ggpubr, Cairo)
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 source("../../scripts/CUSTOM_FNS.R")
 
-neutral_sampled <- fread("neutral_sites_sampled.tsv")
+#neutral_sampled <- fread("neutral_sites_sampled.tsv")
+neutral_sampled <- fread("neutral_sites_sampled_binned.tsv")
 pop_freqs <- fread("gwas_sites_pop_freq_binned.tsv")
 pop_freqs_neutral <- fread("neutral_sites_pop_freq_binned.tsv")
 
