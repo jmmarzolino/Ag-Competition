@@ -23,10 +23,10 @@ df <- df %>% select(c(CHR, BP, A1, A2, F0A1, F0A2, F18A1, F18A2, F58A1, F58A2))
 # then run loop to format matrix of counts and test for sig diffs
 df$chi_p_18_58 <- 1
 for(i in 1:nrow(df)){
-  F18A1 <- df[[i, 5]]
-  F18A2 <- df[[i, 6]]
-  F58A1 <- df[[i, 7]]
-  F58A2 <- df[[i, 8]]
+  F18A1 <- df[i, F18A1]
+  F18A2 <- df[i, F18A2]
+  F58A1 <- df[i, F58A1]
+  F58A2 <- df[i, F58A2]
 
   x <- matrix(c(F18A1, F18A2, F58A1, F58A2), nrow=2)
   dimnames(x) <- list(allele=c("A1", "A2"),
@@ -34,17 +34,17 @@ for(i in 1:nrow(df)){
 
   y <- chisq.test(x)$p.value
   #y <- fisher.test(x)$p.value
-  df[[i, ncol(df)]] <- y
+  df[i, 'chi_p_18_58'] <- y
 }
 
 # test for signifcant difference in allele counts between parents and F18 generation
 # add another p-value column
 df$chi_p_0_18 <- 1
 for(i in 1:nrow(df)){
-  F0A1 <- df[[i, 5]]
-  F0A2 <- df[[i, 6]]
-  F18A1 <- df[[i, 7]]
-  F18A2 <- df[[i, 8]]
+  F0A1 <- df[i, F0A1]
+  F0A2 <- df[i, F0A2]
+  F18A1 <- df[i, F18A1]
+  F18A2 <- df[i, F18A2]
 
   x <- matrix(c(F0A1, F0A2, F18A1, F18A2), nrow=2)
   dimnames(x) <- list(allele=c("A1", "A2"),
@@ -52,32 +52,15 @@ for(i in 1:nrow(df)){
 
   y <- chisq.test(x)$p.value
   #y <- fisher.test(x)$p.value
-  df[[i, ncol(df)]] <- y
+  df[i, 'chi_p_0_18'] <- y
 }
 
-
-# write out results of chi-sq tests
-fwrite(df, "chisq_allele_freq_change_results.tsv")
-
-
-print("number of sites w significant (p<0.05) allele change")
-print("between F18 and F58")
-print(nrow(df[which(df$chi_p_18_58 <= 0.05),]))
-print("between parents and F18")
-print(nrow(df[which(df$chi_p_0_18 <= 0.05),]))
 
 print("fraction of sites w sig changed allele frequencies")
 print("between F18 and F58")
 print((nrow(df[which(df$chi_p_18_58 <= 0.05),])) / nrow(df))
 print("between parents and F18")
 print((nrow(df[which(df$chi_p_0_18 <= 0.05),])) / nrow(df))
-
-
-print("number of sites w significant (p< bonferroni) allele change")
-print("between F18 and F58")
-print(nrow(df[which(df$chi_p_18_58 <= (0.05/nrow(df))),]))
-print("between parents and F18")
-print(nrow(df[which(df$chi_p_0_18 <= (0.05/nrow(df))),]))
 
 print("fraction of sites w sig changed allele frequencies")
 print("between F18 and F58")
