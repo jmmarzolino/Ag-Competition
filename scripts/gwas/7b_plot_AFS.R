@@ -87,7 +87,7 @@ df <- full_join(pop_freqs, pop_freqs_neutral)
 combo <- df %>% pivot_longer(cols=c(-bins), names_to="group")
 combo$group <- as.factor(combo$group)
 combo$group <- factor(combo$group,  # Change ordering manually
-levels = c("F0_bins", "F18_bins", "F18_bins_neutral", "F58_bins", "F58_bins_neutral"))
+levels = c("F0_bins", "F0_bins_neutral", "F18_bins", "F18_bins_neutral", "F58_bins", "F58_bins_neutral"))
 
 
 #### bar plots comparing groups w their neutral match
@@ -126,6 +126,7 @@ dev.off()
 ######### at least** here is where you need the neutrally sampled sites lists!!!
 ## all gwas and neutral generations (P, F0, F18)
 combo_afs <- combo %>%
+  filter(group != "F0_bins_neutral") %>%
   ggplot(aes(x=bins, y=value, fill=group)) +
         geom_bar(stat='identity', position='dodge', width=0.7) +
         theme_classic(base_size=20) +
