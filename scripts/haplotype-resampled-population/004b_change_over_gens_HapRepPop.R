@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 #SBATCH --mem=32G
 #SBATCH --time=01:00:00
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/004b_change_over_gens_HapRepPop.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/haplotype-resampled-population/004b_change_over_gens_HapRepPop.stdout
 #SBATCH -p koeniglab
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
@@ -106,7 +106,7 @@ var_tab <- tibble("trait"=collist, "all_gens"=as.numeric(NA), "F1_F18"=as.numeri
 for(i in collist){
   #print(i)
   k <- leveneTest(get(i) ~ as.factor(Generation), hap)$`Pr(>F)`[1]
-  tmp1 <- hap %>% filter(Generation == 1 | Generation == 18)
+  tmp1 <- hap %>% filter(Generation == 0 | Generation == 18)
   tmp2 <- hap %>% filter(Generation == 18 | Generation == 58)
   m <- leveneTest(get(i) ~ as.factor(Generation), tmp1)$`Pr(>F)`[1]
   n <- leveneTest(get(i) ~ as.factor(Generation), tmp2)$`Pr(>F)`[1]
@@ -169,7 +169,7 @@ signif_tab <- tibble("trait"=collist, "F1_F18"=as.numeric(NA), "F18_F58"=as.nume
 
 for(i in 1:length(signif_tab$trait)){
   # filter to only relevant generations
-  tmp1 <- hap %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 1)
+  tmp1 <- hap %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 0)
   tmp2 <- hap %>% select(c(all_of(i), Generation)) %>% filter(Generation == 18 | Generation == 58)
 
   res1 <- kruskal.test(unlist(tmp1[,1]) ~ Generation, tmp1)

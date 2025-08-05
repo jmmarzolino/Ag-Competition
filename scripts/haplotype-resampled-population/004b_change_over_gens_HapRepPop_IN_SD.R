@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 #SBATCH --mem=32G
 #SBATCH --time=01:00:00
-#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/004b_change_over_gens_HapRepPop_IN_SD.stdout
+#SBATCH --output=/rhome/jmarz001/bigdata/Ag-Competition/scripts/haplotype-resampled-population/004b_change_over_gens_HapRepPop_IN_SD.stdout
 #SBATCH -p koeniglab
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
