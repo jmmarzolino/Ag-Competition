@@ -26,3 +26,9 @@ PHENO_NAME="ASSOC_${COL}"
 
 # univariate linear MIXED model
 /rhome/jmarz001/software/gemma0.98.5 -bfile "$GENO" -k "$KINSHIP" -c "$PCS" -lmm 4 -n $SLURM_ARRAY_TASK_ID -outdir . -o ${PHENO_NAME}_lmm -debug
+
+
+## adding another quick gwas with only greenhouse results
+PHENO_NAME_GHONLY="ASSOC_GH_${COL}_lmm"
+
+/rhome/jmarz001/software/gemma0.98.5 -bfile gh_only -k output/related_matrix_gh_only.cXX.txt -c gh_only_pca.txt -lmm 4 -n $SLURM_ARRAY_TASK_ID -outdir . -o $PHENO_NAME -debug
