@@ -15,10 +15,10 @@ source("../../../scripts/CUSTOM_FNS.R")
 
 # load file with trait names and combine
 phenotype_names <- read_delim("CCII_GH_trait_file_nums.tsv", col_names=T)
-phenotype_names <- phenotype_names[which(phenotype_names$trait_names %in% c("Mass_100","Seed_Estimate", "Flowering_2018_Median", "Flowering_days_2017")), ]
+phenotype_names <- phenotype_names[which(phenotype_names$trait_names %in% c("Mass_100","Seed_Estimate", "Flowering_2018_Median", "Flowering_days_2017", "avg_FT")), ]
 
 field_exp <- read_delim("../trait_name_to_col_numbers.tsv", col_names=T)
-field_exp <- field_exp[which(field_exp$trait_names %in% c("SEED_WEIGHT_100", "FECUNDITY", "FT", "FT")), ]
+field_exp <- field_exp[which(field_exp$trait_names %in% c("SEED_WEIGHT_100", "FECUNDITY", "FT")), ]
 
 
 
@@ -37,7 +37,6 @@ addPlot <- function(FileName, TraitName, Experiment){
 
   # parse locus
   names(df)[1] <- "CHR"
-  df$CHR <- gsub("(chr\\w+)_\\w+_\\d+", "\\1", df$CHR)
 
   # following code adapted from:
     # https://www.r-graph-gallery.com/wp-content/uploads/2018/02/Manhattan_plot_in_R.html
@@ -96,9 +95,9 @@ addPlot <- function(FileName, TraitName, Experiment){
 # set variables
 # manually compile matched lists of traits & files
 matched_exp_ft <- tibble(
-          "experiment"=c("field", "greenhouse", "greenhouse") ,
-          "trait"=c("FT", "Flowering_days_2017", "Flowering_2018_Median") , 
-          "file"=c("../ASSOC_6_lmm.assoc.txt", "ASSOC_12_lmm.assoc.txt", "ASSOC_13_lmm.assoc.txt")
+          "experiment"=c("field", "greenhouse", "greenhouse", "greenhouse") ,
+          "trait"=c("FT", "Flowering_days_2017", "Flowering_2018_Median", "avg_FT") , 
+          "file"=c("../ASSOC_6_lmm.assoc.txt", "ASSOC_10_lmm.assoc.txt", "ASSOC_11_lmm.assoc.txt", "ASSOC_12_lmm.assoc.txt")
           )
 
 matched_exp_fec <- tibble(
