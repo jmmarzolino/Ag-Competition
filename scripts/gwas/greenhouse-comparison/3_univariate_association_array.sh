@@ -10,7 +10,7 @@
 cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas/CCII_greenhouse_exp_gwas
 
 # define variables
-GENO=gh
+GENO=exp_common
 KINSHIP=output/related_matrix.cXX.txt
 PCS=pca.txt
 COL=$(expr $SLURM_ARRAY_TASK_ID + 5)

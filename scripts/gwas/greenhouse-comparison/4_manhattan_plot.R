@@ -52,7 +52,7 @@ addPlot <- function(FileName){
       arrange(chr, BP) %>%
       mutate(BPcum = BP+tot)
 
-    #result <- result %>% filter(-log10(p_lrt)>2)
+    result <- result %>% filter(-log10(p_lrt)>2)
     axisdf <- result %>% group_by(chr) %>% summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
 
     # Manhattan plot

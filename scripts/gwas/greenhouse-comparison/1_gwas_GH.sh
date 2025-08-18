@@ -23,14 +23,8 @@ cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas/CCII_greenhouse_exp_gwas
 #FINAL_PROGENY_RAD.vcf: The unimputed progeny calls
 #############################################################################
 
-#module load vcftools/0.1.16-18
-module load bcftools/1.19
-
 # make list of genotypes in both experiments
-sub /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/2a_list_common_genotypes.R
-# format indv list for plink
-cat exp_common_genos | awk '{$1=$1}{print $1" "$1}' > exp_common_genos2
-
+sub /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/2a_list_genotypes.R
 
 #CCII_GH_trait_file_nums.tsv  
 #CCII_Raw_phenotype_data.txt  
@@ -44,10 +38,21 @@ plink --allow-extra-chr \
 --allow-no-sex \
 --double-id \
 --maf 0.01 \
---keep exp_common_genos2 \
---indiv-sort f exp_common_genos2 \
+--keep GH_genos \
+--indiv-sort f GH_genos \
 --make-bed \
---out gh \
+--out gh_only \
+--set-missing-var-ids @:# \
+--vcf $VCF
+
+plink --allow-extra-chr \
+--allow-no-sex \
+--double-id \
+--maf 0.01 \
+--keep exp_common_genos \
+--indiv-sort f exp_common_genos \
+--make-bed \
+--out exp_common \
 --set-missing-var-ids @:# \
 --vcf $VCF
 
@@ -55,26 +60,37 @@ plink --allow-extra-chr \
 
 #### add phenotypes to .fam file
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/2b_joining_exp_phenotypes.R
+sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/2b_join_GH_phenos.R
 
 # make pca covar file
 plink --allow-extra-chr \
 --allow-no-sex \
 --double-id \
---keep exp_common_genos2 \
+--keep exp_common_genos \
 --vcf $VCF \
 --pca 10 \
---out gh_pca
+--out exp_common_pca
+
+plink --allow-extra-chr \
+--allow-no-sex \
+--double-id \
+--keep GH_genos \
+--vcf $VCF \
+--pca 10 \
+--out gh_only_pca
 
 # cut only eigenvec values from file; ensure proper formatting of value-tab-value (awk reconstitutes all fields)
-cut -d" " -f3- gh_pca.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\t"$0}' > pca.txt
+cut -d" " -f3- exp_common_pca.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\t"$0}' > exp_common_pca.txt
+cut -d" " -f3- gh_only_pca.eigenvec | awk '{OFS="\t"};{$1=$1}{print 1"\t"$0}' > gh_only_pca.txt
 # awk prints col of "1" \t eigenvecs
 # command removes genotype IDs from first two cols, replaces w one col of 1 gemma can use (1 in first col indicates non-missing/included data I believe)
 
 
 # Relatedness Matrix
 module load gemma/0.98.5
-/rhome/jmarz001/software/gemma0.98.5 -bfile gh -gk 1 -outdir output -o related_matrix 
+/rhome/jmarz001/software/gemma0.98.5 -bfile exp_common -gk 1 -outdir output -o related_matrix 
 #-miss 1 -notsnp
+/rhome/jmarz001/software/gemma0.98.5 -bfile gh_only -gk 1 -outdir output -o related_matrix_gh_only
 
 
 # GWAS
@@ -91,10 +107,4 @@ sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gw
 # plot results
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/4_manhattan_plot.R
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/4_manhattan_plot_cross_exp_plots.R
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/5_cross_exp_trait_pair_gwas_sites.R
-
-
-### filter vcf file to indvs used in greenhouse experiment
-bcftools query -f '%CHROM\t%POS\n' PROGENY.vcf > CALLED_POS.txt
-bcftools query -f '[\t%GT]\n' imputed_filter.vcf.gz | sed -e s:"0/0":0:g -e s:"0/1":1:g -e s:"1/1":2:g -e s:"\./\.":NA:g > imputed_filter.gt
-
+##sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/5_cross_exp_trait_pair_gwas_sites.R
