@@ -1,8 +1,8 @@
 #!/usr/bin/env Rscript
 #SBATCH --job-name=gwas
 #SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/4_manhattan_plot.stdout
-#SBATCH --mem=40G
-#SBATCH -t 02:00:00
+#SBATCH --mem=100G
+#SBATCH -t 04:00:00
 #SBATCH -p koeniglab
 
 # Manhattan plots of GEMMA results
@@ -12,10 +12,6 @@ options(stringsAsFactors = F)
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas/CCII_greenhouse_exp_gwas")
 source("../../../scripts/CUSTOM_FNS.R")
-
-# load file with trait names
-phenotype_names <- read_delim("CCII_GH_trait_file_nums.tsv", col_names=T)
-
 
 addPlot <- function(FileName){
   # look up file name in df that connects trait name and file
@@ -52,7 +48,7 @@ addPlot <- function(FileName){
       arrange(chr, BP) %>%
       mutate(BPcum = BP+tot)
 
-    result <- result %>% filter(-log10(p_lrt)>2)
+    result <- result %>% filter(-log10(p_lrt)>3)
     axisdf <- result %>% group_by(chr) %>% summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
 
     # Manhattan plot
@@ -80,10 +76,13 @@ addPlot <- function(FileName){
     #print(g)
 }
 
+
+# load file with trait names
+phenotype_names <- read_delim("CCII_exp_common_trait_file_nums.tsv", col_names=T)
 lst_lmm <- phenotype_names$file_lmm
 test_lmm <- lapply(lst_lmm, addPlot)
 
-pdf("GH_GWAS_manhattan_lmm.pdf")
+pdf("exp_common_GWAS_manhattan_lmm.pdf")
 marrangeGrob(grobs=test_lmm, nrow=2, ncol=1)
 dev.off()
 
@@ -91,6 +90,7 @@ dev.off()
 phenotype_names <- read_delim("CCII_GH_only_trait_file_nums.tsv", col_names=T)
 lst_lmm <- phenotype_names$file_lmm
 test_lmm <- lapply(lst_lmm, addPlot)
+
 pdf("GH_only_GWAS_manhattan_lmm.pdf")
 marrangeGrob(grobs=test_lmm, nrow=2, ncol=1)
 dev.off()
