@@ -62,7 +62,7 @@ addPlot <- function(FileName){
         geom_hline(aes(yintercept=-log10(threshold)), color = "firebrick1", linetype="dashed", alpha=0.7) +
         scale_color_manual(values = rep(c("dodgerblue4", "deepskyblue"), 22 )) +
         # custom X axis:
-        scale_x_continuous(label = axisdf$CHR, breaks= axisdf$center) +
+        scale_x_continuous(label = axisdf$chr, breaks= axisdf$center) +
         scale_y_continuous(expand = c(0, 0.5)) +     # remove space between plot area and x axis
         # Custom theme:
         theme_classic() +
