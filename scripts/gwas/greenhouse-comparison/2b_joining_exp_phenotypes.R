@@ -35,5 +35,5 @@ write_delim(join, "exp_common.fam", delim=" ", col_names=F)
 #trait_n <- read_delim("trait_name_to_col_numbers.tsv")
 trait_n2 <- tibble("trait_names"=colnames(gh)[2:ncol(gh)])
 trait_n2$trait_num <- (1:nrow(trait_n2))+5
-trait_n2$file_lmm <- paste0("ASSOC_exp_common", trait_n2$trait_num, "_lmm", ".assoc.txt")
+trait_n2$file_lmm <- paste0("ASSOC_exp_common_", trait_n2$trait_num, "_lmm", ".assoc.txt")
 write_delim(trait_n2, "CCII_exp_common_trait_file_nums.tsv")
