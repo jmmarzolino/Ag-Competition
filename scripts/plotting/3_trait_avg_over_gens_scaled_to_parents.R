@@ -27,7 +27,7 @@ parent_stats <- df %>%
                    .names = "{.col}_{.fn}"))
 
 # list trait columns
-trait_cols <- c("FT", "TOTAL_MASS", "SEED_WEIGHT_100", "MASS_PER_PLANT", "Germination", "FECUNDITY")
+trait_cols <- c("FT", "SEED_WEIGHT_100", "FECUNDITY")
 
 # z-scale the phenotypes with parent stats
 parent_scaled <- df
@@ -60,4 +60,4 @@ a <- ggplot(df_long) +
       facet_wrap(~TRAIT) +
       theme_bw(base_size=20) +
       labs(x = "Generation", y = "") 
-ggsave("results/trait_over_generations_parent_scaled.png", a, width = (7*3)+2, height = (7*2)+2)
+ggsave("results/trait_over_generations_parent_scaled.png", a, width = (7*3)+2, height = (7*1)+2)
