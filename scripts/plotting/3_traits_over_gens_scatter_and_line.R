@@ -32,29 +32,11 @@ a <- ggplot() +
       theme_bw(base_size=16) +
       labs(x = "Generation", y = tidy_text_substitution("FT"), title="Flowering Time over Generations") 
 
-b <- ggplot(df) + 
-      geom_jitter(aes(x=Generation, y=TOTAL_MASS), alpha=0.7) +
-      geom_line(data=gen_men, aes(x=Generation, y=TOTAL_MASS), color="darkblue", linewidth=1) + 
-      theme_bw(base_size=16) +
-      labs(x = "Generation", y = tidy_text_substitution("TOTAL_MASS"), title="Total Seed Weight over Generations") 
-
 c <- ggplot(df) + 
       geom_jitter(aes(x=Generation, y=SEED_WEIGHT_100), alpha=0.7) +
       geom_line(data=gen_men, aes(x=Generation, y=SEED_WEIGHT_100), color="darkblue", linewidth=1) + 
       theme_bw(base_size=16) +
       labs(x = "Generation", y = tidy_text_substitution("SEED_WEIGHT_100"), title="Mass per 100-seeds over Generations") 
-
-d <- ggplot() + 
-      geom_jitter(data=df, aes(x=Generation, y=MASS_PER_PLANT), alpha=0.7) + 
-      geom_line(data=gen_men, aes(x=Generation, y=MASS_PER_PLANT), color="darkblue", linewidth=1) + 
-      theme_bw(base_size=16) +
-      labs(x = "Generation", y = tidy_text_substitution("MASS_PER_PLANT"), title="Genotype Mass per Plant over Generations") 
-
-e <- ggplot() + 
-      geom_jitter(data=df, aes(x=Generation, y=Germination), alpha=0.7) + 
-      geom_line(data=gen_men, aes(x=Generation, y=Germination), color="darkblue", linewidth=1) + 
-      theme_bw(base_size=16) +
-      labs(x = "Generation", y = tidy_text_substitution("Germination"), title="Seed Germination over Generations") 
 
 f <- ggplot() + 
       geom_jitter(data=df, aes(x=Generation,y=FECUNDITY), alpha=0.7) + 
@@ -62,9 +44,8 @@ f <- ggplot() +
       theme_bw(base_size=16) +
       labs(x = "Generation", y = tidy_text_substitution("FECUNDITY"), title="Genotype Fecundity over Generations") 
 
-
-ggcombo <- ggarrange(a, b, c, d, e, f, ncol=3, nrow=2)
-h <- (7 * 2) + 2
-w <- (8.5 * 3) + 2
+ggcombo <- ggarrange(a, c, f, ncol=3, nrow=1)
+h <- (7 * 1) + 2
+w <- (7.25 * 3) + 2
 
 ggsave("results/traits_over_generations_scatterplots.png", ggcombo, width = w, height = h)
