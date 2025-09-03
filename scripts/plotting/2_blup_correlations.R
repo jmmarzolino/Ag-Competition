@@ -28,6 +28,15 @@ x$TRAIT <- colnames(x)
 write_delim(tibble(x), "correlation_table.tsv", "\t")
 
 
+# test minimal trait correlations with spearmans rho
+# and output p-values
+cor.test(df$FT, df$SEED_WEIGHT_100, method="spearman") %>% print
+#getOption("na.action")
+#na.action = c('no.omit', 'na.fail', 'na.exclude', 'na.pass')
+cor.test(df$FT, df$FECUNDITY, method="spearman") %>% print
+cor.test(df$FECUNDITY, df$SEED_WEIGHT_100, method="spearman") %>% print
+
+
 # plot trait relationships 
 png("blup_correlations.png")
 corrplot(x_cor, method="color", type="upper", order="original", title="", mar=c(0,0,4,0), addCoef.col = "black", tl.col = "black")
