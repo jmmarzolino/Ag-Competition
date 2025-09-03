@@ -30,10 +30,8 @@ adjusted_blues <- brewer.pal(7, "Blues")[3:7]
 # round trait blups as a way of binning to common values
 df_rnd <- df
 df_rnd$FT <- round(df$FT, 2)
-df_rnd$Germination <- round(df$Germination, 3)
 df_rnd$FECUNDITY <- round(df$FECUNDITY)
-df_rnd$MASS_PER_PLANT <- round(df$MASS_PER_PLANT)
-
+df_rnd$SEED_WEIGHT_100 <- round(df$SEED_WEIGHT_100, 2)
 
 ### find the most common phenotypes for early and late generations
 # ft
@@ -41,21 +39,15 @@ F18 <- as.numeric(names(sort(table(df_rnd[which(df_rnd$Generation==18), which(co
 F58 <- as.numeric(names(sort(table(df_rnd[which(df_rnd$Generation==58), which(colnames(df_rnd)=="FT")]), decreasing=T)[1:5]))
 FT_cmn <- tibble(F18, F58) %>% pivot_longer(names_to="Generation", cols=everything())
 
-# germination
-F18 <- as.numeric(names(sort(table(df_rnd[which(df_rnd$Generation==18), which(colnames(df_rnd)=="Germination")]), decreasing=T)[1:5]))
-F58 <- as.numeric(names(sort(table(df_rnd[which(df_rnd$Generation==58), which(colnames(df_rnd)=="Germination")]), decreasing=T)[1:5]))
-GM_cmn <- tibble(F18, F58) %>% pivot_longer(names_to="Generation", cols=everything())
-
 # fecundity
 F18 <- as.numeric(names(sort(table(df_rnd[which(df_rnd$Generation==18), which(colnames(df_rnd)=="FECUNDITY")]), decreasing=T)[1:5]))
 F58 <- as.numeric(names(sort(table(df_rnd[which(df_rnd$Generation==58), which(colnames(df_rnd)=="FECUNDITY")]), decreasing=T)[1:5]))
 FEC_cmn <- tibble(F18, F58) %>% pivot_longer(names_to="Generation", cols=everything())
 
-# mass per plant
-F18 <- as.numeric(names(sort(table(df_rnd[which(df_rnd$Generation==18), which(colnames(df_rnd)=="MASS_PER_PLANT")]), decreasing=T)[1:5]))
-F58 <- as.numeric(names(sort(table(df_rnd[which(df_rnd$Generation==58), which(colnames(df_rnd)=="MASS_PER_PLANT")]), decreasing=T)[1:5]))
-MASSPER_cmn <- tibble(F18, F58) %>% pivot_longer(names_to="Generation", cols=everything())
-
+# 100 seed weight
+F18 <- as.numeric(names(sort(table(df_rnd[which(df_rnd$Generation==18), which(colnames(df_rnd)=="SEED_WEIGHT_100")]), decreasing=T)[1:5]))
+F58 <- as.numeric(names(sort(table(df_rnd[which(df_rnd$Generation==58), which(colnames(df_rnd)=="SEED_WEIGHT_100")]), decreasing=T)[1:5]))
+SW_cmn <- tibble(F18, F58) %>% pivot_longer(names_to="Generation", cols=everything())
 
 
 ## plot trait distributions
@@ -68,15 +60,14 @@ ggplot() +
   theme_bw(base_size=18) +
   guides(color = "none")
 
-
-b <- 
+b <-
 ggplot() +
-  geom_density(data=df, aes(Germination), linewidth=1) +
-  geom_vline(data=GM_cmn, aes(xintercept=value, color=Generation), linewidth=1) +
+  geom_density(data=df, aes(SEED_WEIGHT_100), linewidth=1) +
+  geom_vline(data=SW_cmn, aes(xintercept=value, color=Generation), linewidth=1) +
   scale_color_manual(values=c("#6BAED6", "#084594")) + 
-  labs(x="", y="density", title="Germination Distribution", subtitle="with most common values colored") +
-  theme_bw(base_size=18)
-
+  labs(x="", y="density", title="100-Seed Weight Distribution", subtitle="with most common values colored") +
+  theme_bw(base_size=18) +
+  guides(color = "none")
 
 c <-
 ggplot() +
@@ -87,16 +78,5 @@ ggplot() +
   theme_bw(base_size=18) +
   guides(color = "none")
 
-
-d <- 
-ggplot() +
-  geom_density(data=df, aes(MASS_PER_PLANT), linewidth=1) +
-  geom_vline(data=MASSPER_cmn, aes(xintercept=value, color=Generation), linewidth=1) +
-  scale_color_manual(values=c("#6BAED6", "#084594")) + 
-  labs(x="", y="density", title="Mass Per Plant Distribution", subtitle="with most common values colored") +
-  theme_bw(base_size=18) +
-  guides(color = "none")
-
-
-plots <- ggarrange(a, b, c, d)
+plots <- ggarrange(a, b, c)
 ggsave("results/trait_distributions_GenCmnValLine.png", plots)
