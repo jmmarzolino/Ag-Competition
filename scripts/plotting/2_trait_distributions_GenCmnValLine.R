@@ -17,9 +17,6 @@ source("scripts/CUSTOM_FNS.R")
 df <- read_delim("data/trait_BLUPs.tsv")
 df <- add_generation(df)
 
-# filter trait w/out any variance
-df <- df %>% select(-SEED_WEIGHT_100)
-
 # the lowest color value is too light, so adjust the color scale down one
 #display.brewer.pal(6, "Blues")
 adjusted_blues <- brewer.pal(7, "Blues")[3:7]
