@@ -79,6 +79,31 @@ joind <- full_join(df, allAF, by=c("CHR", "BP", "A1"="A0", "A2"="A1"))
 fwrite(df, "chisq_allele_freq_change_results.tsv")
 
 # filter lines to sites w significant AF change 
-joind <- joind %>% filter(chi_p_0_18 <= (0.05/nrow(df) | chi_p_18_58 <= (0.05/nrow(df))))
+thresh <- 0.05/(nrow(df))
+# make one file for each significant generation period
+df2 <- df %>% filter(chi_p_0_18 <= thresh | chi_p_18_58 <= thresh)
+print('number of sites where either time period has significant changes:'); print(nrow(df2))
+
+joindearly <- df %>% filter(chi_p_0_18 <= thresh)
+joindlate <- df %>% filter(chi_p_18_58 <= thresh)
+
 # and write out
-fwrite(joind, "chisq_allele_freq_change_results_sig.tsv")
+fwrite(joindearly, "chisq_allele_freq_change_results_sig_earlygens.tsv")
+fwrite(joindlate, "chisq_allele_freq_change_results_sig_lategens.tsv")
+
+
+joinddearly <- df %>% filter(chi_p_0_18 <= thresh & chi_p_18_58 <= thresh)
+
+fwrite(joinddearly, "chisq_allele_freq_change_results_sig_bothgens.tsv")
+
+
+
+## read in list of suggestive sites and filter to see if any/all of them have chi-sq test significant allele freq change over gens
+# list of top sites
+top <- fread("gwas_top_sites.tsv")
+
+tiptop <- left_join(top, df, by=c("chr"="CHR", "ps"="BP"))
+tiptop$P_18_58_sig <- tiptop$chi_p_18_58 <= thresh 
+tiptop$P_0_18_sig <- tiptop$chi_p_0_18 <= thresh 
+
+tiptop %>% filter(sig_or_suggestive == "sig_site")
