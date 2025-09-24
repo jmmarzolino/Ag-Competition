@@ -173,7 +173,9 @@ sig_sites <- sig_sites %>% filter(sig_or_suggestive == "sig_site")
 # format sites to match plotting...
 sig_sites$site <- paste0(sig_sites$chr, ":", sig_sites$ps)
 
+print("sites w p-val below 5e-07")
 sig_sites %>% filter(p_lrt <= 5e-07)
+print("sites w p-val below 5e-06")
 sig_sites %>% filter(p_lrt <= 5e-06)
 
 # select the list of sites from your significant site list
