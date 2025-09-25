@@ -190,4 +190,4 @@ g3 <- ggplot(plot_sigs, aes(x=generation, y=allele_frequency, group=site)) +
  theme_bw() +
  ylim(c(0,1)) +
  labs(x="Generation", y="Allele Frequency", title="Allele Frequency over Generation", subtitle="site frequency polarized to trait increase")
-ggsave("trait_assoc_sites_allele_freq_over_gens_trait_faceted_onlygwassignificantsites.png", g3, height=7, width=7*2.1)
+ggsave("trait_assoc_sites_allele_freq_over_gens_trait_faceted_onlygwassignificantsites.png", g3, height=7, width=14)
