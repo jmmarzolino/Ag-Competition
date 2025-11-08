@@ -90,6 +90,36 @@ plink --allow-extra-chr \
 #### add phenotypes to .fam file
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/2_phenotypes.R
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+#################
+module load plink 
+plink --r2 square --distance square
+
+cd ~/bigdata/BARLEY_CCII_FULL/DATA/OUTPUT/PLINK
+plink --set-missing-var-ids @:# --allow-extra-chr --allow-no-sex --double-id --make-bed --out plink_file_noprune --vcf ../FULL_PARENTAL_VCF/FINAL_FILTER.vcf.gz --distance square
+
+plink --indep-pairwise 100 20 .5 --maf .05 --set-missing-var-ids @:# --allow-extra-chr --allow-no-sex --double-id --make-bed --out plink_file --vcf ../FULL_PARENTAL_VCF/FINAL_FILTER.vcf.gz --distance square --pca 25
+
+plink --set-missing-var-ids @:# --maf .05 --allow-extra-chr --allow-no-sex --double-id --extract plink_file.prune.in --make-bed --out plink_file_prune --vcf ../FULL_PARENTAL_VCF/FINAL_FILTER.vcf.gz --distance square --pca 25
+
+
+
+
+
+
+
 # make pca covar file
 plink --allow-extra-chr \
 --allow-no-sex \
