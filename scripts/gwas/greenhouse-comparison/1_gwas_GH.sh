@@ -96,7 +96,7 @@ module load gemma/0.98.5
 # GWAS
 # set number of univariate gwas to run based on
 # the number of traits in trait-gwas number file
-ARRAY_LIM=$(tail -n +2 CCII_GH_trait_file_nums.tsv | wc -l | cut -d\  -f1)
+ARRAY_LIM=$(tail -n +2 CCII_exp_common_trait_file_nums.tsv | wc -l | cut -d\  -f1)
 # genotype-phenotype association
 sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/3_univariate_association_array.sh
 
@@ -106,5 +106,5 @@ sbatch --array=1-$ARRAY_LIM%10 /rhome/jmarz001/bigdata/Ag-Competition/scripts/gw
 
 # plot results
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/4_manhattan_plot.R
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/4_manhattan_plot_cross_exp_plots.R
+#sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/4_manhattan_plot_cross_exp_plots.R
 ##sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/5_cross_exp_trait_pair_gwas_sites.R
