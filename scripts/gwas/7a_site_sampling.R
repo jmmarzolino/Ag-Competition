@@ -379,3 +379,131 @@ fwrite(neutral_pop_freqs, "neutral_sites_sampled_binned.tsv")
 # the average change in allele frequency
 # for sites with the same starting allele frequency
 # randomly sample 1000 times to simulate the random probability paths of frequency changes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+######################################
+# binning function - modified for change in allele frequency
+binning_neg <- function(x) {
+    bins = c(-0.05, -0.1, -0.15, -0.2, -0.25, -0.3, -0.35, -0.4, -0.45, -0.5, -0.55, -0.6, -0.65, -0.7, -0.75, -0.8, -0.85, -0.9, -0.95, -1.0, 0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0)
+
+    a = 0
+    b = 0
+    c = 0
+    d = 0
+    e = 0
+    f = 0
+    g = 0
+    h = 0
+    i = 0
+    j = 0
+    k = 0
+    l = 0
+    m = 0
+    n = 0
+    o = 0
+    p = 0
+    q = 0
+    r = 0
+    s = 0
+    t = 0
+    u = 0
+    zero = 0
+    aa = 0
+    bb = 0 
+    cc = 0
+    dd = 0
+    ee = 0
+    ff = 0
+    gg = 0
+    hh = 0 
+    ii = 0
+    jj = 0
+    kk = 0
+    ll = 0
+    mm = 0
+    nn = 0
+    oo = 0
+    pp = 0
+    qq = 0
+    rr = 0
+    ss = 0
+    tt = 0
+    uu = 0
+
+      for(row in 1:nrow(x)) {
+          # take in the frequency, put it in a bin
+          Line = x[row, 1]
+
+          #if(Line == bins[1]) {
+          #  zero = zero + 1
+          #} else if(Line >= bins[1] & Line < bins[2]) {
+          if(Line >= bins[1] & Line < bins[2]) {
+            a = a +1
+          } else if(Line >= bins[2] & Line < bins[3]) {
+            b = b +1
+          } else if(Line >= bins[3] & Line < bins[4]) {
+            c = c +1
+          } else if(Line >= bins[4] & Line < bins[5]) {
+            d = d +1
+          } else if(Line >= bins[5] & Line < bins[6]) {
+            e = e +1
+          } else if(Line >= bins[6] & Line < bins[7]) {
+            f = f +1
+          } else if(Line >= bins[7] & Line < bins[8]) {
+            g = g +1
+          } else if(Line >= bins[8] & Line < bins[9]) {
+            h = h +1
+          } else if(Line >= bins[9] & Line < bins[10]) {
+            i = i +1
+          } else if(Line >= bins[10] & Line < bins[11]) {
+            j = j +1
+          } else if(Line >= bins[11] & Line < bins[12]) {
+            k = k +1
+          } else if(Line >= bins[12] & Line < bins[13]) {
+            l = l +1
+          } else if(Line >= bins[13] & Line < bins[14]) {
+            m = m +1
+          } else if(Line >= bins[14] & Line < bins[15]) {
+            n = n +1
+          } else if(Line >= bins[15] & Line < bins[16]) {
+            o = o +1
+          } else if(Line >= bins[16] & Line < bins[17]) {
+            p = p +1
+          } else if(Line >= bins[17] & Line < bins[18]) {
+            q = q +1
+          } else if(Line >= bins[18] & Line < bins[19]) {
+            r = r +1
+          } else if(Line >= bins[19] & Line < bins[20]) {
+            s = s +1
+          } else if(Line >= bins[20] & Line <= bins[21]) {
+            t = t +1
+          } else {
+            u = u+1
+          }
+    }
+    # for frequency divide bins by lines
+    hist <- c(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t) #, u) #, zero)
+    #hist <- hist/dim(x)[1]
+    return(hist)
+}
+
+bin_delta018_neu <- binning(random_sample_neutral_F0[,3])
+bin_delta1858_neu <- binning(random_sample_neutral_F0[,4])
+bin_absdelta018_neu <- binning(random_sample_neutral_F0[,5])
+bin_absdelta1858_neu <- binning(random_sample_neutral_F0[,6])
+
+('delta018_neutral_sampled'=bin_delta018_neu, 'delta1858_neutral_sampled'=bin_delta1858_neu, 'abs_delta018_neutral_sampled'=bin_absdelta018_neu, 'abs_delta1858_neutral_sampled'=bin_absdelta1858_neu)
