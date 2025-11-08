@@ -1,48 +1,70 @@
 #!/usr/bin/env Rscript
-
 #SBATCH --job-name=gwas
 #SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7b_plot_deltaAF.stdout
 #SBATCH --ntasks=1
-#SBATCH --mem=80gb
-#SBATCH -t 10:00:00
+#SBATCH --mem=60gb
+#SBATCH -t 02:00:00
 #SBATCH -p koeniglab
 
 library(pacman)
 p_load(tidyverse, data.table, gridExtra, ggsci, ggpubr, Cairo)
 
-setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas/POP_AF")
-source("../../../scripts/standardize_trait_text_function.R")
+setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
+source("../../scripts/CUSTOM_FNS.R")
 
-# sites associated w sig traits = group 1
-sig <- fread("SigTraits_sites.tsv") %>% select(-c(chr, rs, ps))
-sig$delta_AF <- sig$F58_AF - sig$F18_AF
-sig_neu <- fread("SigTraits_neutral_sites.tsv")
 
-# sites associated w neutral traits = group 2
-traits <- fread("NeutralTraits_sites.tsv") %>% select(-c(chr, rs, ps))
-traits$delta_AF <- traits$F58_AF - traits$F18_AF
-traits_neu <- fread("AssocTraits_neutral_sites.tsv")
+## siggs sites, siggs generations, siggsele frequencies
+## read in siggs sites' siggsele frequencies
+df <- fread("siggs_sites_siggsele_freqs.tsv")
+## should already be filtered to the right columns
+df$snp <- paste0(df$CHR, "_", df$BP)
 
+## polarize siggs sites to the BENEFICIAL siggsele (F18 to F58 rather than starting w F0...)
+# which is the one which increases freq over gens
+# do that for siggs sites
+df$beneficial_siggsele <- "A1"
+
+x <- round(df$F58_AF - df$F18_AF, 4)
+dfa1 <- df[which(x >= 0), ]
+dfa2 <- df[which(x < 0), ]
+# sites w beneficial siggsele 2...
+dfa2$beneficial_siggsele <- "A2"
+dfa2[, 5:9] <- 1 - (dfa2[, 5:9])
+
+# stitch data sets back together
+df2 <- bind_rows(dfa1, dfa2)
+
+## then pull sites associated w traits
+## and filter them to their own dataset
+# load associated sites list
+siggs_sig <- fread("siggs_gwas_sig_sites.tsv")
+siggs_sig$rs <- paste0(siggs_sig$chr, "_", siggs_sig$ps)
+
+trait_assoc_sites <- df2 %>% filter(snp %in% siggs_sig$rs)
+neutral_sites <- df2 %>% filter(!(snp %in% siggs_sig$rs))
+
+# calculate change in siggsele freq between 0-18 and 18-58 for later...
+trait_assoc_sites$F0_F18_AF_delta <- trait_assoc_sites$F18_AF - trait_assoc_sites$F0_AF 
+trait_assoc_sites$F18_F58_AF_delta <- trait_assoc_sites$F58_AF - trait_assoc_sites$F18_AF
+
+
+neutral_sampled <- fread("neutral_sites_sampled.tsv")
 
 
 x <- tibble(freq_change = sig$delta_AF, group="sig_trait_sites", neutral=F)
 y <- tibble(freq_change = sig_neu$delta_AF_neutral, group="sig_trait_sites", neutral=T)
-w <- tibble(freq_change = traits$delta_AF, group="trait_assoc_sites", neutral=F)
-z <- tibble(freq_change = traits_neu$delta_AF_neutral, group="trait_assoc_sites", neutral=T)
+
 siggs <- bind_rows(x, y)
-figgs <- bind_rows(w, z)
 
-all <- bind_rows(siggs, figgs)
+siggs$neu2 <- gsub("TRUE", "_neutral", siggs$neutral)
+siggs$neu2 <- gsub("FALSE", "", siggs$neu2)
 
-all$neu2 <- gsub("TRUE", "_neutral", all$neutral)
-all$neu2 <- gsub("FALSE", "", all$neu2)
-
-all$combogroup <- paste(all$group, all$neu2, sep="")
-all$group2 <- factor(all$group, levels=c("sig_trait"))
+siggs$combogroup <- paste(siggs$group, siggs$neu2, sep="")
+siggs$group2 <- factor(siggs$group, levels=c("sig_trait"))
 
 
 # what is the mean, sd, and distribution of the three groups? that'll impact which statistic you use to determine if the 3 groups are from the same distribution or not
-all %>% group_by(group,neutral) %>% summarise('average change' = mean(freq_change), 'median change' = median(freq_change), 'standard dev'=sd(freq_change), 'max'=max(freq_change), 'min'=min(freq_change))
+siggs %>% group_by(group,neutral) %>% summarise('average change' = mean(freq_change), 'median change' = median(freq_change), 'standard dev'=sd(freq_change), 'max'=max(freq_change), 'min'=min(freq_change))
 
 
 
@@ -93,13 +115,13 @@ skewness(abs(traits$delta_AF))
 # for this question, it's one variable (snp source of delta AF) w 2 categories (associated sites vs neutral)
 # I think
 kruskal.test(list(sig$delta_AF, sig_neu$delta_AF_neutral))
-print("kruskal-wallis test p-value for: significant traits vs neutral sites")
+print("kruskal-wsiggsis test p-value for: significant traits vs neutral sites")
 print(kruskal.test(list(sig$delta_AF, sig_neu$delta_AF_neutral))$p.value)
 kruskal.test(list(abs(sig$delta_AF), abs(sig_neu$delta_AF_neutral)))
 
 
 kruskal.test(list(traits$delta_AF, traits_neu$delta_AF_neutral))
-print("kruskal-wallis test p-value for: -- traits vs neutral sites")
+print("kruskal-wsiggsis test p-value for: -- traits vs neutral sites")
 print(kruskal.test(list(traits$delta_AF, traits_neu$delta_AF_neutral))$p.value)
 kruskal.test(list(abs(traits$delta_AF), abs(traits_neu$delta_AF_neutral)))
 
@@ -107,11 +129,10 @@ kruskal.test(list(abs(traits$delta_AF), abs(traits_neu$delta_AF_neutral)))
 
 
 
-# plot distribution of direction and magnitude of allele freq change over generations
+# plot distribution of direction and magnitude of siggsele freq change over generations
 siggs$neutral <- factor(siggs$neutral, levels=c("TRUE", "FALSE"))
-figgs$neutral <- factor(figgs$neutral, levels=c("TRUE", "FALSE"))
 
-## plot distribution of allele freq changes
+## plot distribution of siggsele freq changes
 g <- ggplot(siggs) +
         geom_histogram(aes(freq_change, fill=neutral), binwidth=0.05, alpha=0.7) +
         xlim(c(-1,1)) +
@@ -120,16 +141,9 @@ g <- ggplot(siggs) +
         theme_bw(base_size=18) +
         theme(legend.position = "top")
 
-h <- ggplot(figgs) +
-        geom_histogram(aes(freq_change, fill=neutral), binwidth=0.05, alpha=0.7) +
-        xlim(c(-1,1)) +
-        labs(x="frequency change", title="Allele Frequency Change", subtitle="Sites Associated with Traits") +
-        scale_fill_discrete(name="", labels=c("trait associated sites", "neutral sample sites")) +
-        theme_bw(base_size=18) +
-        theme(legend.position = "top")
 
 png("deltaAF_hist_AssocSitesVNeutral.png", width=16, height=12, units="in", res=300)
-ggarrange(g, h)
+g
 dev.off()
 
 ## plot distribution & median, IQR, range of AF change
@@ -143,20 +157,12 @@ p <- ggplot(siggs, aes(x=neutral, y=freq_change)) +
         theme_bw(base_size=18) +
         theme(axis.text.x = element_text(angle=45, hjust=1))
 
-q <-  ggplot(figgs, aes(x=neutral, y=freq_change)) +
-        geom_violin() +
-        geom_boxplot(width=0.1, alpha=0.8) +
-        labs(title="Allele Frequency Change", subtitle="Sites Associated with Traits", y="Frequency Change") +
-        #scale_fill_discrete(name="", labels=c("trait associated sites", "neutral sample sites")) +
-        scale_x_discrete(name="", labels=c("trait associated sites", "neutral sample sites")) +
-        theme_bw(base_size=18) +
-        theme(axis.text.x = element_text(angle=45, hjust=1))
 png("deltaAF_boxplot_AssocSitesVNeutral.png", width=14, height=10, units="in", res=300)
-ggarrange(p, q)
+p
 dev.off()
 
 
-p <- ggplot(all, aes(y=freq_change, x=combogroup)) +
+p <- ggplot(siggs, aes(y=freq_change, x=combogroup)) +
       geom_violin(aes(fill=combogroup)) +
       guides(fill='none') +
       geom_boxplot(width=0.1, alpha=0.7) +
@@ -167,6 +173,6 @@ p <- ggplot(all, aes(y=freq_change, x=combogroup)) +
       labels = c("Significant Traits", "Significant-Traits Neutral", "Trait Associated", "Trait-Associated Neutral")) +
       labs(title="Allele Frequency Change", y="Frequency Difference", x="")
 
-png("deltaAF_boxplot_allgroups.png", width=6, height=8, units="in", res=300)
+png("deltaAF_boxplot_siggsgroups.png", width=6, height=8, units="in", res=300)
 p
 dev.off()
