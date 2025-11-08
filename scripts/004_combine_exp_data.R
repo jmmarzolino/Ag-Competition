@@ -58,13 +58,20 @@ ag[which(ag$gen > 10), 1] <- ag[which(ag$gen > 10), 5]
 
 ####    Join data
 # join data by genotypes in both data sets
-combo <- inner_join(ag, gh, by=c("Genotype"="Samples")) %>% select(-gen)
-write_delim(combo, "combined_CCII.tsv")
+common_join <- inner_join(ag, gh, by=c("Genotype"="Samples")) %>% select(-gen)
+write_delim(common_join, "combined_CCII.tsv")
+
+#
+add_join <- full_join(ag, gh, by=c("Genotype"="Samples")) %>% select(-gen)
 
 
 ####    Trait correlations
 # save table of trait correlation values
-x_cor <- cor(combo[,2:ncol(combo)], use="na.or.complete", method="spearman")
+x_cor <- cor(common_join[,2:ncol(common_join)], use="na.or.complete", method="spearman")
+
+y_cor <- cor(add_join[,2:ncol(add_join)], use="na.or.complete", method="spearman")
+x_cor==y_cor
+
 dimnames(x_cor)[[1]] <- tidy_text_substitution(dimnames(x_cor)[[1]])
 dimnames(x_cor)[[2]] <- tidy_text_substitution(dimnames(x_cor)[[2]])
 x <- data.table(x_cor)
@@ -74,7 +81,7 @@ write_delim(tibble(x), "over_exps_correlation_table.tsv", "\t")
 
 
 #####    Plotting
-#plot(combo[,2:10])
+#plot(common_join[,2:10])
 
 # trait pairs for plotting
 #"X100_seed_mass"="SEED_WEIGHT_100", 
