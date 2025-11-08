@@ -49,3 +49,9 @@ joined[which(joined$p_lrt <= bonn), ncol(joined)] <- "sig_site"
 
 # now save your resulting list of sites
 write_delim(joined, "gwas_top_sites.tsv")
+
+print(table(joined$associated_trait))
+print(table(joined$associated_trait, joined$sig_or_suggestive))
+
+repeated <- print(names(which(table(joined$rs)>1)))
+joined[which(rs %in% repeated), ]
