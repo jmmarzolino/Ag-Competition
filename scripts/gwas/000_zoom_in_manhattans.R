@@ -7,10 +7,46 @@
 
 library(tidyverse)
 library(data.table)
+library(qqman)
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 source("../../scripts/CUSTOM_FNS.R")
 # read in phenotypes file
+## 
+ft0 <- fread("ASSOC_6_lmm.assoc.txt")
+ft1 <- fread("ASSOC_6.assoc.clumped")[,1:11]
+
+# chr col needs to be numeric
+ft0$chr <- as.numeric(gsub("chr(\\d)H", "\\1", ft0$chr))
+
+# match format of snp columns
+ft0$rs <- gsub("(chr\\dH):(\\d+),", "\\1_\\2", ft0$rs)
+
+manhattan(ft0, chr="chr", bp="ps", snp="rs", p="p_lrt", highlight=ft1$SNP)
+manhattan(subset(ft0, chr==5), chr="chr", bp="ps", snp="rs", p="p_lrt", highlight=ft2$SNP, xlim=c(450000000, 550000000))
+
+manhattan(subset(ft0, chr==4), chr="chr", bp="ps", snp="rs", p="p_lrt", highlight=ft2$SNP, xlim=c(588000000, 592000000))
+
+annotatePval = 0.005, annotateTop = FALSE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 pheno <- fread("")
 
 for(i in 1:5){
@@ -35,15 +71,3 @@ for(i in 1:6){
 
   dev.off()
 }
-
-
-
-
-
-## 
-manhattan(subset(ft0, chr==5), chr="chr", bp="ps", snp="rs", p="p_lrt", highlight=ft2$SNP)
-manhattan(subset(ft0, chr==5), chr="chr", bp="ps", snp="rs", p="p_lrt", highlight=ft2$SNP, xlim=c(450000000, 550000000))
-
-manhattan(subset(ft0, chr==4), chr="chr", bp="ps", snp="rs", p="p_lrt", highlight=ft2$SNP, xlim=c(588000000, 592000000))
-
-annotatePval = 0.005, annotateTop = FALSE
