@@ -98,28 +98,37 @@ herit <- fread("trait_heritability.tsv")
 
 # write out one table with response & selection calculated for trait units & stand. dev.s
 rts <- responses_joined %>% pivot_longer(cols=-c(Generation), names_to='trait', values_to='response')
-herit_response <- full_join(herit, rts)
+rtsp <- rts[grep("Parents", rts$Generation), ]
+rts18 <- rts[grep("F58", rts$Generation), ]
 
-herit_response$selection_est <- herit_response$response / herit_response$H2
+##  calculate selection based on response and heritability calculated
+##  for the same time period
+
+# first, join period heritability to responses by trait name
+jntP <- full_join(rtsp, herit[,c(1,3)]) %>% mutate(selection=response/H2_parents)
+jnt18 <- full_join(rts18, herit[,c(1,4)]) %>% mutate(selection=response/H2_18)
+
+
+herit_response <- full_join(jntP, jnt18, by=c("Generation", "trait", "response", "selection", "H2_parents" = "H2_18"))
+colnames(herit_response)[grep("H2_parents", colnames(herit_response))] <- "H2"
+
 write_delim(herit_response, "trait_selection_ests.tsv", "\t")
 
 # plots comparing response & selection estimates with sd only
-rts <- resp_join_sd %>% pivot_longer(cols=-c(Generation), names_to='trait', values_to='response')
-herit_response <- full_join(herit, rts)
-herit_response$selection_est <- herit_response$response / herit_response$H2
+HRplot <- herit_response[grep("sd", herit_response$Generation), ]
 
 # tidy trait name text before plotting
-herit_response$trait <- tidy_text_substitution(herit_response$trait)
+HRplot$trait <- tidy_text_substitution(HRplot$trait)
 # and tidy generation text
-herit_response$Generation <- gsub("Parents_to_F18_sd", "Parents to F18", herit_response$Generation)
-herit_response$Generation <- gsub("F18_to_F58_sd", "F18 to F58", herit_response$Generation)
+HRplot$Generation <- gsub("Parents_to_F18_sd", "Parents to F18", HRplot$Generation)
+HRplot$Generation <- gsub("F18_to_F58_sd", "F18 to F58", HRplot$Generation)
 # re-order generation indicators 
-herit_response$Generation <- factor(herit_response$Generation, levels = c("Parents to F18", "F18 to F58"))
+HRplot$Generation <- factor(HRplot$Generation, levels = c("Parents to F18", "F18 to F58"))
 # re-order trait factor for facet plot order
-herit_response <- herit_response %>% mutate(trait = factor(trait, levels=c("Flowering Time", "100-Seed Weight", "Fecundity"))) 
+HRplot <- HRplot %>% mutate(trait = factor(trait, levels=c("Flowering Time", "100-Seed Weight", "Fecundity"))) 
 
 
-a <- ggplot(herit_response, aes(Generation, selection_est)) +
+a <- ggplot(HRplot, aes(Generation, selection)) +
   geom_point() +
   geom_hline(aes(yintercept=0), color="grey") +
   facet_wrap(~trait) +
@@ -128,7 +137,7 @@ a <- ggplot(herit_response, aes(Generation, selection_est)) +
 
 ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection_facet.png", a, height=7, width=7*3, units="in")
 
-a3 <- ggplot(herit_response, aes(Generation, selection_est, color=trait, group=trait)) +
+a3 <- ggplot(HRplot, aes(Generation, selection, color=trait, group=trait)) +
   geom_point() +
   geom_line() +
   labs(y="selection estimate", x="time span", title="Selection between Generations") +
