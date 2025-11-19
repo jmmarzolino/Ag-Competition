@@ -20,6 +20,10 @@ pheno <- read_delim("DERIVED_PHENOTYPES.tsv")
     #mutate(across(-c(Genotype, Generation, Replicate, Germination), ~(scale(.) %>% as.vector)))
 pheno$Exp_year <- as.factor(pheno$Exp_year)
 
+pheno_gen <- add_generation(pheno)
+phenop <- pheno_gen %>% filter(Generation == 0)
+pheno18 <- pheno_gen %>% filter(Generation == 18)
+
 # init pdf to store plot outputs
 pdf("heritability_model_fits.pdf", width=20, height=10)
 
@@ -31,12 +35,27 @@ H2cal(data = pheno
           , rep.n = 2
           , year.n = 2
           , year.name = "Exp_year"
-          , fixed.model = "1 + Genotype + Exp_year + (1|Genotype:Exp_year)"
-          , random.model = "1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year)"
+          , fixed.model = ~ 1 + Genotype + Exp_year + (1|Genotype:Exp_year)
+          , random.model = ~ 1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year)
           , plot_diag = TRUE
           , outliers.rm = TRUE
           , summary = TRUE
           )
+
+h2_ft_p <- 
+H2cal(data = phenop, rep.n = 2, year.n = 2, 
+    trait = "FT", gen.name = "Genotype", year.name = "Exp_year", 
+    fixed.model = ~ 1 + Genotype + Exp_year + (1|Genotype:Exp_year), 
+    random.model = ~ 1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year), 
+    plot_diag = TRUE, outliers.rm = TRUE, summary = TRUE )
+
+h2_ft_18 <- 
+H2cal(data = pheno18, rep.n = 2, year.n = 2, 
+    trait = "FT", gen.name = "Genotype", year.name = "Exp_year", 
+    fixed.model = ~ 1 + Genotype + Exp_year + (1|Genotype:Exp_year), 
+    random.model = ~ 1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year), 
+    plot_diag = TRUE, outliers.rm = TRUE, summary = TRUE )
+
 
 h2_sw100 <- 
 H2cal(data = pheno
@@ -45,12 +64,27 @@ H2cal(data = pheno
           , rep.n = 2
           , year.n = 2
           , year.name = "Exp_year"
-          , fixed.model = "1 + Genotype + Exp_year + (1|Genotype:Exp_year)"
-          , random.model = "1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year)"
+          , fixed.model = ~ 1 + Genotype + Exp_year + (1|Genotype:Exp_year)
+          , random.model = ~ 1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year)
           , plot_diag = TRUE
           , outliers.rm = TRUE
           , summary = TRUE
           )
+
+h2_sw100_p <- 
+H2cal(data = phenop, rep.n = 2, year.n = 2, 
+    trait = "SEED_WEIGHT_100", gen.name = "Genotype", year.name = "Exp_year", 
+    fixed.model = ~ 1 + Genotype + Exp_year + (1|Genotype:Exp_year), 
+    random.model = ~ 1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year), 
+    plot_diag = TRUE, outliers.rm = TRUE, summary = TRUE )
+
+h2_sw100_18 <- 
+H2cal(data = pheno18, rep.n = 2, year.n = 2, 
+    trait = "SEED_WEIGHT_100", gen.name = "Genotype", year.name = "Exp_year", 
+    fixed.model = ~ 1 + Genotype + Exp_year + (1|Genotype:Exp_year), 
+    random.model = ~ 1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year), 
+    plot_diag = TRUE, outliers.rm = TRUE, summary = TRUE )
+
 
 h2_fec <- 
 H2cal(data = pheno
@@ -59,17 +93,33 @@ H2cal(data = pheno
           , rep.n = 2
           , year.n = 2
           , year.name = "Exp_year"
-          , fixed.model = "1 + Genotype + Exp_year + (1|Genotype:Exp_year)"
-          , random.model = "1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year)"
+          , fixed.model = ~ 1 + Genotype + Exp_year + (1|Genotype:Exp_year)
+          , random.model = ~ 1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year)
           , plot_diag = TRUE
           , outliers.rm = TRUE
           )
+
+h2_fec_p <- 
+H2cal(data = phenop, rep.n = 2, year.n = 2, 
+    trait = "FECUNDITY", gen.name = "Genotype", year.name = "Exp_year", 
+    fixed.model = ~ 1 + Genotype + Exp_year + (1|Genotype:Exp_year), 
+    random.model = ~ 1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year), 
+    plot_diag = TRUE, outliers.rm = TRUE, summary = TRUE )
+
+h2_fec_18 <- 
+H2cal(data = pheno18, rep.n = 2, year.n = 2, 
+    trait = "FECUNDITY", gen.name = "Genotype", year.name = "Exp_year", 
+    fixed.model = ~ 1 + Genotype + Exp_year + (1|Genotype:Exp_year), 
+    random.model = ~ 1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year), 
+    plot_diag = TRUE, outliers.rm = TRUE, summary = TRUE )
 
 dev.off()
 
 
 H2_table <- tibble("trait" = c("FT", "SEED_WEIGHT_100", "FECUNDITY"), 
-                    "H2_s" = c(h2_ft$tabsmr$H2.s, h2_sw100$tabsmr$H2.s, h2_fec$tabsmr$H2.s) )
+                    "H2_overall" = c(h2_ft$tabsmr$H2.s, h2_sw100$tabsmr$H2.s, h2_fec$tabsmr$H2.s),
+                    "H2_parents" = c(h2_ft_p$tabsmr$H2.s, h2_sw100_p$tabsmr$H2.s, h2_fec_p$tabsmr$H2.s),
+                    "H2_18" = c(h2_ft_18$tabsmr$H2.s, h2_sw100_18$tabsmr$H2.s, h2_fec_18$tabsmr$H2.s) )
 write_delim(H2_table, "trait_heritability.tsv", "\t")
 
 # combine BLUP dataframes
