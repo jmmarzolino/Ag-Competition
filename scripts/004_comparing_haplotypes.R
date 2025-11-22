@@ -12,7 +12,7 @@ setwd("/bigdata/koeniglab/jmarz001/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
 
 hap <- fread("hap_assign.txt")
-df <- fread("trait_BLUPs.tsv")
+df <- fread("BLUPs.tsv")
 
 # set haplotypes to factors instead of numbers
 hap$Haplotype <- as.factor(hap$Haplotype)
