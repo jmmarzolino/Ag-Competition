@@ -24,23 +24,23 @@ source("../../../scripts/CUSTOM_FNS.R")
 
 # manually compile matched lists of traits & files
 matched_exp_ft <- tibble(
-          "experiment"=c("field", "field", "greenhouse", "greenhouse", "greenhouse", "greenhouse") ,
-          "trait"=c("FT", "FT", "Flowering_days_2017", "Flowering_days_2017", "Flowering_2018_Median", "Flowering_2018_Median") , 
-          "gwas_method"=c("lm", "lmm", "lm", "lmm", "lm", "lmm") ,
-          "file"=c("../ASSOC_6.assoc.txt", "../ASSOC_6_lmm.assoc.txt", "ASSOC_12.assoc.txt", "ASSOC_12_lmm.assoc.txt", "ASSOC_13.assoc.txt", "ASSOC_13_lmm.assoc.txt")
+          "experiment"=c("field", "greenhouse", "greenhouse") ,
+          "trait"=c("FT", "Flowering_days_2017", "Flowering_2018_Median") , 
+          "gwas_method"=c("lmm", "lmm", "lmm") ,
+          "file"=c("../ASSOC_6_lmm.assoc.txt", "ASSOC_GH_only_8_lmm.assoc.txt", "ASSOC_GH_only_9_lmm.assoc.txt")
           )
 
 matched_exp_fec <- tibble(
           "experiment"=c("field", "field", "greenhouse", "greenhouse") ,
           "trait"=c("FECUNDITY", "FECUNDITY", "Seed_Estimate", "Seed_Estimate") , 
-          "gwas_method"=c("lm", "lmm", "lm", "lmm") ,
+          "gwas_method"=c("lmm", "lmm") ,
           "file"=c("../ASSOC_11.assoc.txt", "../ASSOC_11_lmm.assoc.txt", "ASSOC_11.assoc.txt", "ASSOC_11_lmm.assoc.txt")
           )
 
 matched_exp_sw <- tibble(
           "experiment"=c("field", "field", "greenhouse", "greenhouse") ,
           "trait"=c("SEED_WEIGHT_100", "SEED_WEIGHT_100", "Mass_100", "Mass_100") , 
-          "gwas_method"=c("lm", "lmm", "lm", "lmm") ,
+          "gwas_method"=c("lmm", "lmm") ,
           "file"=c("../ASSOC_8.assoc.txt", "../ASSOC_8_lmm.assoc.txt", "ASSOC_9.assoc.txt", "ASSOC_9_lmm.assoc.txt")
           )
 
@@ -48,7 +48,7 @@ matched_exp_sw <- tibble(
 matched_exp_tm <- tibble(
           "experiment"=c("field", "field", "greenhouse", "greenhouse") ,
           "trait"=c("TOTAL_MASS", "TOTAL_MASS", "Total_mass", "Total_mass") , 
-          "gwas_method"=c("lm", "lmm", "lm", "lmm") ,
+          "gwas_method"=c("lmm", "lmm") ,
           "file"=c("../ASSOC_7.assoc.txt", "../ASSOC_7_lmm.assoc.txt", "ASSOC_10.assoc.txt", "ASSOC_10_lmm.assoc.txt")
           )
 
@@ -63,63 +63,46 @@ matched_exp_tm <- tibble(
 
 ### flowering time overlap
 x1 <- fread(matched_exp_ft[[1,4]]) %>% select(c("chr", "ps", "af", "beta", "p_lrt"))
+x1$group <- "field flowering time"
 x2 <- fread(matched_exp_ft[[2,4]]) %>% select(c("chr", "ps", "af", "beta", "p_lrt"))
+x2$group <- "greenhouse flowering time 2017"
 x3 <- fread(matched_exp_ft[[3,4]]) %>% select(c("chr", "ps", "af", "beta", "p_lrt"))
-x4 <- fread(matched_exp_ft[[4,4]]) %>% select(c("chr", "ps", "af", "beta", "p_lrt"))
-x5 <- fread(matched_exp_ft[[5,4]]) %>% select(c("chr", "ps", "af", "beta", "p_lrt"))
-x6 <- fread(matched_exp_ft[[6,4]]) %>% select(c("chr", "ps", "af", "beta", "p_lrt"))
+x3$group <- "greenhouse flowering time 2018"
 
-## join datasets, keep the higher p-val for lm and lmm 
-# field flowering time
-y1 <- full_join(x1, x2, by=c("chr", "ps", "af"), suffix=c("_lm", "_lmm"))
-y1$p <- y1$p_lrt_lm
-y1[which(y1$p_lrt_lm < y1$p_lrt_lmm), 8] <- y1[which(y1$p_lrt_lm < y1$p_lrt_lmm), p_lrt_lmm]
-y1 <- y1 %>% select(c(chr, ps, af, p))
-y1$group <- "field"
-# greenhouse flowering time 2017
-y2 <- full_join(x3, x4, by=c("chr", "ps", "af"), suffix=c("_lm", "_lmm"))
-y2$p <- y2$p_lrt_lm
-y2[which(y2$p_lrt_lm < y2$p_lrt_lmm), 8] <- y2[which(y2$p_lrt_lm < y2$p_lrt_lmm), p_lrt_lmm]
-y2 <- y2 %>% select(c(chr, ps, af, p))
-y2$group <- "greenhouse_2017"
-# greenhouse flowering time 2018
-y3 <- full_join(x5, x6, by=c("chr", "ps", "af"), suffix=c("_lm", "_lmm"))
-y3$p <- y3$p_lrt_lm
-y3[which(y3$p_lrt_lm < y3$p_lrt_lmm), 8] <- y3[which(y3$p_lrt_lm < y3$p_lrt_lmm), p_lrt_lmm]
-y3 <- y3 %>% select(c(chr, ps, af, p))
-y3$group <- "greenhouse_2018"
+bon <- 0.05/nrow(x1)
 
-# now join the three experiments
-z <- full_join(y1, y2)
-z <- full_join(z, y3)
+# now join the three phenotypes
+z <- full_join(x1, x2)
+z <- full_join(z, x3)
 
-# filter to top 5%-ish??? of sites across experiments?
-threshhold <- quantile(z$p, 0.0005)
-z_filt <- z[which(z$p <= threshhold), ]
+# filter to top 5% of sites across experiments
+threshhold <- quantile(z$p_lrt, 0.0005)
+z_filt <- z[which(z$p_lrt <= threshhold), ]
 OutName <- paste0("cross_exp_gwas_suggestive_peaks_", "flowering_time", ".tsv")
 fwrite(z_filt, OutName)
 
 # chr col needs to be numeric
 z$chr <- as.numeric(gsub("chr(\\d)H", "\\1", z$chr))
 z$snp <- paste0(z$chr, "_", z$ps)
-tmp <- z %>% select(c(snp, chr, ps, p, group))
-tmp2 <- tmp %>% pivot_wider(names_from="group", values_from=p)
+tmp <- z %>% select(c(snp, chr, ps, p_lrt, group))
+tmp2 <- tmp %>% pivot_wider(names_from="group", values_from=p_lrt)
 
 # plot type 1 - CMplot
 CMplot(tmp2, type="p", plot.type="m", LOG10=TRUE, 
-        threshold=-log10(bon), threshold.col="black", threshold.lty=1, col=c("grey60","#4197d8"), 
-        signal.cex=1.2, signal.col="red", verbose=TRUE, multracks=TRUE, file="png", dpi=300, file.output=TRUE)
+        threshold=-log10(bon), threshold.col="#4197d8", threshold.lty=1, col=c("grey60"), 
+        signal.cex=1.2, verbose=TRUE, multracks=TRUE, file="png", dpi=300, file.output=TRUE)
         # Plots are stored in: /bigdata/koeniglab/jmarz001/Ag-Competition/results/gwas/CCII_greenhouse_exp_gwas
+        # Multi-tracks_Manhtn.....
 
 # plot type 2 - all-in-one vertical manhattan
 png("combo_ft_manhattan.png")
-manhattan(tmp, chr="chr", bp="ps", p="p", snp="snp", genomewideline=-log10(bon), suggestiveline=-log10(bon)-1)
+manhattan(tmp, chr="chr", bp="ps", p="p_lrt", snp="snp", genomewideline=-log10(bon), col = c("gray60","#4197d8"),suggestiveline=-log10(bon)-1, annotateTop = TRUE)
 dev.off()
 
 
 # plot type 3 - all-in-one overlaping manhattan
 tmp$BP <- as.numeric(tmp$ps)
-threshold <- 0.05/length(y1$p)
+
 result <- tmp %>%
   # Compute chromosome size
   group_by(chr) %>%
@@ -133,15 +116,15 @@ result <- tmp %>%
   arrange(chr, BP) %>%
   mutate(BPcum = BP+tot)
 
-#result <- result %>% filter(-log10(p_lrt)>2)
+result <- result %>% filter(-log10(p_lrt)>1.5)
 axisdf <- result %>% group_by(chr) %>% summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
 
-png("cross_exp_manhattan_overlap_ft.png")
+png("cross_exp_manhattan_overlap_ft.png", width=14, height=7, units="in", res=200)
 # Manhattan plot
-ggplot(result, aes(x=BPcum, y=-log10(p), group=group)) +
+ggplot(result, aes(x=BPcum, y=-log10(p_lrt), group=group)) +
     # Show all points
-    geom_point(aes(color=group, shape=as.factor(chr)), alpha=0.5, size=1.3) +
-    geom_hline(aes(yintercept=-log10(threshold)), color = "firebrick1", linetype="dashed", alpha=0.7) +
+    geom_point(aes(color=group), alpha=0.5, size=1.3) +
+    geom_hline(aes(yintercept=-log10(bon)), color = "firebrick1", linetype="dashed", alpha=0.7) +
     scale_shape_manual(values=rep(c(16, 18), 22)) + 
     scale_color_manual(values = c("dark green", "dodgerblue4", "deepskyblue")) +
     # custom X axis:
@@ -157,7 +140,7 @@ ggplot(result, aes(x=BPcum, y=-log10(p), group=group)) +
           plot.title = element_text(size=12),
           plot.subtitle = element_text(size=10)) +
     xlab("Chromosome") +
-    ylab(expression(-log[10](italic(p)))) +
+    ylab(expression(-log[10](italic(p_lrt)))) +
     ggtitle("Flowering Time GWAS Results across Experiments")
 dev.off()
 
@@ -175,13 +158,13 @@ x4 <- fread(matched_exp_fec[[4,4]]) %>% select(c("chr", "ps", "af", "beta", "p_l
 ## join datasets, keep the higher p-val for lm and lmm 
 # field flowering time
 y1 <- full_join(x1, x2, by=c("chr", "ps", "af"), suffix=c("_lm", "_lmm"))
-y1$p <- y1$p_lrt_lm
+y1$p_lrt <- y1$p_lrt_lm
 y1[which(y1$p_lrt_lm < y1$p_lrt_lmm), 8] <- y1[which(y1$p_lrt_lm < y1$p_lrt_lmm), p_lrt_lmm]
 y1 <- y1 %>% select(c(chr, ps, af, p))
 y1$group <- "field"
 # greenhouse flowering time 2017
 y2 <- full_join(x3, x4, by=c("chr", "ps", "af"), suffix=c("_lm", "_lmm"))
-y2$p <- y2$p_lrt_lm
+y2$p_lrt <- y2$p_lrt_lm
 y2[which(y2$p_lrt_lm < y2$p_lrt_lmm), 8] <- y2[which(y2$p_lrt_lm < y2$p_lrt_lmm), p_lrt_lmm]
 y2 <- y2 %>% select(c(chr, ps, af, p))
 y2$group <- "greenhouse"
@@ -190,8 +173,8 @@ y2$group <- "greenhouse"
 z <- full_join(y1, y2)
 
 # filter to top 5%-ish??? of sites across experiments?
-threshhold <- quantile(z$p, 0.0005)
-z_filt <- z[which(z$p <= threshhold), ]
+threshhold <- quantile(z$p_lrt, 0.0005)
+z_filt <- z[which(z$p_lrt <= threshhold), ]
 OutName <- paste0("cross_exp_gwas_suggestive_peaks_", "fecundity", ".tsv")
 fwrite(z_filt, OutName)
 
@@ -202,7 +185,7 @@ tmp <- z %>% select(c(snp, chr, ps, p, group))
 
 # plot type 3 - all-in-one overlaping manhattan
 tmp$BP <- as.numeric(tmp$ps)
-threshold <- 0.05/length(y1$p)
+threshold <- 0.05/length(y1$p_lrt)
 result <- tmp %>%
   # Compute chromosome size
   group_by(chr) %>%
@@ -255,13 +238,13 @@ x4 <- fread(matched_exp_tm[[4,4]]) %>% select(c("chr", "ps", "af", "beta", "p_lr
 ## join datasets, keep the higher p-val for lm and lmm 
 # field flowering time
 y1 <- full_join(x1, x2, by=c("chr", "ps", "af"), suffix=c("_lm", "_lmm"))
-y1$p <- y1$p_lrt_lm
+y1$p_lrt <- y1$p_lrt_lm
 y1[which(y1$p_lrt_lm < y1$p_lrt_lmm), 8] <- y1[which(y1$p_lrt_lm < y1$p_lrt_lmm), p_lrt_lmm]
 y1 <- y1 %>% select(c(chr, ps, af, p))
 y1$group <- "field"
 # greenhouse flowering time 2017
 y2 <- full_join(x3, x4, by=c("chr", "ps", "af"), suffix=c("_lm", "_lmm"))
-y2$p <- y2$p_lrt_lm
+y2$p_lrt <- y2$p_lrt_lm
 y2[which(y2$p_lrt_lm < y2$p_lrt_lmm), 8] <- y2[which(y2$p_lrt_lm < y2$p_lrt_lmm), p_lrt_lmm]
 y2 <- y2 %>% select(c(chr, ps, af, p))
 y2$group <- "greenhouse"
@@ -270,8 +253,8 @@ y2$group <- "greenhouse"
 z <- full_join(y1, y2)
 
 # filter to top 5%-ish??? of sites across experiments?
-threshhold <- quantile(z$p, 0.0005)
-z_filt <- z[which(z$p <= threshhold), ]
+threshhold <- quantile(z$p_lrt, 0.0005)
+z_filt <- z[which(z$p_lrt <= threshhold), ]
 OutName <- paste0("cross_exp_gwas_suggestive_peaks_", "total_mass", ".tsv")
 fwrite(z_filt, OutName)
 
@@ -282,7 +265,7 @@ tmp <- z %>% select(c(snp, chr, ps, p, group))
 
 # plot type 3 - all-in-one overlaping manhattan
 tmp$BP <- as.numeric(tmp$ps)
-threshold <- 0.05/length(y1$p)
+threshold <- 0.05/length(y1$p_lrt)
 result <- tmp %>%
   # Compute chromosome size
   group_by(chr) %>%
@@ -340,13 +323,13 @@ x4 <- fread(matched_exp_sw[[4,4]]) %>% select(c("chr", "ps", "af", "beta", "p_lr
 ## join datasets, keep the higher p-val for lm and lmm 
 # field flowering time
 y1 <- full_join(x1, x2, by=c("chr", "ps", "af"), suffix=c("_lm", "_lmm"))
-y1$p <- y1$p_lrt_lm
+y1$p_lrt <- y1$p_lrt_lm
 y1[which(y1$p_lrt_lm < y1$p_lrt_lmm), 8] <- y1[which(y1$p_lrt_lm < y1$p_lrt_lmm), p_lrt_lmm]
 y1 <- y1 %>% select(c(chr, ps, af, p))
 y1$group <- "field"
 # greenhouse flowering time 2017
 y2 <- full_join(x3, x4, by=c("chr", "ps", "af"), suffix=c("_lm", "_lmm"))
-y2$p <- y2$p_lrt_lm
+y2$p_lrt <- y2$p_lrt_lm
 y2[which(y2$p_lrt_lm < y2$p_lrt_lmm), 8] <- y2[which(y2$p_lrt_lm < y2$p_lrt_lmm), p_lrt_lmm]
 y2 <- y2 %>% select(c(chr, ps, af, p))
 y2$group <- "greenhouse"
@@ -355,8 +338,8 @@ y2$group <- "greenhouse"
 z <- full_join(y1, y2)
 
 # filter to top 5%-ish??? of sites across experiments?
-threshhold <- quantile(z$p, 0.0005)
-z_filt <- z[which(z$p <= threshhold), ]
+threshhold <- quantile(z$p_lrt, 0.0005)
+z_filt <- z[which(z$p_lrt <= threshhold), ]
 OutName <- paste0("cross_exp_gwas_suggestive_peaks_", "100_seed_weight", ".tsv")
 fwrite(z_filt, OutName)
 
@@ -367,7 +350,7 @@ tmp <- z %>% select(c(snp, chr, ps, p, group))
 
 # plot type 3 - all-in-one overlaping manhattan
 tmp$BP <- as.numeric(tmp$ps)
-threshold <- 0.05/length(y1$p)
+threshold <- 0.05/length(y1$p_lrt)
 result <- tmp %>%
   # Compute chromosome size
   group_by(chr) %>%
