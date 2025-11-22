@@ -3,13 +3,13 @@
 #SBATCH --ntasks=1
 #SBATCH --mem=20G
 #SBATCH --time=2:00:00
-#SBATCH -p short
+#SBATCH -p koeniglab
 
 cd /rhome/jmarz001/bigdata/Ag-Competition/results/gwas
 module load bcftools/1.19
 
 ######
-cp ~/shared/for_JILL/combinded.vcf.gz ~/bigdata/Ag-Competition/results/gwas/combined.vcf.gz
+cp ~/shared/for_JILL/combinded.vcf.gz ./combined.vcf.gz
 # list sites in vcf file
 bcftools query -f '%CHROM\t%POS\n' combined.vcf.gz > CALLED_POS.txt
 
@@ -182,16 +182,9 @@ sbatch --array=1-$ARRAY_LIM /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/
 # plot results
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_clumped_indv_sites_manhattan.R
 
-
-
 ### zoom in view of chr 4 & 5 regions
 # plot chr 4 peak and vrn-h2
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/000_zoom_in_manhattans.R
-
-
-
-
-
 
 
 
@@ -213,13 +206,6 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/000_LD_plot.R
 
 
 
-
-
-
-
-
-
-
 ### ALLELE FREQUENCIES
 
 ## plot FT allele freq over time, using only main snps
@@ -227,15 +213,11 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/000_LD_plot.R
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/5c_format_clumped_sites_for_AFchange.R
 
 
-
 # extract allele counts for all sites from progeny sequencing
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6_pull_AC.sh
 
 
-
-
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6b_polarize_sites_to_gwas_beta.R
-
 
 
 ### test genome sites for significant changes in allele frequency between generations (0-18, 18-58)
@@ -259,9 +241,7 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/6c_plot_top_sites_all
 
 
 
-
 ############
-
 # plot allele frequency spectra for all sites & for sites identified as significant from gwas
 ## match starting allele frequencies for sites associated w traits & randomly sample them to create neutral comparison sets
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7a_site_sampling.R
@@ -270,34 +250,6 @@ sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7b_plot_AFS.R
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7b_plot_deltaAF.R
 
 
-
-
-
-
 ############
 # submit controlling script for greenhouse experiment gwas
 sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/greenhouse-comparison/1_gwas_GH.sh
-
-
-
-
-
-
-
-
-
-
-#### SPARE SCRIPT BITTTTTSS
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7_count_sig_regions.R
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7_sig_sites_over_traits.R
-
-# pull allele counts from vcf
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/8a_pull_AC.sh
-
-# filter list of vcf sites to common, segregating sites
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/8b_IPK_segregating_sites_AF.R
-# investigate genome sites w significant chang in allele counts
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/8b_sig_allele_change_sites.R
-
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/8d_plot_AFS.R
-sbatch /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/8d_plot_deltaAF.R
