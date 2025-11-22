@@ -1,6 +1,5 @@
 #!/usr/bin/env Rscript
-
-#SBATCH --job-name=gwas
+#SBATCH --job-name='site_sampling'
 #SBATCH -o /rhome/jmarz001/bigdata/Ag-Competition/scripts/gwas/7a_site_sampling.stdout
 #SBATCH --ntasks=1
 #SBATCH --mem=80gb
@@ -145,7 +144,6 @@ binning <- function(x) {
 # divide site list into allele freq bins
 ## one list starting w F0 and one w F18
 
-# apply plotting function and make list of those plots
 # allele freq bins for gwas sites, F0 and F18
 bin_F0 <- binning(trait_assoc_sites[,5])
 bin_F18 <- binning(trait_assoc_sites[,6])
