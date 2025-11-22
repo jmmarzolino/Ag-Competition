@@ -14,7 +14,7 @@ source("../scripts/CUSTOM_FNS.R")
 ## extract blups & H2 for each trait & model
 
 # Loading Data
-pheno <- read_delim("DERIVED_PHENOTYPES.tsv")
+pheno <- read_delim("raw_phenotypes.tsv")
 #pheno <- pheno %>% 
 #    select(c(Genotype, Replicate, Exp_year, FT, TOTAL_MASS, SEED_WEIGHT_100, FECUNDITY)) #%>% 
     #mutate(across(-c(Genotype, Generation, Replicate, Germination), ~(scale(.) %>% as.vector)))
@@ -120,13 +120,13 @@ H2_table <- tibble("trait" = c("FT", "SEED_WEIGHT_100", "FECUNDITY"),
                     "H2_overall" = c(h2_ft$tabsmr$H2.s, h2_sw100$tabsmr$H2.s, h2_fec$tabsmr$H2.s),
                     "H2_parents" = c(h2_ft_p$tabsmr$H2.s, h2_sw100_p$tabsmr$H2.s, h2_fec_p$tabsmr$H2.s),
                     "H2_18" = c(h2_ft_18$tabsmr$H2.s, h2_sw100_18$tabsmr$H2.s, h2_fec_18$tabsmr$H2.s) )
-write_delim(H2_table, "trait_heritability.tsv", "\t")
+write_delim(H2_table, "heritability.tsv", "\t")
 
 # combine BLUP dataframes
 blup_output <- full_join(h2_ft$blups, h2_sw100$blups)
 blup_output <- full_join(blup_output, h2_fec$blups)
 
-write_delim(blup_output, "trait_BLUPs.tsv", "\t")
+write_delim(blup_output, "BLUPs.tsv", "\t")
 
 
 #lmer(SEED_WEIGHT_100 ~ 1 + (1|Genotype) + Exp_year + (1|Genotype:Exp_year), pheno) %>% plot

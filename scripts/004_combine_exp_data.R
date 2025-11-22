@@ -46,7 +46,7 @@ gh <- gh %>% select(c(Samples, days_to_heading, X100_seed_mass, seed_estimate))
 
 #####    Field Exp
 # CC II field experiment data
-ag <- fread("trait_BLUPs.tsv") 
+ag <- fread("BLUPs.tsv") 
 
 # format genotype IDs to 'family' groups, #_##, removing any third numbers
 ag$Genotype <- gsub("^(\\d+_\\d+).*", "\\1", ag$Genotype)

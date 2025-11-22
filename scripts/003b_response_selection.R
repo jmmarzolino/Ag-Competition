@@ -15,7 +15,7 @@ source("../scripts/CUSTOM_FNS.R")
 
 
 # Loading Data
-#df <- fread("DERIVED_PHENOTYPES.tsv")
+#df <- fread("raw_phenotypes.tsv")
 #df <- df %>% 
 #        select(-c(Replicate, SEED_COUNT)) %>%
 #        group_by(Genotype, Exp_year) %>% 
@@ -24,7 +24,7 @@ source("../scripts/CUSTOM_FNS.R")
 #        group_by(Genotype) %>% summarise(across(where(is.numeric), mean)) %>%
 #        ungroup() 
 
-df <- fread("trait_BLUPs.tsv")
+df <- fread("trait_BLUPs_HapRepPop.tsv")
 #df <- full_join(df, dfb, by=c('Genotype'), suffix=c("", "_blup"))
 df <- add_generation(df)
 #df <- df %>% select(c('Genotype', 'Generation', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Germination', 'FECUNDITY', 'MASS_PER_PLANT', 'FT_blup', 'TOTAL_MASS_blup', 'Germination_blup', 'SEED_WEIGHT_100_blup', 'FECUNDITY_blup', 'MASS_PER_PLANT_blup'))
@@ -94,7 +94,7 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/response_combined.png
 
 
 ## selection
-herit <- fread("trait_heritability.tsv")
+herit <- fread("heritability.tsv")
 
 # write out one table with response & selection calculated for trait units & stand. dev.s
 rts <- responses_joined %>% pivot_longer(cols=-c(Generation), names_to='trait', values_to='response')

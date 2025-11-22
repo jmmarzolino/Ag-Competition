@@ -15,7 +15,7 @@ library(data.table)
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition")
 source("scripts/CUSTOM_FNS.R")
 
-df <- read_delim("data/trait_BLUPs.tsv") 
+df <- read_delim("data/BLUPs.tsv") 
 df <- add_generation(df) %>% select(-Genotype)
 
 # calculate parent generation mean and sd

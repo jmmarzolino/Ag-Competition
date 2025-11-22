@@ -10,7 +10,7 @@ library(data.table)
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
 # load data
-df <- fread("DERIVED_PHENOTYPES.tsv")
+df <- fread("raw_phenotypes.tsv")
 
 
 replicate_df <- df %>%

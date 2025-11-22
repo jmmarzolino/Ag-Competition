@@ -6,7 +6,7 @@ library(corrplot)
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
 
-df <- fread("DERIVED_PHENOTYPES.tsv")
+df <- fread("raw_phenotypes.tsv")
 df <- df %>% 
         filter(Condition == "single") %>% 
         select(-Condition) %>%
@@ -15,7 +15,7 @@ df <- df %>%
         ungroup() %>%
         select(-c(Replicate, Exp_year, SEED_COUNT))
 
-blup <- fread("trait_BLUPs.tsv")
+blup <- fread("BLUPs.tsv")
 test <- full_join(df, blups)
 
 cor(test$FT, test$FT_blup)

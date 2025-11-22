@@ -14,7 +14,7 @@ library(RColorBrewer)
 
 setwd("/bigdata/koeniglab/jmarz001/Ag-Competition")
 source("scripts/CUSTOM_FNS.R")
-df <- read_delim("data/trait_BLUPs.tsv")
+df <- read_delim("data/BLUPs.tsv")
 df <- add_generation(df)
 
 # the lowest color value is too light, so adjust the color scale down one

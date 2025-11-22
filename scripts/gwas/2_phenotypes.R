@@ -11,7 +11,7 @@ library(data.table)
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/results/gwas")
 source("../../scripts/CUSTOM_FNS.R")
 # read in phenotypes file
-pheno <- fread("../../data/trait_BLUPs.tsv")
+pheno <- fread("../../data/BLUPs.tsv")
 
 ## filter trait cols with 0 variance
 #novar <- which(apply(pheno[2:ncol(pheno)], 2, var) == 0)

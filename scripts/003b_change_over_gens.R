@@ -14,7 +14,7 @@ library(car)
 library(dunn.test)
 
 
-df <- fread("trait_BLUPs.tsv")
+df <- fread("BLUPs.tsv")
 df <- add_generation(df)
 df <- df %>% select(-Genotype)
 

@@ -21,7 +21,7 @@ df <- df %>%
     select(-c(BED, ROW, Condition)) %>%
     select(c(Genotype, Exp_year, Replicate, Germination, FT, TOTAL_MASS, SEED_WEIGHT_100))
 
-png("RAW_Germination_vs_TOTAL_MASS.png")
+png("results/RAW_Germination_vs_TOTAL_MASS.png")
 plot(df$Germination, df$TOTAL_MASS)
 dev.off()
 # maybe what we can say is not that I counted germination right or wrong, but that the discrepency between expected and observed relationship btwn germination and total mass when germination equals 1...
@@ -123,7 +123,7 @@ dev.off()
 
 df3 %>% filter(FECUNDITY > 1000)
 df3[which(df3$FECUNDITY > 1000), 5:6] <- NA
-write_delim(df3, "data/DERIVED_PHENOTYPES.tsv", "\t")
+write_delim(df3, "data/raw_phenotypes.tsv", "\t")
 
 # any rows that are entirely NA?
 df2[which(rowSums(is.na(df2))>4),]
