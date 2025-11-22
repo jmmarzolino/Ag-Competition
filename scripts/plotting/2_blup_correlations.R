@@ -14,7 +14,7 @@ library(corrplot)
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/results")
 source("../scripts/CUSTOM_FNS.R")
 
-df <- fread("../data/trait_BLUPs.tsv")
+df <- fread("../data/BLUPs.tsv")
 df_gen <- add_generation(df) %>% select(-Genotype)
 df <- df %>% select(-c(Genotype))
 
@@ -80,25 +80,6 @@ colnames(progeny) <- tidy_text_substitution(colnames(progeny))
 png("blup_correlations_scatterplot_progeny.png", height=10, width=10, units="in", res=200)
 plot(progeny, main="Progeny Only")
 dev.off()
-
-
-
-
-###############################
-## try to fit a quadratic relationship on FT ~ FEC 
-#g1 <- ggplot(traits_df, aes(x=`Flowering Time`, y=`FECUNDITY`)) +
- #       geom_point() +
-  #      geom_smooth(method="lm", formula = 'y ~ poly(x, 2)') +
-   #     theme_bw(base_size = 18)
-#ggsave("ftxFEC_quadratic.png", g1)
-# geom_smooth() method=
-#‘"lm"’, ‘"glm"’, ‘"gam"’, ‘"loess"’
-# or a function, e.g. ‘MASS::rlm’ or ‘mgcv::gam’, ‘stats::lm’,
-
-# check AIC of FEC ~ FT vs MASSPER ~ FT^2
-#lm(`FECUNDITY` ~ `Flowering Time`, data=traits_df) %>% AIC
-#lm(`FECUNDITY` ~ poly(`Flowering Time`,2), data=traits_df) %>% AIC
-###############################
 
 
 
@@ -224,3 +205,56 @@ gee_wiz <- df_fec %>%
           labs(x="Fecundity", y="", color="Generation") +
           theme_bw()
 ggsave("blups_vs_FEC_by_generation.png", gee_wiz, width=(7*3), height=(7*2))
+
+
+
+
+
+
+
+
+
+###############################
+# fit linear & quadratic regressions to trait relationships
+# and report AIC values in table
+
+#FT ~ FEC 
+#FT ~ SW
+#SW ~ FEC
+
+# check AIC of FEC ~ FT vs MASSPER ~ FT^2
+ft_fec_lm_aic <- print(lm(`FT` ~ `FECUNDITY`, data=traits_df) %>% AIC)
+ft_fec_lmpoly_aic <- print(lm(`FT` ~ poly(`FECUNDITY`, 2), data=traits_df) %>% AIC)
+
+ft_sw_lm_aic <- print(lm(`FT` ~ `SEED_WEIGHT_100`, data=traits_df) %>% AIC)
+ft_sw_lmpoly_aic <- print(lm(`FT` ~ poly(`SEED_WEIGHT_100`, 2), data=traits_df) %>% AIC)
+
+sw_fec_lm_aic <- print(lm(`SEED_WEIGHT_100` ~ `FECUNDITY`, data=traits_df) %>% AIC)
+sw_fec_lmpoly_aic <- print(lm(`SEED_WEIGHT_100` ~ poly(`FECUNDITY`, 2), data=traits_df) %>% AIC)
+
+aic_table <- tibble("regression"=c("linear", "quadratic"), "FT~FEC"=c(ft_fec_lm_aic, ft_fec_lmpoly_aic), "FT~SW"=c(ft_sw_lm_aic, ft_sw_lmpoly_aic), "SW~FEC"=c(sw_fec_lm_aic, sw_fec_lmpoly_aic))
+fwrite(aic_table, "trait_relationship_regression_model_fit_AICs.tsv")
+
+
+## try to fit a quadratic relationship on FT ~ FEC 
+g1 <- ggplot(traits_df, aes(x=FT, y=FECUNDITY)) +
+        geom_point() +
+        geom_smooth(method="lm", formula = 'y ~ poly(x, 2)') +
+        theme_bw(base_size = 18)
+ggsave("ftxFEC_quadratic.png", g1)
+
+g1 <- ggplot(traits_df, aes(x=FT, y=SEED_WEIGHT_100)) +
+        geom_point() +
+        geom_smooth(method="lm", formula = 'y ~ poly(x, 2)') +
+        theme_bw(base_size = 18)
+ggsave("ftxSW_quadratic.png", g1)
+
+g1 <- ggplot(traits_df, aes(x=SEED_WEIGHT_100, y=FECUNDITY)) +
+        geom_point() +
+        geom_smooth(method="lm", formula = 'y ~ poly(x, 2)') +
+        theme_bw(base_size = 18)
+ggsave("SWxFEC_quadratic.png", g1)
+
+# geom_smooth() method=
+#‘"lm"’, ‘"glm"’, ‘"gam"’, ‘"loess"’
+# or a function, e.g. ‘MASS::rlm’ or ‘mgcv::gam’, ‘stats::lm’,
