@@ -15,21 +15,7 @@ source("../scripts/CUSTOM_FNS.R")
 
 
 # Loading Data
-#df <- fread("raw_phenotypes.tsv")
-#df <- df %>% 
-#        select(-c(Replicate, SEED_COUNT)) %>%
-#        group_by(Genotype, Exp_year) %>% 
-#        summarise(across(where(is.numeric), mean)) %>%
-#        ungroup() %>% select(-Exp_year) %>% 
-#        group_by(Genotype) %>% summarise(across(where(is.numeric), mean)) %>%
-#        ungroup() 
-
 df <- fread("trait_BLUPs_HapRepPop.tsv")
-#df <- full_join(df, dfb, by=c('Genotype'), suffix=c("", "_blup"))
-df <- add_generation(df)
-#df <- df %>% select(c('Genotype', 'Generation', 'FT', 'TOTAL_MASS', 'SEED_WEIGHT_100', 'Germination', 'FECUNDITY', 'MASS_PER_PLANT', 'FT_blup', 'TOTAL_MASS_blup', 'Germination_blup', 'SEED_WEIGHT_100_blup', 'FECUNDITY_blup', 'MASS_PER_PLANT_blup'))
-
-
 
 # RESPONSE
 ## CALCULATE RESPONSE IN SD AND NORMAL UNITS
@@ -39,7 +25,7 @@ response <- df %>%
       ungroup()
 
 response_scaled <- df %>%
-      mutate(across(-c(Genotype, Generation), ~(scale(.) %>% as.vector))) %>%
+      mutate(across(-c(Generation), ~(scale(.) %>% as.vector))) %>%
       group_by(Generation) %>% 
       summarise(across(where(is.numeric), \(x) mean(x, na.rm = T))) %>% 
       ungroup()
