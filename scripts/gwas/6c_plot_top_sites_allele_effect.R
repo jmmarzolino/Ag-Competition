@@ -35,7 +35,7 @@ colnames(gt) <- c("CHROM", "POS", gtnm$V1)
 
 # line ID + phenotype
 # read in full phenotype file
-pheno <- fread("../../data/trait_BLUPs.tsv")
+pheno <- fread("../../data/BLUPs.tsv")
 
 # shorten genotype codes to 2 generations (\\d_\\d), for consistency, IDing genotype families instead of lines
 pheno$Genotype <- gsub("(\\d+_\\d+)_\\d+", "\\1", pheno$Genotype)
@@ -105,6 +105,6 @@ for(i in c(unique(afs$associated_trait))){
         a1a2_diff <- grp_avg[1, 2] - grp_avg[nrow(grp_avg), 2]
         
         g <- ggplot(jn, aes(x=genotype, y= get(i))) + geom_boxplot() +  stat_n_text() + labs(y=tidy_text_substitution(i), title=paste(ms$chr, ms$ps), subtitle=paste0("difference in A1, A2 trait average: ", round(a1a2_diff, 3))) + theme_bw()
-        ggsave(paste0("allele_effect/", "Rplot_trait", i, "_row", m, ".png"), g)
+        ggsave(paste0("allele_effect/", ms$chr, "_", ms$ps, "_", i, ".png"), g)
     }
 }
