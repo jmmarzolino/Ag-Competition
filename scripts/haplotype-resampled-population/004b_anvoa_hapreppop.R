@@ -12,24 +12,21 @@ library(data.table)
 # with phenotypes sampled to more accurately represent their proportion in the orignal population
 hap <- fread("trait_BLUPs_HapRepPop.tsv")
 
+# add scaled phenotype column
 hap2 <- hap %>% mutate(across(-c(Generation), ~(scale(.) %>% as.vector))) %>% select(-Generation)
 colnames(hap2) <- gsub("(.*)", "\\1_scaled", colnames(hap2))
 hap <- bind_cols(hap, hap2)
 
+# add relative fecundity column
+# divide fecundity column by average fec of all values
+hap$RELATIVE_FECUNDITY <- hap$FECUNDITY/mean(hap$FECUNDITY, na.rm=T)
 
 ####  GENERATION AVERAGES    
 # Make table of generational means & size of generation differences 
-gen_avgs <- hap %>% select(-contains("FECUNDITY")) %>% group_by(Generation) %>% summarise(across(where(is.numeric), \(x) mean(x, na.rm=T))) 
-gen_avgs <- gen_avgs %>% select(c("Generation", "FT", "FT_scaled", "SEED_WEIGHT_100", "SEED_WEIGHT_100_scaled"))
-# calculate relative fecundity to add to avg table
-# (seed#/mean seed # across all BLUPs including parents)
-#fec <- hap %>% select(c("Generation", contains("FECUNDITY"))) 
-#fec %>% mutate()
+gen_means <- hap %>% group_by(Generation) %>% summarise(across(where(is.numeric), \(x) mean(x, na.rm=T))) 
+gen_means <- gen_means %>% select(c("Generation", "FT", "FT_scaled", "FECUNDITY", "FECUNDITY_scaled", "RELATIVE_FECUNDITY", "SEED_WEIGHT_100", "SEED_WEIGHT_100_scaled"))
 
-#%>% group_by(Generation) %>% summarise(across(where(is.numeric), \(x) mean(x, na.rm=T))) 
-
-
-fwrite(gen_avgs, "haprep_gen_avgs.tsv")
+fwrite(gen_means, "haprep_gen_avgs.tsv")
 
 
 ###   make list of traits w sig diff var ~ gens
@@ -51,11 +48,7 @@ if(sum(rowSums(variance[,2:3]) < length(variance[,2]))){
 }
 
 ###    DIFFERENCES BETWEEN GENERATIONS
-# calculate each generation's trait average
-gen_means <- hap %>%
-  group_by(Generation) %>%
-  summarise(across(where(is.numeric), \(x) mean(x, na.rm=T), .names="{.col}"))
-
+# take generations' trait averages
 # reshape the data so each generation mean is a column
 gen_means2 <- gen_means %>%
            pivot_longer(cols = -Generation, names_to = 'traits') %>%
