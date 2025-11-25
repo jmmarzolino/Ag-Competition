@@ -145,9 +145,11 @@ levels = c("Flowering Time", "100-Seed Weight", "Fecundity"))
 g2 <- ggplot(plotting, aes(x=generation, y=allele_frequency, group=site)) + 
  geom_point(alpha=0.4) + geom_line(alpha=0.4) + 
  facet_wrap(~associated_trait) +
- theme_bw() +
- labs(x="Generation", y="Allele Frequency", title="Allele Frequency over Generation", subtitle="site frequency polarized to trait increase")
-ggsave("trait_assoc_sites_allele_freq_over_gens_trait_faceted.png", g2, height=7, width=5.5*3)
+ theme_bw(base_size=20) +
+ labs(x="Generation", y="Allele Frequency", title="Allele Frequency over Generation", subtitle="site frequency polarized to trait increase") +
+ theme(strip.background = element_rect(fill="white", color="white"))
+
+ggsave("trait_assoc_sites_allele_freq_over_gens_trait_faceted.png", g2, height=7, width=17, dpi=200)
 
 
 
@@ -187,7 +189,8 @@ plot_sigs <- plotting %>% filter(site %in% sigs)
 g3 <- ggplot(plot_sigs, aes(x=generation, y=allele_frequency, group=site)) + 
  geom_point(alpha=0.4) + geom_line(alpha=0.4) + 
  facet_wrap(~associated_trait) +
- theme_bw() +
+ theme_bw(base_size=20) +
  ylim(c(0,1)) +
- labs(x="Generation", y="Allele Frequency", title="Allele Frequency over Generation", subtitle="site frequency polarized to trait increase")
-ggsave("trait_assoc_sites_allele_freq_over_gens_trait_faceted_onlygwassignificantsites.png", g3, height=7, width=14)
+ labs(x="Generation", y="Allele Frequency", title="Allele Frequency over Generation", subtitle="site frequency polarized to trait increase") +
+ theme(strip.background = element_rect(fill="white", color="white"))
+ggsave("trait_assoc_sites_allele_freq_over_gens_trait_faceted_onlygwassignificantsites.png", g3, height=7, width=10, dpi=200)

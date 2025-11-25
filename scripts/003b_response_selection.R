@@ -7,12 +7,14 @@
 library(tidyverse)
 library(inti)
 library(data.table)
+library(RColorBrewer)
 
 setwd("/rhome/jmarz001/bigdata/Ag-Competition/data")
 source("../scripts/CUSTOM_FNS.R")
 
 # calculate response and selection
 
+adjusted_blues <- brewer.pal(7, "Blues")[3:7]
 
 # Loading Data
 df <- fread("trait_BLUPs_HapRepPop.tsv")
@@ -126,8 +128,9 @@ ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection_facet.png",
 a3 <- ggplot(HRplot, aes(Generation, selection, color=trait, group=trait)) +
   geom_point() +
   geom_line() +
-  labs(y="selection estimate", x="time span", title="Selection between Generations") +
-  theme_bw(base_size = 14) 
+  labs(y="selection estimate", x="time span", title="selection between generations") +
+  theme_bw(base_size = 14) +
+  scale_color_manual(values=adjusted_blues[c(1, 3, 5)]) 
 
-ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection.png", a3, height=7, width=7, units="in")
+ggsave("/bigdata/koeniglab/jmarz001/Ag-Competition/results/selection.png", a3, height=7, width=7+1, units="in", dpi=200)
 

@@ -64,6 +64,7 @@ g <- ggplot(df_long, aes(VALUE, group=pgroup, color=as.factor(pgroup))) +
   facet_wrap(~TRAIT, scales="free") +
   theme_bw(base_size=20) +
   labs(x="", y="density") +
+  theme(strip.background = element_rect(fill="white", color="white")) +
   stat_summary(fun = mean, geom = "vline", orientation = "y", aes(xintercept = after_stat(x), y = 0), linewidth=1) 
-ggsave("results/trait_distributions_Wparentprogeny.png", g, width=(7*3), height=7)
+ggsave("results/trait_distributions_Wparentprogeny.png", g, width=((7*3)+1), height=7, dpi=200)
 

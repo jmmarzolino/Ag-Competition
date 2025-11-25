@@ -38,9 +38,10 @@ cor.test(df$FECUNDITY, df$SEED_WEIGHT_100, method="spearman") %>% print
 
 
 # plot trait relationships 
-png("blup_correlations.png")
+png("blup_correlations.png", width=5, height=5, units="in", res=300)
 corrplot(x_cor, method="color", type="upper", order="original", title="", mar=c(0,0,4,0), addCoef.col = "black", tl.col = "black")
 dev.off()
+
 
 # plot trait relationships minus flowering time which might skew corr values
 tmp <- df %>% select(-FT)
