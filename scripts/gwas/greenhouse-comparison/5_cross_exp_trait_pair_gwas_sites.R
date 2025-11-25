@@ -64,16 +64,15 @@ matched_exp_tm <- tibble(
 ### flowering time overlap
 x1 <- fread(matched_exp_ft[[1,4]]) %>% select(c("chr", "ps", "af", "beta", "p_lrt"))
 x1$group <- "field flowering time"
-x2 <- fread(matched_exp_ft[[2,4]]) %>% select(c("chr", "ps", "af", "beta", "p_lrt"))
-x2$group <- "greenhouse flowering time 2017"
+#x2 <- fread(matched_exp_ft[[2,4]]) %>% select(c("chr", "ps", "af", "beta", "p_lrt"))
+#x2$group <- "greenhouse flowering time 2017"
 x3 <- fread(matched_exp_ft[[3,4]]) %>% select(c("chr", "ps", "af", "beta", "p_lrt"))
-x3$group <- "greenhouse flowering time 2018"
+x3$group <- "greenhouse flowering time"
 
 bon <- 0.05/nrow(x1)
 
-# now join the three phenotypes
-z <- full_join(x1, x2)
-z <- full_join(z, x3)
+# join phenotypes
+z <- full_join(x1, x3)
 
 # filter to top 5% of sites across experiments
 threshhold <- quantile(z$p_lrt, 0.0005)
@@ -94,14 +93,12 @@ CMplot(tmp2, type="p", plot.type="m", LOG10=TRUE,
         # Plots are stored in: /bigdata/koeniglab/jmarz001/Ag-Competition/results/gwas/CCII_greenhouse_exp_gwas
         # Multi-tracks_Manhtn.....
 
-# plot type 2 - all-in-one vertical manhattan
-png("combo_ft_manhattan.png")
-manhattan(tmp, chr="chr", bp="ps", p="p_lrt", snp="snp", genomewideline=-log10(bon), col = c("gray60","#4197d8"),suggestiveline=-log10(bon)-1, annotateTop = TRUE)
-dev.off()
-
-
 # plot type 3 - all-in-one overlaping manhattan
 tmp$BP <- as.numeric(tmp$ps)
+
+# want to add a vertical line over the top site from greenhouse exp
+gh_vrn <- z %>% filter(group=="greenhouse flowering time") %>% filter(p_lrt == min(p_lrt))
+gh_vrn_site <- paste0(gh_vrn$chr, "_", gh_vrn$ps)
 
 result <- tmp %>%
   # Compute chromosome size
@@ -118,21 +115,22 @@ result <- tmp %>%
 
 result <- result %>% filter(-log10(p_lrt)>1.5)
 axisdf <- result %>% group_by(chr) %>% summarize(center=( max(BPcum) + min(BPcum) ) / 2 )
+vert <- result %>% filter(snp == gh_vrn_site)
 
 png("cross_exp_manhattan_overlap_ft.png", width=14, height=7, units="in", res=200)
 # Manhattan plot
-ggplot(result, aes(x=BPcum, y=-log10(p_lrt), group=group)) +
+ggplot(result, aes(x=BPcum, y=-log10(p_lrt))) +
     # Show all points
-    geom_point(aes(color=group), alpha=0.5, size=1.3) +
-    geom_hline(aes(yintercept=-log10(bon)), color = "firebrick1", linetype="dashed", alpha=0.7) +
-    scale_shape_manual(values=rep(c(16, 18), 22)) + 
-    scale_color_manual(values = c("dark green", "dodgerblue4", "deepskyblue")) +
+    geom_point(aes(color=as.factor(chr)), alpha=0.5, size=1.3) +
+    geom_hline(aes(yintercept=-log10(bon)), color = "orange", linetype="dashed", alpha=0.7) +
+    geom_vline(aes(xintercept=vert$BPcum), linetype="dashed", color="firebrick1", alpha=0.7) + 
+    scale_color_manual(values = rep(c("dodgerblue4", "deepskyblue"), 22 )) +
     # custom X axis:
     scale_x_continuous(label = axisdf$chr, breaks= axisdf$center) +
     scale_y_continuous(expand = c(0, 0.5)) +   # remove space between plot area and x axis
     # Custom theme:
     theme_classic() +
-    theme(#legend.position="none",
+    theme(legend.position="none",
           panel.border = element_blank(),
           panel.grid.major.x = element_blank(),
           panel.grid.minor.x = element_blank(),
@@ -140,11 +138,70 @@ ggplot(result, aes(x=BPcum, y=-log10(p_lrt), group=group)) +
           plot.title = element_text(size=12),
           plot.subtitle = element_text(size=10)) +
     xlab("Chromosome") +
-    ylab(expression(-log[10](italic(p_lrt)))) +
-    ggtitle("Flowering Time GWAS Results across Experiments")
+    ylab(expression(-log[10](italic(p)))) +
+    ggtitle("Flowering Time GWAS Results across Experiments") +
+    facet_wrap(vars(group), ncol=1)
 dev.off()
 
+# zoom in on chr 4 peak
+result <- result %>% filter(chr==4) 
+png("cross_exp_manhattan_overlap_ft_chr4.png", width=8, height=7, units="in", res=200)
+# Manhattan plot
+ggplot(result, aes(x=BPcum, y=-log10(p_lrt))) +
+    # Show all points
+    geom_point(aes(color=as.factor(chr)), alpha=0.5, size=1.3) +
+    geom_hline(aes(yintercept=-log10(bon)), color = "orange", linetype="dashed", alpha=0.7) +
+    geom_vline(aes(xintercept=vert$BPcum), linetype="dashed", color="firebrick1", alpha=0.7) + 
+    scale_color_manual(values = rep(c("dodgerblue4", "deepskyblue"), 22 )) +
+    # custom X axis:
+    scale_x_continuous(label = axisdf$chr, breaks= axisdf$center) +
+    scale_y_continuous(expand = c(0, 0.5)) +   # remove space between plot area and x axis
+    # Custom theme:
+    theme_classic() +
+    theme(legend.position="none",
+          panel.border = element_blank(),
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          text=element_text(size=16),
+          plot.title = element_text(size=12),
+          plot.subtitle = element_text(size=10)) +
+    xlab("Chromosome") +
+    ylab(expression(-log[10](italic(p)))) +
+    ggtitle("Flowering Time GWAS Results across Experiments") +
+    facet_wrap(vars(group), ncol=1)
+dev.off()
 
+result <- result %>% filter(chr==4) %>% filter(BPcum > axisdf$center[4])
+png("cross_exp_manhattan_overlap_ft_zoom.png", width=7, height=7, units="in", res=200)
+# Manhattan plot
+g <- ggplot(result, aes(x=BPcum, y=-log10(p_lrt))) +
+    # Show all points
+    geom_point(aes(color=as.factor(chr)), alpha=0.5, size=1.3) +
+    geom_hline(aes(yintercept=-log10(bon)), color = "orange", linetype="dashed", alpha=0.7) +
+    geom_vline(aes(xintercept=vert$BPcum), linetype="dashed", color="firebrick1", alpha=0.7) + 
+    scale_color_manual(values = rep(c("dodgerblue4", "deepskyblue"), 22 )) +
+    # custom X axis:
+    scale_x_continuous(label = axisdf$chr, breaks= axisdf$center) +
+    scale_y_continuous(expand = c(0, 0.5)) +   # remove space between plot area and x axis
+    # Custom theme:
+    theme_classic() +
+    theme(legend.position="none",
+          panel.border = element_blank(),
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          text=element_text(size=16),
+          plot.title = element_text(size=12),
+          plot.subtitle = element_text(size=10)) +
+    xlab("Chromosome") +
+    ylab(expression(-log[10](italic(p)))) +
+    ggtitle("Flowering Time GWAS Results across Experiments") +
+    facet_wrap(vars(group), ncol=1)
+print(g)
+dev.off()
+
+png("cross_exp_manhattan_overlap_ft_zoom_xtra.png", width=7, height=7, units="in", res=200)
+g+xlim(c((max(result$BPcum)-45000000), max(result$BPcum)))
+dev.off()
 
 
 
